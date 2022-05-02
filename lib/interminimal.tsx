@@ -10,18 +10,18 @@ import {
 
 type LangType = string | undefined;
 
-interface DictType {
+export interface TDictType {
   readonly [key: string]: string;
 }
 
-interface TranslationType {
-  readonly [key: string]: DictType;
+export interface TTranslationType {
+  readonly [key: string]: TDictType;
 }
 
 interface ContextProps {
   readonly defaultLang: string;
   readonly lang?: string;
-  readonly translation?: TranslationType;
+  readonly translation?: TTranslationType;
 }
 
 type AsType =
@@ -32,17 +32,17 @@ type AsType =
 const TContext = createContext<ContextProps>({ defaultLang: "en" });
 
 export class TString {
-  readonly dict: DictType;
+  readonly dict: TDictType;
   readonly lang: LangType;
 
-  constructor(dict: DictType, lang?: LangType) {
+  constructor(dict: TDictType, lang?: LangType) {
     this.dict = dict;
     this.lang = lang;
   }
 
-  static cast(obj: any, lang?: LangType) {
+  static cast(obj: TDictType | TString, lang?: LangType) {
     if (obj instanceof this) return obj;
-    return new this(obj as DictType, lang);
+    return new this(obj as TDictType, lang);
   }
 
   toString() {
@@ -57,51 +57,63 @@ export class TString {
       if (lang === this.lang) return this;
       if (lang in this.dict) return new TString(this.dict, lang);
     }
-    if (this.lang !== null) return this;
-    return new TString(this.dict, Object.keys(this.dict)[0]);
+    if (this.lang) return this;
+    const fallback = Object.keys(this.dict)[0];
+    if (!fallback) throw new Error(`No translations available in any language`);
+    return new TString(this.dict, fallback);
   }
 }
 
 export const useTranslation = () => useContext<ContextProps>(TContext);
 
-const LangText: ComponentType<{
+const TText: ComponentType<{
   children: ReactNode;
   lang: string;
   as: AsType;
-}> = ({ children, lang, as }) => {
+  [key: string]: any;
+}> = ({ children, lang, as, ...props }) => {
   const ctx = useTranslation();
   return lang !== ctx.lang
-    ? createElement(as, { lang }, children)
-    : createElement(as, {}, children);
+    ? createElement(as, { ...props, lang }, children)
+    : createElement(as, props, children);
 };
 
 export const Translate: ComponentType<{
   children: ReactNode;
   lang?: string;
-  translation?: TranslationType;
-}> = ({ children, ...props }) => {
+  translation?: TTranslationType;
+  as?: AsType;
+}> = ({ children, as = "div", ...props }) => {
   const up = useTranslation();
   const ctx = { ...up, ...props };
   return (
-    <LangText as="div" lang={ctx.lang || ctx.defaultLang}>
+    <TText as={as} lang={ctx.lang || ctx.defaultLang}>
       <TContext.Provider value={ctx}>{children}</TContext.Provider>
-    </LangText>
+    </TText>
   );
 };
 
-export const T: ComponentType<{
-  children?: ReactNode | DictType | TString;
+interface TProps {
+  children?: ReactNode | TDictType | TString;
   tag?: string;
   as?: AsType;
-}> = ({ children, tag, as = "span" }) => {
+  [key: string]: any;
+}
+
+export const T: ComponentType<TProps> = ({
+  children,
+  tag,
+  as = "span",
+  ...props
+}) => {
   const ctx = useTranslation();
 
   const renderString = (tstr: TString) => {
     const ts = tstr.toLang([ctx.lang, ctx.defaultLang]);
     return (
-      <LangText as={as} lang={ts.lang || ctx.defaultLang}>
+      <TText as={as} lang={ts.lang || ctx.defaultLang} {...props}>
         {ts.toString()}
-      </LangText>
+      </TText>
     );
   };
 
@@ -112,15 +124,17 @@ export const T: ComponentType<{
       return renderString(TString.cast(children));
 
     return (
-      <LangText as={as} lang={ctx.defaultLang}>
+      <TText as={as} lang={ctx.defaultLang} {...props}>
         {children}
-      </LangText>
+      </TText>
     );
   }
 
+  // Tagged translation?
   if (!tag) throw new Error(`Missing tag or children`);
   if (!ctx.translation) throw new Error(`Context has no translation table`);
   const dict = ctx.translation[tag];
   if (!dict) throw new Error(`No translation for ${tag}`);
+
   return renderString(new TString(dict));
 };

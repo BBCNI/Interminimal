@@ -11,3 +11,13 @@
   justify-content: center;
   align-items: center;
 }
+
+.blocks {
+  display: flex;
+  width: 100%;
+}
+
+.blocks > * {
+  margin: 2em 1em;
+  flex-grow: 1;
+}

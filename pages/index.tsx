@@ -1,13 +1,17 @@
 import type { GetServerSidePropsContext, NextPage } from "next";
 import Head from "next/head";
 import { ChangeEvent, ComponentType, useState } from "react";
-import { T, Translate, TString } from "../lib/interminimal";
+import { T, TDictType, Translate } from "../lib/interminimal";
 import styles from "../styles/Home.module.css";
+
+interface PageProps {
+  greeting: TDictType;
+}
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return {
     props: {
-      name: { en: "Hello", fr: "Bonjour" }
+      greeting: { en: "Hello", fr: "Bonjour", de: "Hallo" }
     }
   };
 }
@@ -15,11 +19,15 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 const translation = {
   two: { en: "Two", fr: "Deux", de: "Zwei" },
   en: { en: "English", fr: "Anglais" },
-  fr: { en: "French", fr: "Francais" },
-  de: { en: "German", fr: "Allemand", de: "Deutsch" }
+  fr: { fr: "Français" },
+  de: { en: "German", fr: "Allemand", de: "Deutsch" },
+  we: { en: "Welsh", we: "Cymraeg" }
 };
 
-const Block: ComponentType<{ name: any; lang: string }> = ({ name, lang }) => {
+const Block: ComponentType<PageProps & { lang: string }> = ({
+  greeting,
+  lang
+}) => {
   const [curLang, setLang] = useState(lang);
 
   const onChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -27,32 +35,35 @@ const Block: ComponentType<{ name: any; lang: string }> = ({ name, lang }) => {
     setLang(e.target.value);
   };
 
+  const langs = ["en", "fr", "de", "we"];
+
   return (
     <div>
       <Translate lang={curLang}>
+        <select value={curLang} onChange={onChange}>
+          {langs.map(lang => (
+            <T key={lang} as="option" value={lang} tag={lang} />
+          ))}
+        </select>
+        <h2>Phrases</h2>
         <ul>
           <T as="li">Hello</T>
-          <T as="li">{name}</T>
+          <T as="li">{greeting}</T>
           <T as="li" tag="two" />
         </ul>
-        <select value={curLang} onChange={onChange}>
-          <option value="en">
-            <T tag="en" />
-          </option>
-          <option value="fr">
-            <T tag="fr" />
-          </option>
-          <option value="de">
-            <T tag="de" />
-          </option>
-        </select>
+        <h2>Languages</h2>
+        <ul>
+          <T as="li" tag="en" />
+          <T as="li" tag="fr" />
+          <T as="li" tag="de" />
+          <T as="li" tag="we" />
+        </ul>
       </Translate>
     </div>
   );
 };
 
-const Home: NextPage<{ name: any }> = props => {
-  console.log(props);
+const Home: NextPage<PageProps> = props => {
   return (
     <Translate lang="en" translation={translation}>
       <div className={styles.container}>
@@ -64,9 +75,11 @@ const Home: NextPage<{ name: any }> = props => {
 
         <main className={styles.main}>
           <h1 className={styles.title}>Interminimal</h1>
-          <Block name={props.name} lang="en" />
-          <Block name={props.name} lang="fr" />
-          <Block name={props.name} lang="de" />
+          <div className={styles.blocks}>
+            <Block greeting={props.greeting} lang="en" />
+            <Block greeting={props.greeting} lang="fr" />
+            <Block greeting={props.greeting} lang="de" />
+          </div>
         </main>
       </div>
     </Translate>
