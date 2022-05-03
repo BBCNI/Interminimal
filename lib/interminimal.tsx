@@ -112,9 +112,7 @@ export class TString {
       return ttx[plur];
     }
 
-    if (typeof ttx === "string") return ttx;
-
-    throw new Error(`Not a string or a dictionary`);
+    return ttx;
   }
 
   toLang(langs: string | string[]): TString {
