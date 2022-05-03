@@ -133,8 +133,7 @@ type TextPropType = TDictType | TString | string;
 
 const lookupTag = (ctx: ContextProps, tag?: string, text?: TextPropType) => {
   if (text) {
-    if (typeof text === "string")
-      return TString.literal(text, ctx.lang || ctx.defaultLang);
+    if (typeof text === "string") return TString.literal(text, ctx.defaultLang);
     return TString.cast(text);
   }
 

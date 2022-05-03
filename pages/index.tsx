@@ -11,7 +11,7 @@ interface PageProps {
 }
 
 // Mock service data
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+export async function getServerSideProps() {
   return {
     props: {
       greeting: { en: "Hello", fr: "Bonjour", de: "Hallo" },
@@ -83,35 +83,6 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
       </Translate>
     </div>
   );
-};
-
-const Format: ComponentType<{ format: string; children: any }> = ({
-  format,
-  children
-}) => {
-  const parts = format.split(/%(\d)/);
-  console.log(parts);
-  const avail = new Set(children.map((_x: any, i: number) => i + 1));
-  const out = [];
-  while (parts.length) {
-    const [frag, arg] = parts.splice(0, 2);
-    if (frag.length) out.push(frag);
-    if (arg) {
-      const idx = Number(arg);
-      if (idx < 1 || idx > children.length)
-        throw new Error(
-          `Arg out of range %${idx} (1..${children.length} are valid)`
-        );
-      if (!avail.has(idx)) throw new Error(`Already using arg %${idx}`);
-      avail.delete(idx);
-      const child = children[idx - 1];
-      console.log(child);
-      out.push(child);
-    }
-  }
-
-  if (avail.size) throw new Error(`Unused args: ${avail}`);
-  return <>{out}</>;
 };
 
 const Home: NextPage<PageProps> = props => {
