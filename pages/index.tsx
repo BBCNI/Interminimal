@@ -35,7 +35,7 @@ export async function getServerSideProps() {
 const translation = {
   // Numbers
   one: { en: "One", fr: "Un", de: "Ein", cy: "Un" },
-  two: { en: "Two", fr: "Deux", de: "Zwxei", cy: "Dwy" },
+  two: { en: "Two", fr: "Deux", de: "Zwei", cy: "Dwy" },
   // Langugae names
   en: { en: "English", fr: "Anglais" },
   fr: { fr: "Français" },
