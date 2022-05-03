@@ -5,6 +5,7 @@ import {
   createElement,
   FunctionComponent,
   ReactNode,
+  Children,
   useContext
 } from "react";
 
@@ -147,16 +148,15 @@ const lookupTag = (ctx: ContextProps, tag?: string, text?: TextPropType) => {
   throw new Error(`No text or tag`);
 };
 
-type ChildType = ReactNode | TDictType | TString;
-
 export const TFormat: ComponentType<{
   format: string;
-  params: ChildType[];
-}> = ({ format, params }) => {
+  children?: ReactNode;
+}> = ({ format, children }) => {
   const parts = format.split(/%(\d)/);
-
+  const params = Children.map(children, x => x) || [];
   const avail = new Set(params.map((_x: any, i: number) => i + 1));
   const out = [];
+
   while (parts.length) {
     const [frag, arg] = parts.splice(0, 2);
     if (frag.length) out.push(frag);
@@ -177,7 +177,7 @@ export const TFormat: ComponentType<{
 };
 
 interface TProps {
-  children?: ChildType[];
+  children?: ReactNode;
   tag?: string;
   text?: TextPropType;
   as?: AsType;
@@ -202,7 +202,7 @@ export const T: ComponentType<TProps> = ({
   if (children)
     return (
       <TText as={as} lang={lang} {...props}>
-        <TFormat format={ts.toString()} params={children} />
+        <TFormat format={ts.toString()}>{children}</TFormat>
       </TText>
     );
 

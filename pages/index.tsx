@@ -78,7 +78,8 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
         </ul>
         <h2>Info</h2>
         <T as="p" text={info}>
-          {[<T key="1" tag="one" />, <T key="2" tag="two" />]}
+          <T key="1" tag="one" />
+          <T key="2" tag="two" />
         </T>
       </Translate>
     </div>
