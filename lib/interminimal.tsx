@@ -57,6 +57,7 @@ export class TString {
       if (lang === this.lang) return this;
       if (lang in this.dict) return new TString(this.dict, lang);
     }
+    // if ("*" in this.dict) return new TString(this.dict, langs[0]);
     if (this.lang) return this;
     const fallback = Object.keys(this.dict)[0];
     if (!fallback) throw new Error(`No translations available in any language`);
