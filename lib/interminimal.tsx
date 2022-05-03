@@ -36,6 +36,7 @@ export class TString {
   readonly lang: LangType;
 
   constructor(dict: TDictType, lang?: LangType) {
+    if (lang && !(lang in dict)) throw new Error(`${lang} not in dictionary`);
     this.dict = dict;
     this.lang = lang;
   }
@@ -57,7 +58,6 @@ export class TString {
       if (lang === this.lang) return this;
       if (lang in this.dict) return new TString(this.dict, lang);
     }
-    // if ("*" in this.dict) return new TString(this.dict, langs[0]);
     if (this.lang) return this;
     const fallback = Object.keys(this.dict)[0];
     if (!fallback) throw new Error(`No translations available in any language`);
@@ -67,7 +67,7 @@ export class TString {
 
 export const useTranslation = () => useContext<ContextProps>(TContext);
 
-const TText: ComponentType<{
+export const TText: ComponentType<{
   children: ReactNode;
   lang: string;
   as: AsType;
@@ -122,7 +122,7 @@ export const T: ComponentType<TProps> = ({
     if (tag) throw new Error(`Please provide tag or children, not both`);
 
     if (typeof children === "object")
-      return renderString(TString.cast(children));
+      return renderString(TString.cast(children as TDictType));
 
     return (
       <TText as={as} lang={ctx.defaultLang} {...props}>

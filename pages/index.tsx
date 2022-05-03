@@ -9,6 +9,7 @@ interface PageProps {
   message: TDictType;
 }
 
+// Mock service data
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return {
     props: {
@@ -23,6 +24,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   };
 }
 
+// Translation dictionary
 const translation = {
   two: { en: "Two", fr: "Deux", de: "Zwei" },
   en: { en: "English", fr: "Anglais" },
@@ -62,10 +64,9 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
         </ul>
         <h2>Languages</h2>
         <ul>
-          <T as="li" tag="en" />
-          <T as="li" tag="fr" />
-          <T as="li" tag="de" />
-          <T as="li" tag="we" />
+          {langs.map(lang => (
+            <T key={lang} as="li" tag={lang} />
+          ))}
         </ul>
       </Translate>
     </div>
