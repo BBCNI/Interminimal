@@ -136,10 +136,8 @@ export const Ambience: ComponentType<{
   children: ReactNode;
   ambient?: string;
 }> = ({ children, ...props }) => {
-  const ctx = useTranslation();
-  return (
-    <TContext.Provider value={ctx.derive(props)}>{children}</TContext.Provider>
-  );
+  const ctx = useTranslation().derive(props);
+  return <TContext.Provider value={ctx}>{children}</TContext.Provider>;
 };
 
 export const Translate: ComponentType<{
@@ -149,12 +147,10 @@ export const Translate: ComponentType<{
   translation?: TTranslationType;
   as?: AsType;
 }> = ({ children, as = "div", ...props }) => {
-  const ctx = useTranslation();
+  const ctx = useTranslation().derive(props);
   return (
-    <TText as={as} lang={props.lang || ctx.defaultLang}>
-      <TContext.Provider value={ctx.derive(props)}>
-        {children}
-      </TContext.Provider>
+    <TText as={as} lang={ctx.lang || ctx.defaultLang}>
+      <TContext.Provider value={ctx}>{children}</TContext.Provider>
     </TText>
   );
 };
