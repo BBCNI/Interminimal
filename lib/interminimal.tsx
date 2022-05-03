@@ -108,7 +108,7 @@ export class TString {
     if (typeof ttx === "object") {
       const plur = new Intl.PluralRules(this.lang).select(count ?? 1);
       if (!(plur in ttx))
-        throw new Error(`Can't map plural ${plur} for ${count}`);
+        throw new Error(`Can't map plural ${plur} for ${count ?? 1}`);
       return ttx[plur];
     }
 
