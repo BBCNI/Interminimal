@@ -21,3 +21,11 @@ a {
   color: orange;
   font-size: 0.8em;
 }
+
+[lang] {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 255, 128, 0.4),
+    rgba(255, 0, 0, 0.1)
+  );
+}

@@ -3,6 +3,7 @@ import Head from "next/head";
 import { ChangeEvent, ComponentType, useState } from "react";
 import { T, TDictType, Translate } from "../lib/interminimal";
 import styles from "../styles/Home.module.css";
+import range from "lodash/range";
 
 interface PageProps {
   greeting: TDictType;
@@ -22,6 +23,7 @@ export async function getServerSideProps() {
         cy: "Gadewch i ni gyfieithu testun!"
       },
       info: {
+        // Demo substitution
         en: 'The word for 1 is "%1" and the word for 2 is "%2"',
         fr: 'Le mot pour 2 est "%2" et le mot pour 1 est "%1".'
       }
@@ -31,12 +33,27 @@ export async function getServerSideProps() {
 
 // Translation dictionary
 const translation = {
+  // Numbers
   one: { en: "One", fr: "Un", de: "Ein", cy: "Un" },
-  two: { en: "Two", fr: "Deux", de: "Zwei", cy: "Dwy" },
+  two: { en: "Two", fr: "Deux", de: "Zwxei", cy: "Dwy" },
+  // Langugae names
   en: { en: "English", fr: "Anglais" },
   fr: { fr: "Français" },
   de: { en: "German", fr: "Allemand", de: "Deutsch" },
-  cy: { en: "Welsh", cy: "Cymraeg" }
+  cy: { en: "Welsh", cy: "Cymraeg" },
+  // Plurals
+  cat: {
+    en: { one: "%1 cat", other: "%1 cats" },
+    de: { one: "%1 Katze", other: "%1 Katzen" },
+    cy: {
+      zero: "%1 cathod",
+      one: "%1 gath",
+      two: "%1 gath",
+      few: "%1 cath",
+      many: "%1 chath",
+      other: "%1 cath"
+    }
+  }
 };
 
 const Block: ComponentType<PageProps & { lang: string }> = ({
@@ -53,16 +70,17 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
   };
 
   const langs = ["en", "fr", "de", "cy"];
+  const counts = [0, 1, 1.5, 2, 3, 6, 42];
 
   return (
     <div>
       <Translate lang={curLang}>
         <select value={curLang} onChange={onChange}>
           {langs.map(lang => (
-            <T key={lang} as="option" value={lang} tag={lang} />
+            <T as="option" key={lang} value={lang} tag={lang} />
           ))}
         </select>
-        <h2>Phrases</h2>
+        <T as="h2" text="Phrases" />
         <ul>
           <T as="li" text="Always English" />
           <T as="li" text={greeting} />
@@ -70,17 +88,25 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
           <T as="li" tag="one" />
           <T as="li" tag="two" />
         </ul>
-        <h2>Languages</h2>
+        <T as="h2" text="Languages" />
         <ul>
           {langs.map(lang => (
             <T key={lang} as="li" tag={lang} />
           ))}
         </ul>
-        <h2>Info</h2>
+        <T as="h2" text="Info" />
         <T as="p" text={info}>
-          <T key="1" tag="one" />
-          <T key="2" tag="two" />
+          <T tag="one" />
+          <T tag="two" />
         </T>
+        <T as="h2" text="Cats" />
+        <ul>
+          {counts.map((n, i) => (
+            <T as="li" key={i} tag="cat" count={n}>
+              {String(n)}
+            </T>
+          ))}
+        </ul>
       </Translate>
     </div>
   );

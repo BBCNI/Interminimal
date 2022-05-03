@@ -8,11 +8,16 @@ import {
   Children,
   useContext,
   Fragment,
-  cloneElement
+  cloneElement,
+  isValidElement
 } from "react";
 
-export interface TDictType {
+export interface TPluralType {
   readonly [key: string]: string;
+}
+
+export interface TDictType {
+  readonly [key: string]: string | TPluralType;
 }
 
 export interface TTranslationType {
@@ -95,9 +100,19 @@ export class TString {
     return new this({ [lang]: str }, lang);
   }
 
-  toString() {
-    if (!this.lang) throw new Error(`Can't render with undefined lang`);
-    return this.dict[this.lang];
+  toString(count?: number): string {
+    if (!this.lang) throw new Error(`Can't translate with undefined lang`);
+    const ttx = this.dict[this.lang];
+
+    // Plurals?
+    if (typeof ttx === "object") {
+      const plur = new Intl.PluralRules(this.lang).select(count ?? 1);
+      if (!(plur in ttx))
+        throw new Error(`Can't map plural ${plur} for ${count}`);
+      return ttx[plur];
+    }
+
+    return ttx as string;
   }
 
   toLang(langs: string | string[]): TString {
@@ -109,7 +124,7 @@ export class TString {
     }
     if (this.lang) return this;
     const fallback = Object.keys(this.dict)[0];
-    if (!fallback) throw new Error(`No translations available in any language`);
+    if (!fallback) throw new Error(`No translations available`);
     return new TString(this.dict, fallback);
   }
 }
@@ -136,7 +151,7 @@ export const Translate: ComponentType<{
 }> = ({ children, as = "div", ...props }) => {
   const ctx = useTranslation();
   return (
-    <TText as={as} lang={ctx.lang || ctx.defaultLang}>
+    <TText as={as} lang={props.lang || ctx.defaultLang}>
       <TContext.Provider value={ctx.derive(props)}>
         {children}
       </TContext.Provider>
@@ -158,6 +173,7 @@ export const TText: ComponentType<{
   [key: string]: any;
 }> = ({ children, lang, as, ...props }) => {
   const ctx = useTranslation();
+  console.log(ctx);
   const curLang = ctx.ambient || ctx.lang;
 
   if (lang !== curLang)
@@ -174,6 +190,8 @@ export const TText: ComponentType<{
     </As>
   );
 };
+
+const clone = (elt: any) => (isValidElement(elt) ? cloneElement(elt) : elt);
 
 export const TFormat: ComponentType<{
   format: string;
@@ -212,7 +230,7 @@ export const TFormat: ComponentType<{
         throw new Error(`Already using arg %${idx}`);
 
       avail.delete(idx);
-      out.push(cloneElement(params[idx - 1]));
+      out.push(clone(params[idx - 1]));
     }
   }
 
@@ -225,6 +243,7 @@ interface TProps {
   children?: ReactNode;
   tag?: string;
   text?: TextPropType;
+  count?: number;
   as?: AsType;
   [key: string]: any;
 }
@@ -233,6 +252,7 @@ export const T: ComponentType<TProps> = ({
   children,
   tag,
   text,
+  count,
   as = "span",
   ...props
 }) => {
@@ -243,13 +263,13 @@ export const T: ComponentType<TProps> = ({
   if (children)
     return (
       <TText as={as} lang={lang} {...props}>
-        <TFormat format={ts.toString()}>{children}</TFormat>
+        <TFormat format={ts.toString(count)}>{children}</TFormat>
       </TText>
     );
 
   return (
     <TText as={as} lang={lang} {...props}>
-      {ts.toString()}
+      {ts.toString(count)}
     </TText>
   );
 };
