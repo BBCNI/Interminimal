@@ -134,7 +134,7 @@ export const useTranslation = () => useContext<LangContext>(TContext);
 // Set the ambient language
 export const Ambience: ComponentType<{
   children: ReactNode;
-  ambient?: string;
+  ambient: string;
 }> = ({ children, ...props }) => {
   const ctx = useTranslation().derive(props);
   return <TContext.Provider value={ctx}>{children}</TContext.Provider>;
@@ -243,6 +243,7 @@ interface TProps {
   [key: string]: any;
 }
 
+// TODO translatable props?
 export const T: ComponentType<TProps> = ({
   children,
   tag,
@@ -255,16 +256,9 @@ export const T: ComponentType<TProps> = ({
   const ts = ctx.resolve(tag, text);
   const lang = ts.lang || ctx.defaultLang;
 
-  if (children)
-    return (
-      <TText as={as} lang={lang} {...props}>
-        <TFormat format={ts.toString(count)}>{children}</TFormat>
-      </TText>
-    );
-
   return (
     <TText as={as} lang={lang} {...props}>
-      {ts.toString(count)}
+      <TFormat format={ts.toString(count)}>{children}</TFormat>
     </TText>
   );
 };

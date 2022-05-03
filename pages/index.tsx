@@ -1,9 +1,8 @@
-import type { GetServerSidePropsContext, NextPage } from "next";
+import type { NextPage } from "next";
 import Head from "next/head";
 import { ChangeEvent, ComponentType, useState } from "react";
 import { T, TDictType, Translate } from "../lib/interminimal";
 import styles from "../styles/Home.module.css";
-import range from "lodash/range";
 
 interface PageProps {
   greeting: TDictType;
@@ -126,9 +125,9 @@ const Home: NextPage<PageProps> = props => {
           <h1 className={styles.title}>Interminimal</h1>
           <div></div>
           <div className={styles.blocks}>
+            <Block {...props} lang="cy" />
             <Block {...props} lang="en" />
             <Block {...props} lang="fr" />
-            <Block {...props} lang="de" />
           </div>
         </main>
       </div>
