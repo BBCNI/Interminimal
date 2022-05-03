@@ -114,7 +114,7 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
 
 const Home: NextPage<PageProps> = props => {
   return (
-    <Translate lang="en" translation={translation}>
+    <Translate translation={translation}>
       <div className={styles.container}>
         <Head>
           <title>Interminimal</title>

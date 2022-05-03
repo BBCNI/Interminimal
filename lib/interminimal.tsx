@@ -170,9 +170,9 @@ export const TText: ComponentType<{
 }> = ({ children, lang, as, ...props }) => {
   const ctx = useTranslation();
   console.log(ctx);
-  const curLang = ctx.ambient || ctx.lang;
+  const ambient = ctx.ambient || ctx.lang || ctx.defaultLang;
 
-  if (lang !== curLang)
+  if (lang !== ambient)
     return (
       <Ambience ambient={lang}>
         <As as={as} {...props} lang={lang}>
