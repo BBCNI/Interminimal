@@ -36,7 +36,7 @@ const translation = {
   // Numbers
   one: { en: "One", fr: "Un", de: "Ein", cy: "Un" },
   two: { en: "Two", fr: "Deux", de: "Zwei", cy: "Dwy" },
-  // Langugae names
+  // Language names
   en: { en: "English", fr: "Anglais" },
   fr: { fr: "Français" },
   de: { en: "German", fr: "Allemand", de: "Deutsch" },
