@@ -6,10 +6,10 @@ import {
   FunctionComponent,
   ReactNode,
   Children,
-  useContext
+  useContext,
+  Fragment,
+  cloneElement
 } from "react";
-
-type LangType = string | undefined;
 
 export interface TDictType {
   readonly [key: string]: string;
@@ -19,31 +19,74 @@ export interface TTranslationType {
   readonly [key: string]: TDictType;
 }
 
-interface ContextProps {
-  readonly defaultLang: string;
-  readonly lang?: string;
-  readonly ambient?: string;
-  readonly translation?: TTranslationType;
-}
+type TextPropType = TDictType | TString | string;
 
 type AsType =
   | string
-  | FunctionComponent<{ lang?: string | undefined }>
-  | ComponentClass<{ lang?: string | undefined }, any>;
+  | FunctionComponent<{ lang?: string }>
+  | ComponentClass<{ lang?: string }, any>;
 
-const TContext = createContext<ContextProps>({ defaultLang: "en" });
+interface LangContextProps {
+  readonly strict?: boolean;
+  readonly defaultLang?: string;
+  readonly translation?: TTranslationType;
+  readonly lang?: string;
+  readonly ambient?: string;
+}
+
+class LangContext {
+  readonly strict: boolean = true;
+  readonly defaultLang: string = "en";
+  readonly lang?: string;
+  readonly ambient?: string;
+  readonly translation?: TTranslationType;
+
+  constructor(props: LangContextProps = {}) {
+    Object.assign(this, props);
+  }
+
+  derive(props: LangContextProps = {}) {
+    return new LangContext({ ...this, ...props });
+  }
+
+  resolveText(text: TextPropType) {
+    if (typeof text === "string")
+      return TString.literal(text, this.defaultLang);
+    return TString.cast(text);
+  }
+
+  resolveTag(tag: string) {
+    const { translation } = this;
+    if (!translation) throw new Error(`Context has no translation table`);
+    const dict = translation[tag];
+    if (!dict) throw new Error(`No translation for ${tag}`);
+    return TString.cast(dict);
+  }
+
+  resolve(tag?: string, text?: TextPropType) {
+    const r = () => {
+      if (tag && text) throw new Error(`Got both tag and text`);
+      if (text) return this.resolveText(text);
+      if (tag) return this.resolveTag(tag);
+      throw new Error(`No text or tag`);
+    };
+    return r().toLang([this.lang || this.defaultLang, this.defaultLang]);
+  }
+}
+
+const TContext = createContext<LangContext>(new LangContext({}));
 
 export class TString {
   readonly dict: TDictType;
-  readonly lang: LangType;
+  readonly lang?: string;
 
-  constructor(dict: TDictType, lang?: LangType) {
+  constructor(dict: TDictType, lang?: string) {
     if (lang && !(lang in dict)) throw new Error(`${lang} not in dictionary`);
     this.dict = dict;
     this.lang = lang;
   }
 
-  static cast(obj: TDictType | TString, lang?: LangType) {
+  static cast(obj: TDictType | TString, lang?: string) {
     if (obj instanceof this) return obj;
     return new this(obj as TDictType, lang);
   }
@@ -57,7 +100,7 @@ export class TString {
     return this.dict[this.lang];
   }
 
-  toLang(langs: LangType | LangType[]): TString {
+  toLang(langs: string | string[]): TString {
     if (!Array.isArray(langs)) return this.toLang([langs]);
     for (const lang of langs) {
       if (!lang) continue;
@@ -71,16 +114,34 @@ export class TString {
   }
 }
 
-export const useTranslation = () => useContext<ContextProps>(TContext);
+export const useTranslation = () => useContext<LangContext>(TContext);
 
 // Set the ambient language
 export const Ambience: ComponentType<{
   children: ReactNode;
   ambient?: string;
 }> = ({ children, ...props }) => {
-  const up = useTranslation();
-  const ctx = { ...up, ...props };
-  return <TContext.Provider value={ctx}>{children}</TContext.Provider>;
+  const ctx = useTranslation();
+  return (
+    <TContext.Provider value={ctx.derive(props)}>{children}</TContext.Provider>
+  );
+};
+
+export const Translate: ComponentType<{
+  children: ReactNode;
+  lang?: string;
+  ambient?: string;
+  translation?: TTranslationType;
+  as?: AsType;
+}> = ({ children, as = "div", ...props }) => {
+  const ctx = useTranslation();
+  return (
+    <TText as={as} lang={ctx.lang || ctx.defaultLang}>
+      <TContext.Provider value={ctx.derive(props)}>
+        {children}
+      </TContext.Provider>
+    </TText>
+  );
 };
 
 // Create a component with the specified tag
@@ -114,66 +175,50 @@ export const TText: ComponentType<{
   );
 };
 
-export const Translate: ComponentType<{
-  children: ReactNode;
-  lang?: string;
-  ambient?: string;
-  translation?: TTranslationType;
-  as?: AsType;
-}> = ({ children, as = "div", ...props }) => {
-  const up = useTranslation();
-  const ctx = { ...up, ...props };
-  return (
-    <TText as={as} lang={ctx.lang || ctx.defaultLang}>
-      <TContext.Provider value={ctx}>{children}</TContext.Provider>
-    </TText>
-  );
-};
-
-type TextPropType = TDictType | TString | string;
-
-const lookupTag = (ctx: ContextProps, tag?: string, text?: TextPropType) => {
-  if (text) {
-    if (typeof text === "string") return TString.literal(text, ctx.defaultLang);
-    return TString.cast(text);
-  }
-
-  if (tag) {
-    if (!ctx.translation) throw new Error(`Context has no translation table`);
-    const dict = ctx.translation[tag];
-    if (!dict) throw new Error(`No translation for ${tag}`);
-    return TString.cast(dict);
-  }
-
-  throw new Error(`No text or tag`);
-};
-
 export const TFormat: ComponentType<{
   format: string;
   children?: ReactNode;
 }> = ({ format, children }) => {
-  const parts = format.split(/%(\d)/);
-  const params = Children.map(children, x => x) || [];
+  const ctx = useTranslation();
+  // Parse format string
+  const parts = format.split(/%(%|\d+)/);
+
+  // Make children into a regular array of nodes
+  const params = Children.map<ReactNode, any>(children, x => x) || [];
+
+  // Set of available indexes
   const avail = new Set(params.map((_x: any, i: number) => i + 1));
+
+  // Output nodes
   const out = [];
 
   while (parts.length) {
     const [frag, arg] = parts.splice(0, 2);
     if (frag.length) out.push(frag);
     if (arg) {
+      // Allow '%%' to escape '%'
+      if (arg === "%") {
+        out.push(arg);
+        continue;
+      }
+
       const idx = Number(arg);
       if (idx < 1 || idx > params.length)
         throw new Error(
           `Arg out of range %${idx} (1..${params.length} are valid)`
         );
-      if (!avail.has(idx)) throw new Error(`Already using arg %${idx}`);
+
+      if (ctx.strict && !avail.has(idx))
+        throw new Error(`Already using arg %${idx}`);
+
       avail.delete(idx);
-      out.push(params[idx - 1]);
+      out.push(cloneElement(params[idx - 1]));
     }
   }
 
-  if (avail.size) throw new Error(`Unused args: ${avail}`);
-  return <>{out}</>;
+  if (ctx.strict && avail.size) throw new Error(`Unused args: ${avail}`);
+
+  return <Fragment>{out}</Fragment>;
 };
 
 interface TProps {
@@ -192,11 +237,7 @@ export const T: ComponentType<TProps> = ({
   ...props
 }) => {
   const ctx = useTranslation();
-
-  if (!tag && !text) throw new Error(`Missing tag / text`);
-  if (tag && text) throw new Error(`Got both tag and text`);
-
-  const ts = lookupTag(ctx, tag, text).toLang([ctx.lang, ctx.defaultLang]);
+  const ts = ctx.resolve(tag, text);
   const lang = ts.lang || ctx.defaultLang;
 
   if (children)
