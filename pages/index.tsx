@@ -99,13 +99,11 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
           <T tag="two" />
         </T>
         <T as="h2" text="Cats" />
-        <ul>
-          {counts.map((n, i) => (
-            <T as="li" key={i} tag="cat" count={n}>
-              {String(n)}
-            </T>
-          ))}
-        </ul>
+        {counts.map((n, i) => (
+          <T as="div" key={i} tag="cat" count={n}>
+            {String(n)}
+          </T>
+        ))}
       </Translate>
     </div>
   );
