@@ -169,7 +169,6 @@ export const TText: ComponentType<{
   [key: string]: any;
 }> = ({ children, lang, as, ...props }) => {
   const ctx = useTranslation();
-  console.log(ctx);
   const ambient = ctx.ambient || ctx.lang || ctx.defaultLang;
 
   if (lang !== ambient)
