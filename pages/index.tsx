@@ -31,8 +31,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 // Translation dictionary
 const translation = {
-  one: { en: "One", fr: "Un", de: "Ein" },
-  two: { en: "Two", fr: "Deux", de: "Zwei" },
+  one: { en: "One", fr: "Un", de: "Ein", cy: "Un" },
+  two: { en: "Two", fr: "Deux", de: "Zwei", cy: "Dwy" },
   en: { en: "English", fr: "Anglais" },
   fr: { fr: "Français" },
   de: { en: "German", fr: "Allemand", de: "Deutsch" },
@@ -67,6 +67,7 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
           <T as="li" text="Always English" />
           <T as="li" text={greeting} />
           <T as="li" text={message} />
+          <T as="li" tag="one" />
           <T as="li" tag="two" />
         </ul>
         <h2>Languages</h2>
