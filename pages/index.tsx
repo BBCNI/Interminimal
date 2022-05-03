@@ -18,7 +18,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         en: "Let's translate text!",
         fr: "Traduisons le texte!",
         de: "Lassen Sie uns Text übersetzen!",
-        we: "Gadewch i ni gyfieithu testun!"
+        cy: "Gadewch i ni gyfieithu testun!"
       }
     }
   };
@@ -30,7 +30,7 @@ const translation = {
   en: { en: "English", fr: "Anglais" },
   fr: { fr: "Français" },
   de: { en: "German", fr: "Allemand", de: "Deutsch" },
-  we: { en: "Welsh", we: "Cymraeg" }
+  cy: { en: "Welsh", cy: "Cymraeg" }
 };
 
 const Block: ComponentType<PageProps & { lang: string }> = ({
@@ -45,7 +45,7 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
     setLang(e.target.value);
   };
 
-  const langs = ["en", "fr", "de", "we"];
+  const langs = ["en", "fr", "de", "cy"];
 
   return (
     <div>
