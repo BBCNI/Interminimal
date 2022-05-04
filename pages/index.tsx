@@ -39,7 +39,7 @@ export async function getServerSideProps() {
 }
 
 // Translation dictionary
-const translation = {
+const dictionary = {
   // Numbers
   one: { en: "One", fr: "Un", de: "Ein", cy: "Un" },
   two: { en: "Two", fr: "Deux", de: "Zwei", cy: "Dwy" },
@@ -122,7 +122,7 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
           <Tli text={["one"]} />
           {/* regular tag spec */}
           <Tli tag="two" />
-          {/* inline translation */}
+          {/* inline fat string */}
           <Tli
             text={{ en: "Where is the spinach?", fr: "Où sont les épinards?" }}
           />
@@ -166,7 +166,7 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
 
 const Home: NextPage<PageProps> = props => {
   return (
-    <Translate translation={translation}>
+    <Translate dictionary={dictionary}>
       <div className={styles.container}>
         <Head>
           <title>Interminimal</title>

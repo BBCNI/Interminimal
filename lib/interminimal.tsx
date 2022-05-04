@@ -34,13 +34,13 @@ type AsType =
   | FunctionComponent<{ lang?: string }>
   | ComponentClass<{ lang?: string }, any>;
 
-type MagicPropsPredicate = (value: any, key: string) => string | undefined;
+type MagicPropsPredicate = (key: string, value: any) => string | undefined;
 
 interface LangContextProps {
   readonly strict?: boolean;
   readonly defaultLang?: string;
   readonly magicProps?: MagicPropsPredicate;
-  readonly translation?: TTranslationType;
+  readonly dictionary?: TTranslationType;
   readonly lang?: string | string[];
   readonly ambient?: string;
 }
@@ -57,7 +57,7 @@ class LangContext {
   readonly magicProps: MagicPropsPredicate = defaultMagicProps;
   readonly lang: string[] = [];
   readonly ambient?: string;
-  readonly translation?: TTranslationType;
+  readonly dictionary?: TTranslationType;
 
   private stackCache: readonly string[] | null = null;
 
@@ -90,7 +90,7 @@ class LangContext {
   }
 
   derive(props: LangContextProps = {}) {
-    const { translation, stackCache, lang, ...rest } = this;
+    const { dictionary, stackCache, lang, ...rest } = this;
     return new LangContext({ ...rest, ...props, parent: this });
   }
 
@@ -106,9 +106,8 @@ class LangContext {
   }
 
   resolveTag(tag: string): TString {
-    const { parent, translation } = this;
-    if (translation && tag in translation)
-      return TString.cast(translation[tag]);
+    const { parent, dictionary } = this;
+    if (dictionary && tag in dictionary) return TString.cast(dictionary[tag]);
     if (parent) return parent.resolveTag(tag);
     throw new Error(`No translation for ${tag}`);
   }
@@ -204,7 +203,7 @@ export const Translate: ComponentType<{
   defaultLang?: string;
   lang?: string;
   ambient?: string;
-  translation?: TTranslationType;
+  dictionary?: TTranslationType;
   as?: AsType;
 }> = ({ children, as = "div", ...props }) => {
   const ctx = useTranslation().derive(props);

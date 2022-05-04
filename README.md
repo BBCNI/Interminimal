@@ -40,7 +40,7 @@ const dictionary = {
 function MyApp() {
   return (
     // Set the dictionary to use
-    <Translate translation={dictionary}>
+    <Translate dictionary={dictionary}>
       <MyThing />
     </Translate>
   );
@@ -53,12 +53,12 @@ As you can see in the example above you can translate your text using just two c
 
 ## `Translate` - the translation context
 
-The translation context dictates the translation settings for all components below it. Contexts may be freely nested with each overriding one or more properties from the context above it. The most interesting properties of a translation context are `lang`, `defaultLang` and `translation` (the dictionary).
+The translation context dictates the translation settings for all components below it. Contexts may be freely nested with each overriding one or more properties from the context above it. The most interesting properties of a translation context are `lang`, `defaultLang` and `dictionary`.
 
 ```js
 function MyThing() {
   return (
-    <Translate translation={dictionary} lang="en">
+    <Translate dictionary={dictionary} lang="en">
       {/* english */}
       <T as="p" text={oneString} />
       <Translate lang="cy">
@@ -134,7 +134,7 @@ In order to use a dictionary pass it to a `Translate` to add it to the translati
 function MyApp() {
   return (
     // Set the dictionary to use
-    <Translate translation={dictionary}>
+    <Translate dictionary={dictionary}>
       <MyThing />
     </Translate>
   );
@@ -229,7 +229,7 @@ return <T as="img" altText={caption} srcText={pic} />;
 Translations can be templated. Placeholders in the translated string (`%1`, `%2` etc) are replaced with the corresponding child components of the `T`.
 
 ```js
-const translation = {
+const dictionary = {
   // Numbers
   one: { en: "One", fr: "Un", de: "Ein", cy: "Un" },
   two: { en: "Two", fr: "Deux", de: "Zwei", cy: "Dwy" },
@@ -242,10 +242,12 @@ const translation = {
 };
 
 return (
-  <T tag="info">
-    <T tag="one" />
-    <T tag="two" />
-  </T>
+  <Translate dictionary={dictionary}>
+    <T tag="info">
+      <T tag="one" />
+      <T tag="two" />
+    </T>
+  </Translate>
 );
 // when cy
 //    <span lang="en">
@@ -338,7 +340,7 @@ Plurals don't have to be templated but it's often a good idea because it allows 
 
 # Summary
 
-`Translate` creates a translation context. Any use of `T` in components below the `Translate` will attempt to translate text according to the context settings. `Translate` can be nested to any depth. Each `Translate` inherits and potentially overrides settings from its parent context. The most interesting properties of a translation context are `lang`, `defaultLang` and `translation` (the dictionary).
+`Translate` creates a translation context. Any use of `T` in components below the `Translate` will attempt to translate text according to the context settings. `Translate` can be nested to any depth. Each `Translate` inherits and potentially overrides settings from its parent context. The most interesting properties of a translation context are `lang`, `defaultLang` and `dictionary`.
 
 `T` attempts to translate text in fat strings or from the dictionary. It can translate content and properties. By default `T` renders as a span but it can be asked to render as any element or component.
 
