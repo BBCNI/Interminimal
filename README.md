@@ -72,7 +72,7 @@ function MyThing() {
 
 ## `T` - the translator
 
-The `T` component represents translatable text. It will attempt to render using the language specified by containing translation context.
+The `T` component represents translatable text. It will attempt to render using the language specified by the containing translation context.
 
 Here are some of the things `T` can do:
 
@@ -80,7 +80,7 @@ Here are some of the things `T` can do:
 - handle pluralisation (even fatter strings)
 - look up tagged translations in a dictionary
 - add a `lang` attribute only when necessary
-- translate other attributes (e.g. `alt` on `img`, `title` on many elements)
+- translate other properties (e.g. `alt`, `title`)
 - perform flexible template subsitution
 - wrap arbitrary HTML elements and React components with translation goodness.
 
@@ -213,6 +213,16 @@ return <T as="img" altText={["caption"]} src="i/pic.jpg" />;
 ```
 
 As noted above a fat string whose value is a single element array is treated as a dictionary tag. That allows us to get property translations from either the dictionary or fat strings.
+
+We don't have to limit ourselves properties containing human text. We could switch the image too.
+
+```js
+// Fat string
+const caption = { en: "Hello", de: "Hallo" };
+const pic = { en: "i/pic.jpg", de: "i/pic-de.jpg" };
+
+return <T as="img" altText={caption} srcText={pic} />;
+```
 
 ### Template strings
 
