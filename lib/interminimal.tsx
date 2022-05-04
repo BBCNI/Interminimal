@@ -139,6 +139,21 @@ class LangContext {
 
     return Object.fromEntries(pairs);
   }
+
+  render(ts: TString, count?: number) {
+    const str = ts.toString(count);
+    const parts = str.split(/(?<!%)%\{(.+?)\}/);
+    if (parts.length === 1) return parts[0];
+    const out = [];
+
+    while (parts.length) {
+      const [frag, tag] = parts.splice(0, 2);
+      if (frag.length) out.push(frag);
+      if (tag) out.push(this.resolveTag(tag).toLang(this.stack));
+    }
+
+    return out.join("");
+  }
 }
 
 const TContext = createContext<LangContext>(new LangContext({}));
@@ -257,6 +272,7 @@ export const TFormat: ComponentType<{
   const ctx = useTranslation();
   // Parse format string
   const parts = format.split(/%(%|\d+)/);
+  if (parts.length === 1) return <Fragment>{parts[0]}</Fragment>;
 
   // Make children into a regular array of nodes
   const params = Children.map<ReactNode, any>(children, x => x) || [];
@@ -320,7 +336,7 @@ export const T: ComponentType<TProps> = ({
 
     return (
       <TText as={as} lang={ts.lang} {...ctx.resolveProps(props, ts.lang)}>
-        <TFormat format={ts.toString(count)}>{children}</TFormat>
+        <TFormat format={ctx.render(ts, count)}>{children}</TFormat>
       </TText>
     );
   }

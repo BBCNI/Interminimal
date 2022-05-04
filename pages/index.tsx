@@ -40,8 +40,14 @@ export async function getServerSideProps() {
 
 // Translation dictionary
 const dictionary = {
+  site: { en: "Interminimal" },
   // Numbers
-  one: { en: "One", fr: "Un", de: "Ein", cy: "Un" },
+  one: {
+    en: "One (%{site})",
+    fr: "Un (%{site})",
+    de: "Ein (%{site})",
+    cy: "Un (%{site})"
+  },
   two: { en: "Two", fr: "Deux", de: "Zwei", cy: "Dwy" },
   // Language names
   en: { en: "English", fr: "Anglais" },
