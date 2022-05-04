@@ -174,6 +174,7 @@ export const Ambience: ComponentType<{
 
 export const Translate: ComponentType<{
   children: ReactNode;
+  defaultLang?: string;
   lang?: string;
   ambient?: string;
   translation?: TTranslationType;
