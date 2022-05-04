@@ -1,11 +1,11 @@
 # React Translations
 
-## Short Example
+## An Example
 
 ```js
 import { T, Translate } from "interminimal";
 
-// Multlingual string
+// Multlingual fat string
 const message = { en: "Hello", fr: "Bonjour" };
 
 function MyThing() {
@@ -53,7 +53,7 @@ As you can see in the example above you can translate your text using just two c
 
 ## `Translate` - the translation context
 
-The translation context dictates the translation settings for all components below it. Contexts may be freely nested with each overriding one or more properties from the context above it.
+The translation context dictates the translation settings for all components below it. Contexts may be freely nested with each overriding one or more properties from the context above it. The most interesting properties of a translation context are `lang`, `defaultLang` and `translation` (the dictionary).
 
 ```js
 function MyThing() {
@@ -80,7 +80,7 @@ Here are some of the things `T` can do:
 - handle pluralisation (even fatter strings)
 - look up tagged translations in a dictionary
 - add a `lang` attribute only when necessary
-- translate other attributes (e.g. `alt` on an `img`, `title` etc)
+- translate other attributes (e.g. `alt` on `img`, `title` on many elements)
 - perform flexible template subsitution
 - wrap arbitrary HTML elements and React components with translation goodness.
 
@@ -147,7 +147,9 @@ The simplest use of `T` is to translate a simple fat string. By default the tran
 
 ```js
 const language = { en: "English", cy: "Cymraeg" };
+
 return <T text={language} />;
+
 // when en: <span>English</span>
 // when cy: <span>Cymraeg</span>
 // when de: <span lang="en">English</span>
@@ -160,33 +162,38 @@ We can also look up translations by their dictionary tag. This code has the same
 ```js
 // Assumes the dictionary example from above
 return <T tag="language" />;
+
 // This also works
 return <T text={["language"]} />;
 ```
 
-When text is a single element array it is treated as a tag. This is to allow us to mix fat strings and dictionary tags in our data structures and render them with the same code.
+When `text` is a single element array it is treated as a tag. This is to allow us to mix fat strings and dictionary tags in our data structures and render them with the same code. It also helps when we translate attributes - more on that soon.
 
-If we need an element other than `span` we can tell `T` what to use:
+If we need an element other than `span` we can tell `T` what to render:
 
 ```js
 return <T as="h1" tag="language" />;
 // <h1>English<h1> / <h1>Cymraeg</h1> / <h1 lang="en">English<h1>
 ```
 
+The `as` property can be an HTML element name or a function or class React component.
+
 If you prefer you can use the `tBind` helper to make a new component which always renders as a particular element:
 
 ```js
 import { tBind, tBindMulti } from "interminimal";
+
 const Toption = tBind("option");
 const [Tdiv, Tp] = tBindMulti(["div", "p"]);
+
 return <Tdiv tag="language" />;
 ```
 
-`tBind` accepts an HTML element tag or a React component.
+`tBind` also accepts an HTML element tag or a React component.
 
 ### Properties
 
-All unknown properties (with the exception of `text`, `tag`, `as` and `count`) are passed to the underlying element.
+All with the exception of `text`, `tag`, `as` and `count`, `T` passes all remaining properties to the underlying element.
 
 ```js
 return <T as="option" value="X" tag="language" />;
@@ -198,6 +205,7 @@ We can also ask for properties to be translated by adding `Text` to the end of t
 ```js
 // Fat string
 const caption = { en: "Hello", de: "Hallo" };
+
 return <T as="img" altText={caption} src="i/pic.jpg" />;
 
 // Dictionary
@@ -314,7 +322,7 @@ function CountCats() {
 //    42 cath
 ```
 
-Plurals don't have to be templated but it's often a good idea because it allows the translator to vary the when the number appears in the text.
+Plurals don't have to be templated but it's often a good idea because it allows the translator to vary where the number appears in the text.
 
 # Summary
 
