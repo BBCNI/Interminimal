@@ -315,8 +315,8 @@ function CountCats() {
   const counts = [0, 1, 1.5, 2, 3, 6, 42];
   return (
     <div>
-      {counts.map(count => (
-        <Cats count={count} />
+      {counts.map((count, i) => (
+        <Cats key={i} count={count} />
       ))}
     </div>
   );
