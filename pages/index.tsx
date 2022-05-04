@@ -94,6 +94,7 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
           <T as="li" text={["one"]} />
           {/* regular tag spec */}
           <T as="li" tag="two" />
+          {/* inline translation */}
           <T
             as="li"
             text={{ en: "Where is the spinach?", fr: "Où sont les épinards?" }}

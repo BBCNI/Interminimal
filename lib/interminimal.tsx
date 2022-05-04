@@ -275,7 +275,6 @@ interface TProps {
   [key: string]: any;
 }
 
-// TODO translatable props?
 export const T: ComponentType<TProps> = ({
   children,
   tag,
