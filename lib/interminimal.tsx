@@ -96,7 +96,7 @@ class LangContext {
   }
 
   derive(props: LangContextProps = {}) {
-    const { dictionary, stackCache, lang, ...rest } = this;
+    const { dictionary, stackCache, tagCache, lang, ...rest } = this;
     return new LangContext({ ...rest, ...props, parent: this });
   }
 
