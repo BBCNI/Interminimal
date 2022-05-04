@@ -12,6 +12,9 @@ import {
   isValidElement
 } from "react";
 
+import uniq from "lodash/uniq";
+import castArray from "lodash/castArray";
+
 export interface TPluralType {
   readonly [key: string]: string;
 }
@@ -38,29 +41,57 @@ interface LangContextProps {
   readonly defaultLang?: string;
   readonly magicProps?: MagicPropsPredicate;
   readonly translation?: TTranslationType;
-  readonly lang?: string;
+  readonly lang?: string | string[];
   readonly ambient?: string;
 }
 
-const defaultMagicProps: MagicPropsPredicate = (k: string, v: any) => {
+const defaultMagicProps: MagicPropsPredicate = (k: string) => {
   const m = k.match(/^(\w+)Text$/);
   if (m) return m[1];
 };
 
 class LangContext {
+  readonly parent?: LangContext;
   readonly strict: boolean = true;
   readonly defaultLang: string = "en";
   readonly magicProps: MagicPropsPredicate = defaultMagicProps;
-  readonly lang?: string;
+  readonly lang: string[] = [];
   readonly ambient?: string;
   readonly translation?: TTranslationType;
 
+  private stackCache: readonly string[] | null = null;
+
   constructor(props: LangContextProps = {}) {
-    Object.assign(this, props);
+    const { lang, ...rest } = props;
+    const langs = castArray(lang).filter(Boolean);
+    Object.assign(this, { lang: langs, ...rest });
+  }
+
+  get stack(): readonly string[] {
+    const seal = (o: string[]) => Object.freeze(uniq(o));
+    const s = () => {
+      const { parent, lang, defaultLang } = this;
+      // Optimisation: if we don't add any languages our stack
+      // is the same as our parent's.
+      if (lang.length === 0 && parent) return parent.stack;
+      if (parent) return seal(lang.concat(parent.stack));
+      return seal(lang.concat(defaultLang));
+    };
+
+    return (this.stackCache = this.stackCache || s());
+  }
+
+  get language() {
+    return this.stack[0];
+  }
+
+  get ambience() {
+    return this.ambient || this.language;
   }
 
   derive(props: LangContextProps = {}) {
-    return new LangContext({ ...this, ...props });
+    const { translation, stackCache: langStack, lang, ...rest } = this;
+    return new LangContext({ ...rest, ...props, parent: this });
   }
 
   resolveText(text: TextPropType) {
@@ -70,12 +101,12 @@ class LangContext {
     return TString.cast(text);
   }
 
-  resolveTag(tag: string) {
-    const { translation } = this;
-    if (!translation) throw new Error(`Context has no translation table`);
-    const dict = translation[tag];
-    if (!dict) throw new Error(`No translation for ${tag}`);
-    return TString.cast(dict);
+  resolveTag(tag: string): TString {
+    const { parent, translation } = this;
+    if (translation && tag in translation)
+      return TString.cast(translation[tag]);
+    if (parent) return parent.resolveTag(tag);
+    throw new Error(`No translation for ${tag}`);
   }
 
   resolve(tag?: string, text?: TextPropType) {
@@ -85,24 +116,17 @@ class LangContext {
       if (tag) return this.resolveTag(tag);
       throw new Error(`No text or tag`);
     };
-    return r().toLang([this.lang || this.defaultLang, this.defaultLang]);
+    return r().toLang(this.stack);
   }
 
   resolveProps(props: { [key: string]: any }, lang?: string) {
     const { magicProps } = this;
     if (!magicProps) return props;
+    const search = lang ? [lang, ...this.stack] : this.stack;
 
     const pairs = Object.entries(props).map(([k, v]) => {
       const nk = magicProps(k, v);
-      if (nk)
-        return [
-          nk,
-          this.resolveText(v).toLang([
-            lang || this.lang || this.defaultLang,
-            this.lang || this.defaultLang,
-            this.defaultLang
-          ])
-        ];
+      if (nk) return [nk, this.resolveText(v).toLang(search)];
 
       return [k, v];
     });
@@ -182,7 +206,7 @@ export const Translate: ComponentType<{
 }> = ({ children, as = "div", ...props }) => {
   const ctx = useTranslation().derive(props);
   return (
-    <TText as={as} lang={ctx.lang || ctx.defaultLang}>
+    <TText as={as} lang={ctx.language}>
       <TContext.Provider value={ctx}>{children}</TContext.Provider>
     </TText>
   );
@@ -202,9 +226,8 @@ export const TText: ComponentType<{
   [key: string]: any;
 }> = ({ children, lang, as, ...props }) => {
   const ctx = useTranslation();
-  const ambient = ctx.ambient || ctx.lang || ctx.defaultLang;
 
-  if (lang !== ambient)
+  if (lang !== ctx.ambience)
     return (
       <Ambience ambient={lang}>
         <As as={as} {...props} lang={lang}>
@@ -287,10 +310,10 @@ export const T: ComponentType<TProps> = ({
   const ctx = useTranslation();
   if (tag || text) {
     const ts = ctx.resolve(tag, text);
-    const lang = ts.lang || ctx.defaultLang;
+    if (!ts.lang) throw new Error(`No lang on translation`);
 
     return (
-      <TText as={as} lang={lang} {...ctx.resolveProps(props, lang)}>
+      <TText as={as} lang={ts.lang} {...ctx.resolveProps(props, ts.lang)}>
         <TFormat format={ts.toString(count)}>{children}</TFormat>
       </TText>
     );

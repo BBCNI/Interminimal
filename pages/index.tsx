@@ -7,7 +7,8 @@ import {
   tBind,
   tBindMulti,
   TDictType,
-  Translate
+  Translate,
+  useTranslation
 } from "../lib/interminimal";
 import styles from "../styles/Home.module.css";
 
@@ -67,6 +68,12 @@ const translation = {
   }
 };
 
+const Info: ComponentType<{}> = () => {
+  // const ctx = useTranslation();
+  // console.log(ctx.stack);
+  return null;
+};
+
 const Block: ComponentType<PageProps & { lang: string }> = ({
   greeting,
   message,
@@ -99,6 +106,7 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
   return (
     <div>
       <Translate lang={curLang}>
+        <Info />
         <select value={curLang} onChange={onChange}>
           {langs.map(lang => (
             <Toption key={lang} value={lang} tag={lang} />
