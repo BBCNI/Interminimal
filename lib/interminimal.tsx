@@ -149,7 +149,9 @@ class LangContext {
     while (parts.length) {
       const [frag, tag] = parts.splice(0, 2);
       if (frag.length) out.push(frag);
-      if (tag) out.push(this.resolveTag(tag).toLang(this.stack));
+      // TODO detect language mixing here.
+      if (tag)
+        out.push(this.resolveTag(tag).toLang(this.stack).toString(count));
     }
 
     return out.join("");
