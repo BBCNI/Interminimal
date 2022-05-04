@@ -306,15 +306,15 @@ const boundMap = new Map();
 
 export const tBind = (as: AsType): ComponentType<TProps> => {
   const bind = (as: AsType): ComponentType<TProps> => {
-    const baked: ComponentType<TProps> = ({ children, ...props }) => (
+    const bound: ComponentType<TProps> = ({ children, ...props }) => (
       <T as={as} {...props}>
         {children}
       </T>
     );
     const asName = typeof as === "string" ? as : as.displayName;
     for (const prop of ["name", "displayName"])
-      Object.defineProperty(baked, prop, { value: `T${asName}` });
-    return baked;
+      Object.defineProperty(bound, prop, { value: `T${asName}` });
+    return bound;
   };
 
   let bound = boundMap.get(as);
