@@ -24,24 +24,33 @@ export interface TTranslationType {
   readonly [key: string]: TDictType;
 }
 
-type TextPropType = TDictType | TString | string;
+type TextPropType = TDictType | TString | string | string[];
 
 type AsType =
   | string
   | FunctionComponent<{ lang?: string }>
   | ComponentClass<{ lang?: string }, any>;
 
+type MagicPropsPredicate = (value: any, key: string) => string | undefined;
+
 interface LangContextProps {
   readonly strict?: boolean;
   readonly defaultLang?: string;
+  readonly magicProps?: MagicPropsPredicate;
   readonly translation?: TTranslationType;
   readonly lang?: string;
   readonly ambient?: string;
 }
 
+const defaultMagicProps: MagicPropsPredicate = (k: string, v: any) => {
+  const m = k.match(/^(\w+)Text$/);
+  if (m) return m[1];
+};
+
 class LangContext {
   readonly strict: boolean = true;
   readonly defaultLang: string = "en";
+  readonly magicProps: MagicPropsPredicate = defaultMagicProps;
   readonly lang?: string;
   readonly ambient?: string;
   readonly translation?: TTranslationType;
@@ -55,6 +64,7 @@ class LangContext {
   }
 
   resolveText(text: TextPropType) {
+    if (Array.isArray(text)) return this.resolveTag(text[0]);
     if (typeof text === "string")
       return TString.literal(text, this.defaultLang);
     return TString.cast(text);
@@ -76,6 +86,28 @@ class LangContext {
       throw new Error(`No text or tag`);
     };
     return r().toLang([this.lang || this.defaultLang, this.defaultLang]);
+  }
+
+  resolveProps(props: { [key: string]: any }, lang?: string) {
+    const { magicProps } = this;
+    if (!magicProps) return props;
+
+    const pairs = Object.entries(props).map(([k, v]) => {
+      const nk = magicProps(k, v);
+      if (nk)
+        return [
+          nk,
+          this.resolveText(v).toLang([
+            lang || this.lang || this.defaultLang,
+            this.lang || this.defaultLang,
+            this.defaultLang
+          ])
+        ];
+
+      return [k, v];
+    });
+
+    return Object.fromEntries(pairs);
   }
 }
 
@@ -253,12 +285,20 @@ export const T: ComponentType<TProps> = ({
   ...props
 }) => {
   const ctx = useTranslation();
-  const ts = ctx.resolve(tag, text);
-  const lang = ts.lang || ctx.defaultLang;
+  if (tag || text) {
+    const ts = ctx.resolve(tag, text);
+    const lang = ts.lang || ctx.defaultLang;
+
+    return (
+      <TText as={as} lang={lang} {...ctx.resolveProps(props, lang)}>
+        <TFormat format={ts.toString(count)}>{children}</TFormat>
+      </TText>
+    );
+  }
 
   return (
-    <TText as={as} lang={lang} {...props}>
-      <TFormat format={ts.toString(count)}>{children}</TFormat>
+    <TText as={as} {...ctx.resolveProps(props)}>
+      {children}
     </TText>
   );
 };

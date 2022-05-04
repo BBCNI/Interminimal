@@ -40,8 +40,13 @@ const translation = {
   fr: { fr: "Français" },
   de: { en: "German", fr: "Allemand", de: "Deutsch" },
   cy: { en: "Welsh", cy: "Cymraeg" },
-  // Plurals
   cat: {
+    en: "cat",
+    de: "Katze",
+    cy: "gath"
+  },
+  // Plurals
+  cats: {
     en: { one: "%1 cat", other: "%1 cats" },
     de: { one: "%1 Katze", other: "%1 Katzen" },
     cy: {
@@ -84,8 +89,12 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
           <T as="li" text="Always English" />
           <T as="li" text={greeting} />
           <T as="li" text={message} />
-          <T as="li" tag="one" />
+          <T as="li" text={["one"]} />
           <T as="li" tag="two" />
+          <T
+            as="li"
+            text={{ en: "Where is the spinach?", fr: "Où sont les épinards?" }}
+          />
         </ul>
         <T as="h2" text="Languages" />
         <ul>
@@ -99,8 +108,9 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
           <T tag="two" />
         </T>
         <T as="h2" text="Cats" />
+        <T as="img" altText={["cat"]} src="http://placekitten.com/g/200/300" />
         {counts.map((n, i) => (
-          <T as="div" key={i} tag="cat" count={n}>
+          <T as="div" key={i} tag="cats" count={n}>
             {String(n)}
           </T>
         ))}
