@@ -90,7 +90,7 @@ class LangContext {
   }
 
   derive(props: LangContextProps = {}) {
-    const { translation, stackCache: langStack, lang, ...rest } = this;
+    const { translation, stackCache, lang, ...rest } = this;
     return new LangContext({ ...rest, ...props, parent: this });
   }
 
@@ -171,8 +171,8 @@ export class TString {
     return ttx;
   }
 
-  toLang(langs: string | string[]): TString {
-    if (!Array.isArray(langs)) return this.toLang([langs]);
+  toLang(langs: string | readonly string[]): TString {
+    if (!Array.isArray(langs)) return this.toLang([langs] as readonly string[]);
     for (const lang of langs) {
       if (!lang) continue;
       if (lang === this.lang) return this;
