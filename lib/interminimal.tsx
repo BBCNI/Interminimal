@@ -301,3 +301,25 @@ export const T: ComponentType<TProps> = ({
     </TText>
   );
 };
+
+const boundMap = new Map();
+
+export const tBind = (as: AsType): ComponentType<TProps> => {
+  const bind = (as: AsType): ComponentType<TProps> => {
+    const baked: ComponentType<TProps> = ({ children, ...props }) => (
+      <T as={as} {...props}>
+        {children}
+      </T>
+    );
+    const asName = typeof as === "string" ? as : as.displayName;
+    for (const prop of ["name", "displayName"])
+      Object.defineProperty(baked, prop, { value: `T${asName}` });
+    return baked;
+  };
+
+  let bound = boundMap.get(as);
+  if (!bound) boundMap.set(as, (bound = bind(as)));
+  return bound;
+};
+
+export const tBindMulti = (as: AsType[]) => as.map(tBind);

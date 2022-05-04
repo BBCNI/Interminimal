@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import { ChangeEvent, ComponentType, useState } from "react";
-import { T, TDictType, Translate } from "../lib/interminimal";
+import { T, tBindMulti, TDictType, Translate } from "../lib/interminimal";
 import styles from "../styles/Home.module.css";
 
 interface PageProps {
@@ -76,54 +76,63 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
   const langs = ["en", "fr", "de", "cy"];
   const counts = [0, 1, 1.5, 2, 3, 6, 42];
 
+  // Bake an alternative to <T as="li" ...>
+  const [Tli, Toption, Tdiv, Timg, Th2, Tp] = tBindMulti([
+    "li",
+    "option",
+    "div",
+    "img",
+    "h2",
+    "p"
+  ]);
+
   return (
     <div>
       <Translate lang={curLang}>
         <select value={curLang} onChange={onChange}>
           {langs.map(lang => (
-            <T as="option" key={lang} value={lang} tag={lang} />
+            <Toption key={lang} value={lang} tag={lang} />
           ))}
         </select>
 
-        <T as="h2" text="Phrases" />
+        <Th2 text="Phrases" />
         <ul>
-          <T as="li" text="Always English" />
-          <T as="li" text={greeting} />
-          <T as="li" text={message} />
+          <Tli text="Always English" />
+          <Tli text={greeting} />
+          <Tli text={message} />
           {/* alternative tag spec */}
-          <T as="li" text={["one"]} />
+          <Tli text={["one"]} />
           {/* regular tag spec */}
-          <T as="li" tag="two" />
+          <Tli tag="two" />
           {/* inline translation */}
-          <T
-            as="li"
+          <Tli
             text={{ en: "Where is the spinach?", fr: "Où sont les épinards?" }}
           />
         </ul>
 
-        <T as="h2" text="Languages" />
+        <Th2 text="Languages" />
         <ul>
           {langs.map(lang => (
-            <T key={lang} as="li" tag={lang} />
+            <Tli key={lang} tag={lang} />
           ))}
         </ul>
 
-        <T as="h2" text="Info" />
+        <Th2 text="Info" />
         {/* `info` has two placeholders which we fill with "one" and "two" */}
-        <T as="p" text={info}>
+        <Tp text={info}>
           <T tag="one" />
           <T tag="two" />
-        </T>
+        </Tp>
 
-        <T as="h2" text="Cats" />
+        <Th2 text="Cats" />
         {/* translate alt attribute via cat tag */}
-        <T as="img" altText={["cat"]} src="http://placekitten.com/g/200/300" />
+        <Timg altText={["cat"]} src="http://placekitten.com/g/200/300" />
 
         {/* many cats, many plurals */}
         {counts.map((n, i) => (
-          <T as="div" key={i} tag="cats" count={n}>
+          <Tdiv key={i} tag="cats" count={n}>
             {String(n)}
-          </T>
+          </Tdiv>
         ))}
       </Translate>
     </div>
