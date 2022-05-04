@@ -63,6 +63,7 @@ class LangContext {
 
   constructor(props: LangContextProps = {}) {
     const { lang, ...rest } = props;
+    // Upgrade lang to array if necessary.
     const langs = castArray(lang).filter(Boolean);
     Object.assign(this, { lang: langs, ...rest });
   }
@@ -158,7 +159,7 @@ class LangContext {
   }
 }
 
-const TContext = createContext<LangContext>(new LangContext());
+const TContext = createContext(new LangContext());
 
 export class TString {
   readonly dict: TDictType;
