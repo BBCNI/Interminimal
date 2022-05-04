@@ -158,7 +158,7 @@ class LangContext {
   }
 }
 
-const TContext = createContext<LangContext>(new LangContext({}));
+const TContext = createContext<LangContext>(new LangContext());
 
 export class TString {
   readonly dict: TDictType;
