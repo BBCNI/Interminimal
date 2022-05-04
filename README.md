@@ -305,7 +305,7 @@ function Cats({ count }) {
   // React treats the falsy 0 as a non-existent component because 0 is
   // false but "0" is true.
   return (
-    <T text={cats} count={count}>
+    <T as="div" text={cats} count={count}>
       {String(count)}
     </T>
   );
