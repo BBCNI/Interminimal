@@ -71,10 +71,14 @@ class LangContext {
     const seal = (o: string[]) => Object.freeze(uniq(o));
     const s = () => {
       const { parent, lang, defaultLang } = this;
-      // Optimisation: if we don't add any languages our stack
-      // is the same as our parent's.
-      if (lang.length === 0 && parent) return parent.stack;
-      if (parent) return seal(lang.concat(parent.stack));
+
+      if (parent) {
+        // Optimisation: if we don't add any languages our stack
+        // is the same as our parent's.
+        if (lang.length === 0) return parent.stack;
+        return seal(lang.concat(parent.stack));
+      }
+
       return seal(lang.concat(defaultLang));
     };
 
