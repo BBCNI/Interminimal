@@ -214,7 +214,7 @@ export class TString {
   }
 }
 
-export const useTranslation = () => useContext<LangContext>(TContext);
+export const useTranslation = () => useContext(TContext);
 
 // Set the ambient language
 export const Ambience: ComponentType<{
