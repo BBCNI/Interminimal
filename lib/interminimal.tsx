@@ -95,7 +95,11 @@ class LangContext {
   }
 
   resolveText(text: TextPropType) {
-    if (Array.isArray(text)) return this.resolveTag(text[0]);
+    if (Array.isArray(text)) {
+      if (text.length !== 1)
+        throw new Error(`To be a valid tag a text property must be [tag]`);
+      return this.resolveTag(text[0]);
+    }
     if (typeof text === "string")
       return TString.literal(text, this.defaultLang);
     return TString.cast(text);
@@ -120,14 +124,13 @@ class LangContext {
   }
 
   resolveProps(props: { [key: string]: any }, lang?: string) {
-    const { magicProps } = this;
+    const { magicProps, stack } = this;
     if (!magicProps) return props;
-    const search = lang ? [lang, ...this.stack] : this.stack;
+    const search = lang ? [lang, ...stack] : stack;
 
     const pairs = Object.entries(props).map(([k, v]) => {
       const nk = magicProps(k, v);
       if (nk) return [nk, this.resolveText(v).toLang(search)];
-
       return [k, v];
     });
 
