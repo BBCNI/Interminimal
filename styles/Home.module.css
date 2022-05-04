@@ -18,6 +18,10 @@
 }
 
 .blocks > * {
-  margin: 2em 1em;
+  margin: 2rem 1rem;
   flex-grow: 1;
+}
+
+.cat {
+  margin: 0.5rem 1rem;
 }

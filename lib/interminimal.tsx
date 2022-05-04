@@ -311,7 +311,8 @@ export const tBind = (as: AsType): ComponentType<TProps> => {
         {children}
       </T>
     );
-    const asName = typeof as === "string" ? as : as.displayName;
+    const asName =
+      typeof as === "string" ? as : as.displayName ?? as.name ?? "anon";
     for (const prop of ["name", "displayName"])
       Object.defineProperty(bound, prop, { value: `T${asName}` });
     return bound;

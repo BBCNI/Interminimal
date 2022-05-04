@@ -1,7 +1,14 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { ChangeEvent, ComponentType, useState } from "react";
-import { T, tBindMulti, TDictType, Translate } from "../lib/interminimal";
+import Image from "next/image";
+import { ChangeEvent, ComponentType, FunctionComponent, useState } from "react";
+import {
+  T,
+  tBind,
+  tBindMulti,
+  TDictType,
+  Translate
+} from "../lib/interminimal";
 import styles from "../styles/Home.module.css";
 
 interface PageProps {
@@ -77,14 +84,17 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
   const counts = [0, 1, 1.5, 2, 3, 6, 42];
 
   // Bake an alternative to <T as="li" ...>
-  const [Tli, Toption, Tdiv, Timg, Th2, Tp] = tBindMulti([
+  const [Tli, Toption, Tdiv, Th2, Tp] = tBindMulti([
     "li",
     "option",
     "div",
-    "img",
     "h2",
     "p"
   ]);
+
+  // Unfortunately we have to cast next/Image as a FunctionComponent.
+  // Not sure what a better fix for this might be.
+  const TImage = tBind(Image as FunctionComponent);
 
   return (
     <div>
@@ -125,8 +135,15 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
         </Tp>
 
         <Th2 text="Cats" />
-        {/* translate alt attribute via cat tag */}
-        <Timg altText={["cat"]} src="http://placekitten.com/g/200/300" />
+        <figure className={styles.cat}>
+          {/* translate alt attribute via cat tag */}
+          <TImage
+            altText={["cat"]}
+            width="500"
+            height="300"
+            src="http://placekitten.com/g/500/300"
+          />
+        </figure>
 
         {/* many cats, many plurals */}
         {counts.map((n, i) => (
