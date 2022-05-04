@@ -84,31 +84,41 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
             <T as="option" key={lang} value={lang} tag={lang} />
           ))}
         </select>
+
         <T as="h2" text="Phrases" />
         <ul>
           <T as="li" text="Always English" />
           <T as="li" text={greeting} />
           <T as="li" text={message} />
+          {/* alternative tag spec */}
           <T as="li" text={["one"]} />
+          {/* regular tag spec */}
           <T as="li" tag="two" />
           <T
             as="li"
             text={{ en: "Where is the spinach?", fr: "Où sont les épinards?" }}
           />
         </ul>
+
         <T as="h2" text="Languages" />
         <ul>
           {langs.map(lang => (
             <T key={lang} as="li" tag={lang} />
           ))}
         </ul>
+
         <T as="h2" text="Info" />
+        {/* `info` has two placeholders which we fill with "one" and "two" */}
         <T as="p" text={info}>
           <T tag="one" />
           <T tag="two" />
         </T>
+
         <T as="h2" text="Cats" />
+        {/* translate alt attribute via cat tag */}
         <T as="img" altText={["cat"]} src="http://placekitten.com/g/200/300" />
+
+        {/* many cats, many plurals */}
         {counts.map((n, i) => (
           <T as="div" key={i} tag="cats" count={n}>
             {String(n)}
