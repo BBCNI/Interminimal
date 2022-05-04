@@ -332,6 +332,8 @@ function CountCats() {
 //    42 cath
 ```
 
+The `count` property of `T` is used select the language-appropriate plural.
+
 Plurals don't have to be templated but it's often a good idea because it allows the translator to vary where the number appears in the text.
 
 # Summary
