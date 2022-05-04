@@ -193,7 +193,7 @@ return <Tdiv tag="language" />;
 
 ### Properties
 
-All with the exception of `text`, `tag`, `as` and `count`, `T` passes all remaining properties to the underlying element.
+With the exception of `text`, `tag`, `as` and `count`, `T` passes remaining properties to the underlying element.
 
 ```js
 return <T as="option" value="X" tag="language" />;
