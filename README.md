@@ -167,7 +167,7 @@ return <T tag="language" />;
 return <T text={["language"]} />;
 ```
 
-When `text` is a single element array it is treated as a tag. This is to allow us to mix fat strings and dictionary tags in our data structures and render them with the same code. It also helps when we translate attributes - more on that soon.
+When `text` is a single element array it is treated as a tag. This is to allow us to mix fat strings and dictionary tags in our data structures and render them with the same code. It also helps when we translate properties - more on that soon.
 
 If we need an element other than `span` we can tell `T` what to render:
 
@@ -338,6 +338,6 @@ Plurals don't have to be templated but it's often a good idea because it allows 
 
 `Translate` creates a translation context. Any use of `T` in components below the `Translate` will attempt to translate text according to the context settings. `Translate` can be nested to any depth. Each `Translate` inherits and potentially overrides settings from its parent context. The most interesting properties of a translation context are `lang`, `defaultLang` and `translation` (the dictionary).
 
-`T` attempts to translate text in fat strings or from the dictionary. It can translate content and attributes. By default `T` renders as a span but it can be asked to render as any element or component.
+`T` attempts to translate text in fat strings or from the dictionary. It can translate content and properties. By default `T` renders as a span but it can be asked to render as any element or component.
 
 `T` supports plurals and templating. Templating can nest to any depth. Templates can re-order child components.
