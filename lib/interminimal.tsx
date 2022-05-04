@@ -60,6 +60,7 @@ class LangContext {
   readonly dictionary?: TTranslationType;
 
   private stackCache: readonly string[] | null = null;
+  private tagCache: { [key: string]: TString } = {};
 
   constructor(props: LangContextProps = {}) {
     const { lang, ...rest } = props;
@@ -111,10 +112,14 @@ class LangContext {
   }
 
   resolveTag(tag: string): TString {
-    const { parent, dictionary } = this;
-    if (dictionary && tag in dictionary) return TString.cast(dictionary[tag]);
-    if (parent) return parent.resolveTag(tag);
-    throw new Error(`No translation for ${tag}`);
+    const { tagCache } = this;
+    const rt = () => {
+      const { parent, dictionary } = this;
+      if (dictionary && tag in dictionary) return TString.cast(dictionary[tag]);
+      if (parent) return parent.resolveTag(tag);
+      throw new Error(`No translation for ${tag}`);
+    };
+    return (tagCache[tag] = tagCache[tag] || rt());
   }
 
   resolve(tag?: string, text?: TextPropType) {
