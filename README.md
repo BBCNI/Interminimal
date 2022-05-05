@@ -344,9 +344,15 @@ return (
 );
 ```
 
+### Tag lookup in templates
+
+We can also interpolate the contents of tags (looked up in the dictionary chain) into template strings. A template string like `"The name of this site is %{site}"` will look for a tag called `site` and substitute it. This substitution happens late in the rendering of the string so the substituted text can't provide further placeholders.
+
 ### Template Syntax
 
 We've seen that `%\d+` introduces a placeholder into a template string. Placeholders may optionally be followed by `[text in brackets]` that will be available to child components. There may be no spaces between the placeholder and the opening `[`.
+
+To interpolate the contents of a translation from the dictionary we use `%{tagName}`.
 
 A `%` followed by `%`, `[` or `]` escapes that character:
 
@@ -355,6 +361,8 @@ A `%` followed by `%`, `[` or `]` escapes that character:
 - for `]` inside placeholder text use `%]`
 
 The brackets `[` and `]` are only special after a placeholder - you can use them anywhere else without escaping them.
+
+Apart from their use in `%{tagName}` `{` and `}` also have no special significance and may be used unescaped.
 
 Any `%` that isn't followed by a digit or `%`, `[` or `]` is passed through unaltered.
 

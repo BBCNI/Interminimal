@@ -155,7 +155,10 @@ export const Block: ComponentType<PageProps & { lang: string }> = ({
           <Tli tag="two" />
           {/* inline fat string */}
           <Tli
-            text={{ en: "Where is the spinach?", fr: "Où sont les épinards?" }}
+            text={{
+              en: "Where is the spinach? (%{site})",
+              fr: "Où sont les épinards? (%{site})"
+            }}
           />
         </ul>
 
