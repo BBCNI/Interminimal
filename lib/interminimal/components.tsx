@@ -11,18 +11,15 @@ import {
 } from "react";
 
 import { parseTemplate } from "./template";
-
 import { LangContextProps, AsType, TProps, TDictionaryRoot } from "./types";
 import { LangContext } from "./context";
 import { TString } from "./string";
 
-export * from "./types";
-
 const TContext = createContext(new LangContext());
 
 export const useTranslation = () => useContext(TContext);
-
 // Set the ambient language
+
 export const Local: ComponentType<
   LangContextProps & { children: ReactNode }
 > = ({ children, ...props }) => {
