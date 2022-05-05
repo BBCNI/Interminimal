@@ -6,8 +6,6 @@ const parse = (format: string): TemplateToken[] => {
   // to have ["%1", "["] instead.
   const tokens = format.split(/(%%|%\[|%]|%\d+|\[|])/).filter(t => t.length);
 
-  console.log(cache);
-
   // Parse "[...]""
   const literal = () => {
     tokens.shift(); // "["
@@ -67,4 +65,6 @@ const parse = (format: string): TemplateToken[] => {
 const cache: { [key: string]: TemplateToken[] } = {};
 
 export const parseTemplate = (format: string) =>
-  (cache[format] = cache[format] || parse(format));
+  /%/.test(format)
+    ? (cache[format] = cache[format] || parse(format))
+    : [format];
