@@ -202,16 +202,16 @@ return <T as="option" value="X" tag="language" />;
 // <option value="X">English</option>
 ```
 
-We can also ask for properties to be translated by adding `Text` to the end of their name:
+We can also ask for properties to be translated by prefixing them with `t-`.
 
 ```js
 // Fat string
 const caption = { en: "Hello", de: "Hallo" };
 
-return <T as="img" altText={caption} src="i/pic.jpg" />;
+return <T as="img" t-alt={caption} src="i/pic.jpg" />;
 
 // Dictionary
-return <T as="img" altText={["caption"]} src="i/pic.jpg" />;
+return <T as="img" t-alt={["caption"]} src="i/pic.jpg" />;
 ```
 
 As noted above a fat string whose value is a single element array is treated as a dictionary tag. That allows us to get property translations from either the dictionary or fat strings.
@@ -223,7 +223,7 @@ We don't have to limit ourselves properties containing human text. We could swit
 const caption = { en: "Hello", de: "Hallo" };
 const pic = { en: "i/pic.jpg", de: "i/pic-de.jpg" };
 
-return <T as="img" altText={caption} srcText={pic} />;
+return <T as="img" t-alt={caption} t-src={pic} />;
 ```
 
 ### Template strings

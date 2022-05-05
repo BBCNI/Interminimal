@@ -152,7 +152,7 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
         <figure className={styles.cat}>
           {/* translate alt attribute via cat tag */}
           <TImage
-            altText={["cat"]}
+            t-alt={["cat"]}
             width="500"
             height="300"
             src="http://placekitten.com/g/500/300"

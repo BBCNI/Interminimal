@@ -46,7 +46,7 @@ interface LangContextProps {
 }
 
 const defaultMagicProps: MagicPropsPredicate = (k: string) => {
-  const m = k.match(/^(\w+)Text$/);
+  const m = k.match(/^t-(.+)$/);
   if (m) return m[1];
 };
 
@@ -142,8 +142,6 @@ class LangContext {
       if (nk) return [nk, this.render(this.resolveText(v).toLang(search))];
       return [k, v];
     });
-
-    console.log(pairs);
 
     return Object.fromEntries(pairs);
   }
