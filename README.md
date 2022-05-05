@@ -141,6 +141,8 @@ function MyApp() {
 }
 ```
 
+Nested translation contexts may provide topical dictionaries to override or augment dictionaries in containing contexts. This allows, for example, a component to provide its own translations which will temporarily augment the main dictionary.
+
 ### Using `T`
 
 The simplest use of `T` is to translate a simple fat string. By default the translated text is wrapped in a `span`.
