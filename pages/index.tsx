@@ -80,13 +80,18 @@ const dictionary = {
   },
   // Silly deep nesting.
   silly: {
-    en: "Top level %1[Level one %1[Level two] and %2[also level two with %1[level three]]]",
+    en:
+      "Top level %1[Level one %1[Level two] and " +
+      "%2[also level two with %1[level three]]]",
     fr:
       "Niveau supérieur %1[Niveau un %1[Niveau deux]" +
       " et %2[aussi niveau deux avec %1[niveau trois]]]",
     de:
       "Oberste Ebene %1[Ebene eins %1[Ebene zwei] " +
-      "und %2[auch Ebene zwei mit %1[Ebene drei]]]"
+      "und %2[auch Ebene zwei mit %1[Ebene drei]]]",
+    cy:
+      "Lefel uchaf %1[Lefel un %1[Lefel dau] a " +
+      "%2[hefyd lefel dau gyda %1[lefel tri]]]"
   }
 };
 
