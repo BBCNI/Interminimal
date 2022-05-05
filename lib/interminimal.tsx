@@ -139,9 +139,11 @@ class LangContext {
 
     const pairs = Object.entries(props).map(([k, v]) => {
       const nk = magicProps(k, v);
-      if (nk) return [nk, this.resolveText(v).toLang(search)];
+      if (nk) return [nk, this.render(this.resolveText(v).toLang(search))];
       return [k, v];
     });
+
+    console.log(pairs);
 
     return Object.fromEntries(pairs);
   }
