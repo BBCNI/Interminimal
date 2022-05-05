@@ -340,7 +340,7 @@ return (
 
 ### Template Syntax
 
-We've seen that `%\d+` introduces a placeholder into a template string. Placeholders may optionally be followed by `[text in brackets]` that will be available to child components.
+We've seen that `%\d+` introduces a placeholder into a template string. Placeholders may optionally be followed by `[text in brackets]` that will be available to child components. There may be no spaces between the placeholder and the opening `[`.
 
 A `%` followed by any non-digit escapes the next character:
 
