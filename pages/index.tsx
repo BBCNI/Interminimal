@@ -104,7 +104,7 @@ const dictionary: TDictionaryRoot = {
     },
     // A nested dictionary for use with dictionaryFromTag
     "madness": { $$dict: { site: { en: "Or maybe something else" } } },
-    "h.siteName": { en: "It's Called", fr: "C'est appelé" },
+    "h.siteName": { en: "It's Called", fr: "C'est Appelé" },
     "h.someCats": { en: "Some Cats", fr: "Quelques Chats", cy: "Rhai Cathod" }
   }
 };
