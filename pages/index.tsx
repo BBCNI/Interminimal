@@ -48,7 +48,7 @@ const dictionary = {
     de: "Ein",
     cy: "Un"
   },
-  two: { en: "Two", fr: "Deux", de: "Zwei", cy: "Dwy" },
+  two: { en: "Two", fr: "Deux", de: "Zwei", cy: "Dau" },
   // Language names
   en: { en: "English", fr: "Anglais" },
   fr: { fr: "Français" },
@@ -57,7 +57,7 @@ const dictionary = {
   cat: {
     en: "cat",
     de: "Katze",
-    cy: "gath"
+    cy: "cath"
   },
   // Plurals
   cats: {

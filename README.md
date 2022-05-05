@@ -76,7 +76,7 @@ The `T` component represents translatable text. It will attempt to render using 
 
 Here are some of the things `T` can do:
 
-- translate fat strings like `{ en: "English", cy: "Cymraeg" }`
+- translate fat strings like `{ en: "Hello", fr: "Bonjour" }`
 - handle pluralisation (even fatter strings)
 - look up tagged translations in a dictionary
 - add a `lang` attribute only when necessary
@@ -91,7 +91,7 @@ We represent multilingual content as objects that have ISO 639-1 language codes 
 Here's a simple example:
 
 ```js
-{ en: "English", cy: "Cymraeg" }
+{ en: "Hello", fr: "Bonjour" }
 ```
 
 When looking for a translation `T` tries the containing context's desired language `lang` first. If that fails to find a translation it walks up the context stack trying each `lang` in turn. Then it tries `defaultLang`. If none of those yield a translation it will use the first of any languages present in the fat string. Translation can only fail completely is the fat string is just an empty object.
@@ -120,7 +120,7 @@ Translation dictionaries are plain objects that map tags to fat strings:
 
 ```js
 const dictionary = {
-  lang: { en: "English", cy: "Cymraeg" },
+  lang: { en: "English", de: "Deutsch" },
   cats: {
     en: { one: "%1 cat", other: "%1 cats" },
     de: { one: "%1 Katze", other: "%1 Katzen" }
@@ -148,13 +148,13 @@ Nested translation contexts may provide topical dictionaries to override or augm
 The simplest use of `T` is to translate a simple fat string. By default the translated text is wrapped in a `span`.
 
 ```js
-const language = { en: "English", cy: "Cymraeg" };
+const language = { en: "Hello", fr: "Bonjour" };
 
 return <T text={language} />;
 
-// when en: <span>English</span>
-// when cy: <span>Cymraeg</span>
-// when de: <span lang="en">English</span>
+// when en: <span>Hello</span>
+// when fr: <span>Bonjour</span>
+// when de: <span lang="en">Hello</span>
 ```
 
 Note that when we ask for a language for which there's no translation we get the default language (in this case "en") and the `span` has `lang` attribute to declare that it's a different language from the surrounding text.
@@ -234,7 +234,7 @@ Translations can be templated. Placeholders in the translated string (`%1`, `%2`
 const dictionary = {
   // Numbers
   one: { en: "One", fr: "Un", de: "Ein", cy: "Un" },
-  two: { en: "Two", fr: "Deux", de: "Zwei", cy: "Dwy" },
+  two: { en: "Two", fr: "Deux", de: "Zwei", cy: "Dau" },
   // Message
   info: {
     // Demo substitution
@@ -256,7 +256,7 @@ return (
 //       The word for 1 is
 //       <span lang="cy">Un</span>
 //       and the word for 2 is
-//       <span lang="cy">Dwy</span>
+//       <span lang="cy">Dau</span>
 //    </span>
 //
 // when fr
@@ -268,7 +268,7 @@ return (
 //    </span>
 ```
 
-There is no Welsh ("cy") translation for the `"info"` tag so we get the default English version of that text but the numbers are still correctly translated into Welsh. Because the Welsh words "Un" and "Dwy" are inside English text they get a `lang="cy"` attribute to switch back to Welsh. This is because `T` is aware of the "ambient" language and adds the `lang` attribute if the ambience doesn't match its translation.
+There is no Welsh ("cy") translation for the `"info"` tag so we get the default English version of that text but the numbers are still correctly translated into Welsh. Because the Welsh words "Un" and "Dau" are inside English text they get a `lang="cy"` attribute to switch back to Welsh. This is because `T` is aware of the "ambient" language and adds the `lang` attribute if the ambience doesn't match its translation.
 
 The French version of the info text reverses the order of the substitutions.
 
