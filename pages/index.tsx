@@ -91,8 +91,7 @@ const dictionary = {
 };
 
 export const Box: ComponentType<{ children: ReactNode; lang?: string }> = ({
-  children,
-  lang
+  children
 }) => <>[{children}]</>;
 
 export const Block: ComponentType<PageProps & { lang: string }> = ({
@@ -196,50 +195,6 @@ export const Block: ComponentType<PageProps & { lang: string }> = ({
             {String(n)}
           </Tdiv>
         ))}
-      </Translate>
-    </div>
-  );
-};
-
-const TestBlock: ComponentType<PageProps & { lang: string }> = ({
-  greeting,
-  message,
-  info,
-  nested,
-  lang
-}) => {
-  const [curLang, setLang] = useState(lang);
-
-  const onChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    e.preventDefault();
-    setLang(e.target.value);
-  };
-
-  const langs = ["en", "fr", "de", "cy"];
-  const counts = [0, 1, 1.5, 2, 3, 6, 42];
-
-  // Bake an alternative to <T as="li" ...>
-  const [Toption, Th2, Tp] = tBindMulti(["option", "h2", "p"]);
-
-  // Unfortunately we have to cast next/Image as a FunctionComponent.
-  // Not sure what a better fix for this might be.
-  const TImage = tBind(Image as FunctionComponent);
-
-  return (
-    <div>
-      <Translate lang={curLang}>
-        <select value={curLang} onChange={onChange}>
-          {langs.map(lang => (
-            <Toption key={lang} value={lang} tag={lang} />
-          ))}
-        </select>
-
-        <Th2 text="Info" />
-
-        <Tp text={nested}>
-          <T as="a" href="/" tag="%1" />
-          <T as="i" tag="%2" />
-        </Tp>
       </Translate>
     </div>
   );

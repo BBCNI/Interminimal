@@ -285,6 +285,67 @@ return (
 );
 ```
 
+### Inline text in template placeholders
+
+The example above looks up the tags `"one"` and `"two"` in the dictionary and will translate them independently of containing template. Sometimes it's more convenient to keep all the parts of the string together. Suppose we want to add translation to this markup:
+
+```html
+<span>Here's a <a href="/">useful link</a> and here's some <i>italic text<i></span>
+```
+
+Here's how we might do it:
+
+```js
+// Simpler to translate
+const message = {
+  en: "Here's a %1[useful link] and here's some %2[italic text]",
+  fr: "Voici %2[du texte en italique] et un %1[lien utile]"
+};
+
+return (
+  <T text={message}>
+    <T as="a" href="/" tag="%1" />
+    <T as="i" tag="%2" />
+  </T>
+);
+// En Français:
+//   <p>Voici <i>du texte en italique</i> et un <a href="/">lien utile</a></p>
+```
+
+Within the nested components any text `[in square brackets]` after the placeholder will be available as tags named after the placeholder `%1`, `%2` etc.
+
+For child components that need multiple text substitutions you can nest placeholders:
+
+```js
+const silly = {
+  en:
+    "Top level %1[Level one %1[Level two] and" +
+    " %2[also level two with %1[level three]]]",
+  fr:
+    "Niveau supérieur %1[Niveau un %1[Niveau deux]" +
+    " et %2[aussi niveau deux avec %1[niveau trois]]]"
+};
+
+return (
+  <T text={silly}>
+    <T tag="%1">
+      <T tag="%1" />
+      <T tag="%2">
+        <T tag="%1" />
+      </T>
+    </T>
+  </Tp>
+);
+```
+
+### Template Syntax
+
+We've seen that `%\d+` introduces a placeholder into a template string. Placeholders may optionally be followed by `[text in brackets]` that will be available to child components.
+
+A `%` followed by any non-digit escapes the next character. For `%` use `%%`, for `[` after a placeholder use `%[` and for `]` inside placeholder text use `%]`.
+
+The brackets `[` and `]` are only special after a placeholder - you can use them anywhere else without escaping them.
+
 ### Plurals: Let's Count Cats!
 
 Different languages have different rules for forming plurals. They also have different kinds of plurals: Welsh has six. Here's how we count cats in English, German and Welsh
