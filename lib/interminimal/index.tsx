@@ -256,8 +256,6 @@ export const TFormat: ComponentType<{
 
   const parts = parseTemplate(format);
 
-  console.log({ format, lang, parts });
-
   // Parse format string
   // const parts = format.split(/%(%|\d+)/);
   if (parts.length === 1 && typeof parts[0] === "string")
@@ -291,7 +289,6 @@ export const TFormat: ComponentType<{
   });
 
   if (ctx.strict && avail.size) throw new Error(`Unused args: ${avail}`);
-  console.log(dict);
 
   if (Object.keys(dict).length) return <Local dictionary={dict}>{out}</Local>;
 
@@ -310,8 +307,6 @@ export const T: ComponentType<TProps> = ({
   if (tag || text) {
     const ts = ctx.resolve(tag, text);
     if (!ts.lang) throw new Error(`No lang on translation`);
-
-    console.log(ts);
 
     return (
       <TText as={as} lang={ts.lang} {...ctx.resolveProps(props, ts.lang)}>
