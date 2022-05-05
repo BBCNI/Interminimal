@@ -346,7 +346,7 @@ return (
 
 ### Tag lookup in templates
 
-We can also interpolate the contents of tags (looked up in the dictionary chain) into template strings. A template string like `"The name of this site is %{site}"` will look for a tag called `site` and substitute it. This substitution happens late in the rendering of the string so the substituted text can't provide further placeholders.
+We can also interpolate the contents of tags (looked up in the dictionary chain) into template strings. A template string like `"The name of this site is %{site}"` will look for a tag called `site` and substitute it. This substitution happens early in the rendering of the string so the substituted text can provide further placeholders.
 
 ### Template Syntax
 
