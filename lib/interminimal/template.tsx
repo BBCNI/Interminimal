@@ -16,6 +16,7 @@ export const parseTemplate = (format: string): TemplateToken[] => {
       }
       out.push(tok);
     }
+    throw new Error(`Missing ] in template`);
   };
 
   // Split all the tokens
