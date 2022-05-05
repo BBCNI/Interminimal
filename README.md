@@ -191,7 +191,7 @@ const [Tdiv, Tp] = tBindMulti(["div", "p"]);
 return <Tdiv tag="language" />;
 ```
 
-`tBind` also accepts an HTML element tag or a React component.
+`tBind` also accepts an HTML element name or a React component.
 
 ### Properties
 
