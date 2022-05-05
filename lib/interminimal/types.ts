@@ -34,6 +34,7 @@ export interface LangContextProps {
   readonly defaultLang?: string;
   readonly magicProps?: MagicPropsPredicate;
   readonly dictionary?: TDictionaryRoot;
+  readonly dictionaryFromTag?: string;
   readonly lang?: string | string[];
   readonly ambient?: string;
 }

@@ -44,10 +44,12 @@ class LangContext {
   private tagCache: { [key: string]: TFatString | TDictionaryRoot } = {};
 
   constructor(props: LangContextProps = {}) {
-    const { lang, ...rest } = props;
+    const { lang, dictionary, ...rest } = props;
+    if (dictionary && !("$$dict" in dictionary))
+      throw new Error(`Invalid dictionary (missing $$dict key)`);
     // Upgrade lang to array if necessary.
     const langs = castArray(lang).filter(Boolean);
-    Object.assign(this, { lang: langs, ...rest });
+    Object.assign(this, { lang: langs, dictionary, ...rest });
   }
 
   get stack(): readonly string[] {
@@ -77,8 +79,24 @@ class LangContext {
   }
 
   derive(props: LangContextProps = {}) {
+    // Handle dictionaryFromTag
+    const transformProps = ({
+      dictionaryFromTag,
+      ...rest
+    }: LangContextProps) => {
+      if (dictionaryFromTag) {
+        if (props.dictionary)
+          throw new Error(`dictionary and dictionaryFromTag both found`);
+        return {
+          dictionary: this.resolveDictionary(dictionaryFromTag),
+          ...rest
+        };
+      }
+      return rest;
+    };
+
     const { dictionary, stackCache, tagCache, lang, ...rest } = this;
-    return new LangContext({ ...rest, ...props, parent: this });
+    return new LangContext({ ...rest, ...transformProps(props), parent: this });
   }
 
   resolveText(text: TextPropType) {
@@ -101,7 +119,7 @@ class LangContext {
         const { $$dict } = dictionary;
         if ($$dict && tag in $$dict) return $$dict[tag];
       }
-      if (parent) return parent.resolveTag(tag);
+      if (parent) return parent.findTag(tag);
       throw new Error(`No translation for ${tag}`);
     };
 

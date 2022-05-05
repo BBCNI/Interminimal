@@ -94,7 +94,8 @@ const dictionary: TDictionaryRoot = {
       cy:
         "Lefel uchaf %1[Lefel un %1[Lefel dau] a " +
         "%2[hefyd lefel dau gyda %1[lefel tri]]]"
-    }
+    },
+    madness: { $$dict: { site: { en: "Or maybe something else" } } }
   }
 };
 
@@ -192,8 +193,8 @@ export const Block: ComponentType<PageProps & { lang: string }> = ({
           <TImage
             t-alt={["cat"]}
             width="500"
-            height="300"
-            src="http://placekitten.com/g/500/300"
+            height="200"
+            src="http://placekitten.com/g/500/200"
           />
         </figure>
 
@@ -203,6 +204,12 @@ export const Block: ComponentType<PageProps & { lang: string }> = ({
             {String(n)}
           </Tdiv>
         ))}
+
+        <Th2 text="It's Called" />
+        <T tag="site" />
+        <Translate dictionaryFromTag="madness">
+          <T tag="site" />
+        </Translate>
       </Translate>
     </div>
   );
