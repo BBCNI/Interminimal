@@ -2,7 +2,13 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { ChangeEvent, ComponentType, FunctionComponent, useState } from "react";
+import {
+  ChangeEvent,
+  ComponentType,
+  FunctionComponent,
+  ReactNode,
+  useState
+} from "react";
 import { T, tBind, tBindMulti, Translate } from "../lib/interminimal";
 import { TFatString } from "../lib/interminimal/types";
 import styles from "../styles/Home.module.css";
@@ -71,8 +77,23 @@ const dictionary = {
       many: "%1 chath",
       other: "%1 cath"
     }
+  },
+  // Silly deep nesting.
+  silly: {
+    en: "Top level %1[Level one %1[Level two] and %2[also level two with %1[level three]]]",
+    fr:
+      "Niveau supérieur %1[Niveau un %1[Niveau deux]" +
+      " et %2[aussi niveau deux avec %1[niveau trois]]]",
+    de:
+      "Oberste Ebene %1[Ebene eins %1[Ebene zwei] " +
+      "und %2[auch Ebene zwei mit %1[Ebene drei]]]"
   }
 };
+
+export const Box: ComponentType<{ children: ReactNode; lang?: string }> = ({
+  children,
+  lang
+}) => <>[{children}]</>;
 
 export const Block: ComponentType<PageProps & { lang: string }> = ({
   greeting,
@@ -103,6 +124,7 @@ export const Block: ComponentType<PageProps & { lang: string }> = ({
   // Unfortunately we have to cast next/Image as a FunctionComponent.
   // Not sure what a better fix for this might be.
   const TImage = tBind(Image as FunctionComponent);
+  const TBox = tBind(Box as FunctionComponent);
 
   return (
     <div>
@@ -146,6 +168,15 @@ export const Block: ComponentType<PageProps & { lang: string }> = ({
             <T as="a" tag="%1" />
           </Link>
           <T as="i" tag="%2" />
+        </Tp>
+
+        <Tp tag="silly">
+          <TBox tag="%1">
+            <TBox tag="%1" />
+            <TBox tag="%2">
+              <TBox tag="%1" />
+            </TBox>
+          </TBox>
         </Tp>
 
         <Th2 text="Cats" />
