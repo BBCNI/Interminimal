@@ -1,4 +1,4 @@
-import { TemplateToken, TemplatePlaceholder } from "./types";
+import { TemplateToken, TemplatePlaceholder } from ".";
 
 const parse = (format: string): TemplateToken[] => {
   // Use a capturing split to tokenise. We filter out empty tokens here so

@@ -9,8 +9,15 @@ import {
   ReactNode,
   useState
 } from "react";
-import { T, tBind, tBindMulti, Translate } from "../lib/interminimal";
-import { TDictionaryRoot, TFatString } from "../lib/interminimal/types";
+import {
+  T,
+  tBind,
+  tBindMulti,
+  Translate,
+  TDictionaryRoot,
+  TFatString
+} from "../lib/interminimal";
+
 import styles from "../styles/Home.module.css";
 
 interface PageProps {

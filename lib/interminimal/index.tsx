@@ -16,6 +16,8 @@ import { LangContextProps, AsType, TProps, TDictionaryRoot } from "./types";
 import { LangContext } from "./context";
 import { TString } from "./string";
 
+export * from "./types";
+
 const TContext = createContext(new LangContext());
 
 export const useTranslation = () => useContext(TContext);

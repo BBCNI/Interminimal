@@ -1,4 +1,4 @@
-import { TFatString } from "./types";
+import { TFatString } from ".";
 
 export class TString {
   readonly dict: TFatString;
