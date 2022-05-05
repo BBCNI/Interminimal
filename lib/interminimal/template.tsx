@@ -1,8 +1,13 @@
 import { TemplateToken, TemplatePlaceholder } from "./types";
 
-export const parseTemplate = (format: string): TemplateToken[] => {
+const parse = (format: string): TemplateToken[] => {
+  // Use a capturing split to tokenise. We filter out empty tokens here so
+  // that we don't trip over e.g. ["%1", "", "["] in the main loop. We want
+  // to have ["%1", "["] instead.
+  const tokens = format.split(/(%%|%\[|%]|%\d+|\[|])/).filter(t => t.length);
+
   // Parse "[...]""
-  const parseLiteral = () => {
+  const literal = () => {
     tokens.shift(); // "["
     const out = [];
     let level = 0;
@@ -19,39 +24,45 @@ export const parseTemplate = (format: string): TemplateToken[] => {
     throw new Error(`Missing ] in template`);
   };
 
-  // Split all the tokens
   const out: TemplateToken[] = [];
-  const tokens = format.split(/(%%|%\[|%]|%\d+|\[|])/).filter(s => s.length);
 
-  // Append to output merging adjacent strings
-  const pushFrag = (frag: string) => {
+  // Append to output, merging adjacent strings
+  const put = (frag: string) => {
     if (out.length && typeof out[out.length - 1] === "string")
       out[out.length - 1] += frag;
     else out.push(frag);
   };
 
-  while (tokens.length) {
+  while (true) {
     const tok = tokens.shift();
-    if (!tok) break;
+    if (tok === undefined) break;
     const m = tok.match(/^%(.+)$/);
     if (m) {
+      // % escape?
       if (Number.isNaN(m[1])) {
-        pushFrag(m[1]);
+        put(m[1]);
         continue;
       }
+
       const pl: TemplatePlaceholder = { index: Number(m[1]) };
 
       // Following literal?
       if (tokens.length && tokens[0] === "[") {
         pl.name = tok;
-        pl.text = parseLiteral();
+        pl.text = literal();
       }
+
       out.push(pl);
       continue;
     }
 
-    pushFrag(tok);
+    put(tok);
   }
 
   return out;
 };
+
+const cache: { [key: string]: TemplateToken[] } = {};
+
+export const parseTemplate = (format: string) =>
+  (cache[format] = cache[format] || parse(format));
