@@ -80,8 +80,7 @@ export const TFormat: ComponentType<{
 
   const parts = parseTemplate(format);
 
-  // Parse format string
-  // const parts = format.split(/%(%|\d+)/);
+  // Bail out quickly in the simple case
   if (parts.length === 1 && typeof parts[0] === "string")
     return <Fragment>{parts[0]}</Fragment>;
 
