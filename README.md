@@ -120,7 +120,7 @@ Translation dictionaries are plain objects that map tags to fat strings:
 
 ```js
 const dictionary = {
-  lang: { en: "English", de: "Deutsch" },
+  greeting: { en: "Hello", de: "Güten Tag" },
   cats: {
     en: { one: "%1 cat", other: "%1 cats" },
     de: { one: "%1 Katze", other: "%1 Katzen" }
@@ -148,9 +148,9 @@ Nested translation contexts may provide topical dictionaries to override or augm
 The simplest use of `T` is to translate a simple fat string. By default the translated text is wrapped in a `span`.
 
 ```js
-const language = { en: "Hello", fr: "Bonjour" };
+const greeting = { en: "Hello", fr: "Bonjour" };
 
-return <T text={language} />;
+return <T text={greeting} />;
 
 // when en: <span>Hello</span>
 // when fr: <span>Bonjour</span>
@@ -163,10 +163,10 @@ We can also look up translations by their dictionary tag. This code has the same
 
 ```js
 // Assumes the dictionary example from above
-return <T tag="language" />;
+return <T tag="greeting" />;
 
 // This also works
-return <T text={["language"]} />;
+return <T text={["greeting"]} />;
 ```
 
 When `text` is a single element array it is treated as a tag. This is to allow us to mix fat strings and dictionary tags in our data structures and render them with the same code. It also helps when we translate properties - more on that soon.
@@ -174,8 +174,8 @@ When `text` is a single element array it is treated as a tag. This is to allow u
 If we need an element other than `span` we can tell `T` what to render:
 
 ```js
-return <T as="h1" tag="language" />;
-// <h1>English<h1> / <h1>Cymraeg</h1> / <h1 lang="en">English<h1>
+return <T as="h1" tag="greeting" />;
+// <h1>Hello<h1> / <h1>Güten Tag</h1> / <h1 lang="en">Hello<h1>
 ```
 
 The `as` property can be an HTML element name or a function or class React component.
