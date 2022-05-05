@@ -312,7 +312,7 @@ return (
 //   <p>Voici <i>du texte en italique</i> et un <a href="/">lien utile</a></p>
 ```
 
-Within the nested components any text `[in square brackets]` after the placeholder will be available as tags named after the placeholder `%1`, `%2` etc.
+Within the nested components any text `[in square brackets]` after the placeholder will be available as tags named after that placeholder: `%1`, `%2` etc.
 
 For child components that need multiple text substitutions you can nest placeholders:
 
