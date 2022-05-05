@@ -38,7 +38,8 @@ export async function getServerSideProps() {
       },
       nested: {
         en: "Here's a %1[useful link] and here's some %2[italic text]",
-        fr: "Voici %2[du texte en italique] et un %1[lien utile]"
+        fr: "Voici %2[du texte en italique] et un %1[lien utile]",
+        de: "Hier ist ein %1[nützlicher Link] und hier ein %2[kursiver Text]"
       }
     }
   };
