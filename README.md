@@ -274,7 +274,7 @@ return (
 //    </span>
 ```
 
-There is no Welsh ("cy") translation for the `"info"` tag so we get the default English version of that text but the numbers are still correctly translated into Welsh. Because the Welsh words "Un" and "Dau" are inside English text they get a `lang="cy"` attribute to switch back to Welsh. This is because `T` is aware of the "ambient" language and adds the `lang` attribute if the ambience doesn't match its translation.
+In that example there is no Welsh ("cy") translation for the `"info"` tag so we get the default English version of that text but the numbers are still correctly translated into Welsh. Because the Welsh words "Un" and "Dau" are inside English text they get a `lang="cy"` attribute to switch back to Welsh. This is because `T` is aware of the "ambient" language and adds the `lang` attribute if the ambience doesn't match its translation.
 
 The French version of the info text reverses the order of the substitutions.
 
