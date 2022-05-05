@@ -25,15 +25,17 @@ function MyThing() {
 }
 
 const dictionary = {
-  // Language names
-  en: { en: "English", fr: "Anglais" },
-  fr: { fr: "Français" },
-  de: { en: "German", fr: "Allemand", de: "Deutsch" },
-  // Page heading
-  heading: {
-    en: "Let's Translate!",
-    fr: "Traduisons!",
-    de: "Lassen Sie uns übersetzen!"
+  $$dict: {
+    // Language names
+    en: { en: "English", fr: "Anglais" },
+    fr: { fr: "Français" },
+    de: { en: "German", fr: "Allemand", de: "Deutsch" },
+    // Page heading
+    heading: {
+      en: "Let's Translate!",
+      fr: "Traduisons!",
+      de: "Lassen Sie uns übersetzen!"
+    }
   }
 };
 
@@ -116,14 +118,16 @@ const cats = {
 
 ### Dictionaries
 
-Translation dictionaries are plain objects that map tags to fat strings:
+Translation dictionaries have a `$$dict` key that contains an object that map tags to fat strings:
 
 ```js
 const dictionary = {
-  greeting: { en: "Hello", de: "Güten Tag" },
-  cats: {
-    en: { one: "%1 cat", other: "%1 cats" },
-    de: { one: "%1 Katze", other: "%1 Katzen" }
+  $$dict: {
+    greeting: { en: "Hello", de: "Güten Tag" },
+    cats: {
+      en: { one: "%1 cat", other: "%1 cats" },
+      de: { one: "%1 Katze", other: "%1 Katzen" }
+    }
   }
 };
 ```
@@ -232,14 +236,16 @@ Translations can be templated. Placeholders in the translated string (`%1`, `%2`
 
 ```js
 const dictionary = {
-  // Numbers
-  one: { en: "One", fr: "Un", de: "Ein", cy: "Un" },
-  two: { en: "Two", fr: "Deux", de: "Zwei", cy: "Dau" },
-  // Message
-  info: {
-    // Demo substitution
-    en: "The word for 1 is %1 and the word for 2 is %2",
-    fr: "Le mot pour 2 est %2 et le mot pour 1 est %1"
+  $$dict: {
+    // Numbers
+    one: { en: "One", fr: "Un", de: "Ein", cy: "Un" },
+    two: { en: "Two", fr: "Deux", de: "Zwei", cy: "Dau" },
+    // Message
+    info: {
+      // Demo substitution
+      en: "The word for 1 is %1 and the word for 2 is %2",
+      fr: "Le mot pour 2 est %2 et le mot pour 1 est %1"
+    }
   }
 };
 

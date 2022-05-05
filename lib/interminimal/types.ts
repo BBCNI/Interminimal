@@ -2,16 +2,20 @@ import { ComponentClass, FunctionComponent, ReactNode } from "react";
 import { TString } from "./index";
 
 export type TPluralType = {
-  readonly [key in Intl.LDMLPluralRule]: string;
+  readonly [key in Intl.LDMLPluralRule]?: string;
 };
 
-export interface TFatString {
+export type TFatString = {
   readonly [key: string]: string | TPluralType;
-}
+} & { $$dict?: never };
 
-export interface TDictionaryType {
-  [key: string]: TFatString;
-}
+export type TDictionaryType = {
+  [key: string]: TFatString | TDictionaryRoot;
+} & { $$dict?: never };
+
+export type TDictionaryRoot = {
+  $$dict: TDictionaryType;
+};
 
 export type TextPropType = TFatString | TString | string | string[];
 
@@ -29,7 +33,7 @@ export interface LangContextProps {
   readonly strict?: boolean;
   readonly defaultLang?: string;
   readonly magicProps?: MagicPropsPredicate;
-  readonly dictionary?: TDictionaryType;
+  readonly dictionary?: TDictionaryRoot;
   readonly lang?: string | string[];
   readonly ambient?: string;
 }

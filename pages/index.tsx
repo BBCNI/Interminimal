@@ -10,7 +10,7 @@ import {
   useState
 } from "react";
 import { T, tBind, tBindMulti, Translate } from "../lib/interminimal";
-import { TFatString } from "../lib/interminimal/types";
+import { TDictionaryRoot, TFatString } from "../lib/interminimal/types";
 import styles from "../styles/Home.module.css";
 
 interface PageProps {
@@ -46,53 +46,55 @@ export async function getServerSideProps() {
 }
 
 // Translation dictionary
-const dictionary = {
-  site: { en: "Interminimal" },
-  // Numbers
-  one: {
-    en: "One",
-    fr: "Un",
-    de: "Ein",
-    cy: "Un"
-  },
-  two: { en: "Two", fr: "Deux", de: "Zwei", cy: "Dau" },
-  // Language names
-  en: { en: "English", fr: "Anglais" },
-  fr: { fr: "Français" },
-  de: { en: "German", fr: "Allemand", de: "Deutsch" },
-  cy: { en: "Welsh", cy: "Cymraeg" },
-  cat: {
-    en: "cat",
-    de: "Katze",
-    cy: "cath"
-  },
-  // Plurals
-  cats: {
-    en: { one: "%1 cat", other: "%1 cats" },
-    de: { one: "%1 Katze", other: "%1 Katzen" },
-    cy: {
-      zero: "%1 cathod",
-      one: "%1 gath",
-      two: "%1 gath",
-      few: "%1 cath",
-      many: "%1 chath",
-      other: "%1 cath"
+const dictionary: TDictionaryRoot = {
+  $$dict: {
+    site: { en: "Interminimal" },
+    // Numbers
+    one: {
+      en: "One",
+      fr: "Un",
+      de: "Ein",
+      cy: "Un"
+    },
+    two: { en: "Two", fr: "Deux", de: "Zwei", cy: "Dau" },
+    // Language names
+    en: { en: "English", fr: "Anglais" },
+    fr: { fr: "Français" },
+    de: { en: "German", fr: "Allemand", de: "Deutsch" },
+    cy: { en: "Welsh", cy: "Cymraeg" },
+    cat: {
+      en: "cat",
+      de: "Katze",
+      cy: "cath"
+    },
+    // Plurals
+    cats: {
+      en: { one: "%1 cat", other: "%1 cats" },
+      de: { one: "%1 Katze", other: "%1 Katzen" },
+      cy: {
+        zero: "%1 cathod",
+        one: "%1 gath",
+        two: "%1 gath",
+        few: "%1 cath",
+        many: "%1 chath",
+        other: "%1 cath"
+      }
+    },
+    // Silly deep nesting.
+    silly: {
+      en:
+        "Top level %1[Level one %1[Level two] and " +
+        "%2[also level two with %1[level three]]]",
+      fr:
+        "Niveau supérieur %1[Niveau un %1[Niveau deux]" +
+        " et %2[aussi niveau deux avec %1[niveau trois]]]",
+      de:
+        "Oberste Ebene %1[Ebene eins %1[Ebene zwei] " +
+        "und %2[auch Ebene zwei mit %1[Ebene drei]]]",
+      cy:
+        "Lefel uchaf %1[Lefel un %1[Lefel dau] a " +
+        "%2[hefyd lefel dau gyda %1[lefel tri]]]"
     }
-  },
-  // Silly deep nesting.
-  silly: {
-    en:
-      "Top level %1[Level one %1[Level two] and " +
-      "%2[also level two with %1[level three]]]",
-    fr:
-      "Niveau supérieur %1[Niveau un %1[Niveau deux]" +
-      " et %2[aussi niveau deux avec %1[niveau trois]]]",
-    de:
-      "Oberste Ebene %1[Ebene eins %1[Ebene zwei] " +
-      "und %2[auch Ebene zwei mit %1[Ebene drei]]]",
-    cy:
-      "Lefel uchaf %1[Lefel un %1[Lefel dau] a " +
-      "%2[hefyd lefel dau gyda %1[lefel tri]]]"
   }
 };
 

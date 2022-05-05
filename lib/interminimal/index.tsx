@@ -22,7 +22,8 @@ import {
   TextPropType,
   TFatString,
   AsType,
-  TProps
+  TProps,
+  TDictionaryRoot
 } from "./types";
 
 const defaultMagicProps: MagicPropsPredicate = (k: string) => {
@@ -37,10 +38,10 @@ class LangContext {
   readonly magicProps: MagicPropsPredicate = defaultMagicProps;
   readonly lang: string[] = [];
   readonly ambient?: string;
-  readonly dictionary?: TDictionaryType;
+  readonly dictionary?: TDictionaryRoot;
 
   private stackCache: readonly string[] | null = null;
-  private tagCache: { [key: string]: TString } = {};
+  private tagCache: { [key: string]: TFatString | TDictionaryRoot } = {};
 
   constructor(props: LangContextProps = {}) {
     const { lang, ...rest } = props;
@@ -91,15 +92,32 @@ class LangContext {
     return TString.cast(text);
   }
 
-  resolveTag(tag: string): TString {
+  findTag(tag: string): TFatString | TDictionaryRoot {
     const { tagCache } = this;
+
     const rt = () => {
       const { parent, dictionary } = this;
-      if (dictionary && tag in dictionary) return TString.cast(dictionary[tag]);
+      if (dictionary) {
+        const { $$dict } = dictionary;
+        if ($$dict && tag in $$dict) return $$dict[tag];
+      }
       if (parent) return parent.resolveTag(tag);
       throw new Error(`No translation for ${tag}`);
     };
+
     return (tagCache[tag] = tagCache[tag] || rt());
+  }
+
+  resolveTag(tag: string): TString {
+    const it = this.findTag(tag);
+    if ("$$dict" in it) throw new Error(`${tag} is a dictionary`);
+    return TString.cast(it);
+  }
+
+  resolveDictionary(tag: string): TDictionaryRoot {
+    const it = this.findTag(tag);
+    if ("$$dict" in it) return it as TDictionaryRoot;
+    throw new Error(`${tag} is not a dictionary`);
   }
 
   resolve(tag?: string, text?: TextPropType) {
@@ -174,7 +192,7 @@ export class TString {
       const plur = new Intl.PluralRules(this.lang).select(count ?? 1);
       if (!(plur in ttx))
         throw new Error(`Can't map plural ${plur} for ${count ?? 1}`);
-      return ttx[plur];
+      return ttx[plur] as string;
     }
 
     return ttx;
@@ -267,14 +285,14 @@ export const TFormat: ComponentType<{
   // Set of available indexes
   const avail = new Set(params.map((_x: any, i: number) => i + 1));
 
-  const dict: TDictionaryType = {};
+  const dict: TDictionaryRoot = { $$dict: {} };
 
   // Output nodes
   const out = parts.map(part => {
     if (typeof part === "string") return part;
     const { index, name, text } = part;
 
-    if (name && text) dict[name] = TString.literal(text, lang).dict;
+    if (name && text) dict.$$dict[name] = TString.literal(text, lang).dict;
 
     if (index < 1 || index > params.length)
       throw new Error(
@@ -290,7 +308,8 @@ export const TFormat: ComponentType<{
 
   if (ctx.strict && avail.size) throw new Error(`Unused args: ${avail}`);
 
-  if (Object.keys(dict).length) return <Local dictionary={dict}>{out}</Local>;
+  if (Object.keys(dict.$$dict).length)
+    return <Local dictionary={dict}>{out}</Local>;
 
   return <Fragment>{out}</Fragment>;
 };
