@@ -36,7 +36,7 @@ const parse = (format: string): TemplateToken[] => {
   while (true) {
     const tok = tokens.shift();
     if (tok === undefined) break;
-    const m = tok.match(/^%(.+)$/);
+    const m = tok.match(/^%(\d+|[%\[\]])$/);
     if (m) {
       // % escape?
       if (Number.isNaN(m[1])) {
