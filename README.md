@@ -342,7 +342,7 @@ return (
 
 We've seen that `%\d+` introduces a placeholder into a template string. Placeholders may optionally be followed by `[text in brackets]` that will be available to child components. There may be no spaces between the placeholder and the opening `[`.
 
-A `%` followed `%`, `[` or `]` escapes that character:
+A `%` followed by `%`, `[` or `]` escapes that character:
 
 - for `%` use `%%`
 - for `[` after a placeholder use `%[`
