@@ -1,9 +1,7 @@
 import {
-  ComponentClass,
   ComponentType,
   createContext,
   createElement,
-  FunctionComponent,
   ReactNode,
   Children,
   useContext,
@@ -12,38 +10,20 @@ import {
   isValidElement
 } from "react";
 
+import { parseTemplate } from "./template";
+
 import uniq from "lodash/uniq";
 import castArray from "lodash/castArray";
 
-export interface TPluralType {
-  readonly [key: string]: string;
-}
-
-export interface TDictType {
-  readonly [key: string]: string | TPluralType;
-}
-
-export interface TTranslationType {
-  readonly [key: string]: TDictType;
-}
-
-type TextPropType = TDictType | TString | string | string[];
-
-type AsType =
-  | string
-  | FunctionComponent<{ lang?: string }>
-  | ComponentClass<{ lang?: string }, any>;
-
-type MagicPropsPredicate = (key: string, value: any) => string | undefined;
-
-interface LangContextProps {
-  readonly strict?: boolean;
-  readonly defaultLang?: string;
-  readonly magicProps?: MagicPropsPredicate;
-  readonly dictionary?: TTranslationType;
-  readonly lang?: string | string[];
-  readonly ambient?: string;
-}
+import {
+  MagicPropsPredicate,
+  TDictionaryType,
+  LangContextProps,
+  TextPropType,
+  TFatString,
+  AsType,
+  TProps
+} from "./types";
 
 const defaultMagicProps: MagicPropsPredicate = (k: string) => {
   const m = k.match(/^t-(.+)$/);
@@ -57,7 +37,7 @@ class LangContext {
   readonly magicProps: MagicPropsPredicate = defaultMagicProps;
   readonly lang: string[] = [];
   readonly ambient?: string;
-  readonly dictionary?: TTranslationType;
+  readonly dictionary?: TDictionaryType;
 
   private stackCache: readonly string[] | null = null;
   private tagCache: { [key: string]: TString } = {};
@@ -167,18 +147,18 @@ class LangContext {
 const TContext = createContext(new LangContext());
 
 export class TString {
-  readonly dict: TDictType;
+  readonly dict: TFatString;
   readonly lang?: string;
 
-  constructor(dict: TDictType, lang?: string) {
+  constructor(dict: TFatString, lang?: string) {
     if (lang && !(lang in dict)) throw new Error(`${lang} not in dictionary`);
     this.dict = dict;
     this.lang = lang;
   }
 
-  static cast(obj: TDictType | TString, lang?: string) {
+  static cast(obj: TFatString | TString, lang?: string) {
     if (obj instanceof this) return obj;
-    return new this(obj as TDictType, lang);
+    return new this(obj as TFatString, lang);
   }
 
   static literal(str: string, lang: string) {
@@ -217,22 +197,16 @@ export class TString {
 export const useTranslation = () => useContext(TContext);
 
 // Set the ambient language
-export const Ambience: ComponentType<{
-  children: ReactNode;
-  ambient: string;
-}> = ({ children, ...props }) => {
+export const Local: ComponentType<
+  LangContextProps & { children: ReactNode }
+> = ({ children, ...props }) => {
   const ctx = useTranslation().derive(props);
   return <TContext.Provider value={ctx}>{children}</TContext.Provider>;
 };
 
-export const Translate: ComponentType<{
-  children: ReactNode;
-  defaultLang?: string;
-  lang?: string;
-  ambient?: string;
-  dictionary?: TTranslationType;
-  as?: AsType;
-}> = ({ children, as = "div", ...props }) => {
+export const Translate: ComponentType<
+  LangContextProps & { children: ReactNode; as?: AsType }
+> = ({ children, as = "div", ...props }) => {
   const ctx = useTranslation().derive(props);
   return (
     <TText as={as} lang={ctx.language}>
@@ -258,11 +232,11 @@ export const TText: ComponentType<{
 
   if (lang !== ctx.ambience)
     return (
-      <Ambience ambient={lang}>
+      <Local ambient={lang}>
         <As as={as} {...props} lang={lang}>
           {children}
         </As>
-      </Ambience>
+      </Local>
     );
   return (
     <As as={as} {...props}>
@@ -275,12 +249,19 @@ const clone = (elt: any) => (isValidElement(elt) ? cloneElement(elt) : elt);
 
 export const TFormat: ComponentType<{
   format: string;
+  lang: string;
   children?: ReactNode;
-}> = ({ format, children }) => {
+}> = ({ format, lang, children }) => {
   const ctx = useTranslation();
+
+  const parts = parseTemplate(format);
+
+  console.log({ format, lang, parts });
+
   // Parse format string
-  const parts = format.split(/%(%|\d+)/);
-  if (parts.length === 1) return <Fragment>{parts[0]}</Fragment>;
+  // const parts = format.split(/%(%|\d+)/);
+  if (parts.length === 1 && typeof parts[0] === "string")
+    return <Fragment>{parts[0]}</Fragment>;
 
   // Make children into a regular array of nodes
   const params = Children.map<ReactNode, any>(children, x => x) || [];
@@ -288,46 +269,34 @@ export const TFormat: ComponentType<{
   // Set of available indexes
   const avail = new Set(params.map((_x: any, i: number) => i + 1));
 
+  const dict: TDictionaryType = {};
+
   // Output nodes
-  const out = [];
+  const out = parts.map(part => {
+    if (typeof part === "string") return part;
+    const { index, name, text } = part;
 
-  while (parts.length) {
-    const [frag, arg] = parts.splice(0, 2);
-    if (frag.length) out.push(frag);
-    if (arg) {
-      // Allow '%%' to escape '%'
-      if (arg === "%") {
-        out.push(arg);
-        continue;
-      }
+    if (name && text) dict[name] = TString.literal(text, lang).dict;
 
-      const idx = Number(arg);
-      if (idx < 1 || idx > params.length)
-        throw new Error(
-          `Arg out of range %${idx} (1..${params.length} are valid)`
-        );
+    if (index < 1 || index > params.length)
+      throw new Error(
+        `Arg out of range %${index} (1..${params.length} are valid)`
+      );
 
-      if (ctx.strict && !avail.has(idx))
-        throw new Error(`Already using arg %${idx}`);
+    if (ctx.strict && !avail.has(index))
+      throw new Error(`Already using arg %${index}`);
 
-      avail.delete(idx);
-      out.push(clone(params[idx - 1]));
-    }
-  }
+    avail.delete(index);
+    return clone(params[index - 1]);
+  });
 
   if (ctx.strict && avail.size) throw new Error(`Unused args: ${avail}`);
+  console.log(dict);
+
+  if (Object.keys(dict).length) return <Local dictionary={dict}>{out}</Local>;
 
   return <Fragment>{out}</Fragment>;
 };
-
-interface TProps {
-  children?: ReactNode;
-  tag?: string;
-  text?: TextPropType;
-  count?: number;
-  as?: AsType;
-  [key: string]: any;
-}
 
 export const T: ComponentType<TProps> = ({
   children,
@@ -342,9 +311,13 @@ export const T: ComponentType<TProps> = ({
     const ts = ctx.resolve(tag, text);
     if (!ts.lang) throw new Error(`No lang on translation`);
 
+    console.log(ts);
+
     return (
       <TText as={as} lang={ts.lang} {...ctx.resolveProps(props, ts.lang)}>
-        <TFormat format={ctx.render(ts, count)}>{children}</TFormat>
+        <TFormat lang={ts.lang} format={ctx.render(ts, count)}>
+          {children}
+        </TFormat>
       </TText>
     );
   }
