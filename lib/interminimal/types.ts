@@ -1,5 +1,5 @@
 import { ComponentClass, FunctionComponent, ReactNode } from "react";
-import { TString } from "./index";
+import { TString } from "./string";
 
 export type TPluralType = {
   readonly [key in Intl.LDMLPluralRule]?: string;
@@ -9,12 +9,17 @@ export type TFatString = {
   readonly [key: string]: string | TPluralType;
 } & { $$dict?: never };
 
-export type TDictionaryType = {
+type TDictionaryType = {
   [key: string]: TFatString | TDictionaryRoot;
 } & { $$dict?: never };
 
+export type TDictionaryMeta = {
+  [key: string]: string;
+};
+
 export type TDictionaryRoot = {
   $$dict: TDictionaryType;
+  $$meta?: TDictionaryMeta;
 };
 
 export type TextPropType = TFatString | TString | string | string[];

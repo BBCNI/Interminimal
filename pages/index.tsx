@@ -95,6 +95,7 @@ const dictionary: TDictionaryRoot = {
         "Lefel uchaf %1[Lefel un %1[Lefel dau] a " +
         "%2[hefyd lefel dau gyda %1[lefel tri]]]"
     },
+    // A nested dictionary for use with dictionaryFromTag
     madness: { $$dict: { site: { en: "Or maybe something else" } } }
   }
 };
