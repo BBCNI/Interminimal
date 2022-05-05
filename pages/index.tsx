@@ -55,27 +55,27 @@ export async function getServerSideProps() {
 // Translation dictionary
 const dictionary: TDictionaryRoot = {
   $$dict: {
-    site: { en: "Interminimal" },
+    "site": { en: "Interminimal" },
     // Numbers
-    one: {
+    "one": {
       en: "One",
       fr: "Un",
       de: "Ein",
       cy: "Un"
     },
-    two: { en: "Two", fr: "Deux", de: "Zwei", cy: "Dau" },
+    "two": { en: "Two", fr: "Deux", de: "Zwei", cy: "Dau" },
     // Language names
-    en: { en: "English", fr: "Anglais" },
-    fr: { fr: "Français" },
-    de: { en: "German", fr: "Allemand", de: "Deutsch" },
-    cy: { en: "Welsh", cy: "Cymraeg" },
-    cat: {
+    "en": { en: "English", fr: "Anglais" },
+    "fr": { fr: "Français" },
+    "de": { en: "German", fr: "Allemand", de: "Deutsch" },
+    "cy": { en: "Welsh", cy: "Cymraeg" },
+    "cat": {
       en: "cat",
       de: "Katze",
       cy: "cath"
     },
     // Plurals
-    cats: {
+    "cats": {
       en: { one: "%1 cat", other: "%1 cats" },
       de: { one: "%1 Katze", other: "%1 Katzen" },
       cy: {
@@ -88,7 +88,7 @@ const dictionary: TDictionaryRoot = {
       }
     },
     // Silly deep nesting.
-    silly: {
+    "silly": {
       en:
         "Top level %1[Level one %1[Level two] and " +
         "%2[also level two with %1[level three]]]",
@@ -103,7 +103,9 @@ const dictionary: TDictionaryRoot = {
         "%2[hefyd lefel dau gyda %1[lefel tri]]]"
     },
     // A nested dictionary for use with dictionaryFromTag
-    madness: { $$dict: { site: { en: "Or maybe something else" } } }
+    "madness": { $$dict: { site: { en: "Or maybe something else" } } },
+    "h.siteName": { en: "It's Called", fr: "C'est appelé" },
+    "h.someCats": { en: "Some Cats", fr: "Quelques Chats" }
   }
 };
 
@@ -198,7 +200,7 @@ export const Block: ComponentType<PageProps & { lang: string }> = ({
           </TBox>
         </Tp>
 
-        <Th2 text="Cats" />
+        <Th2 tag="h.someCats" />
         <figure className={styles.cat}>
           {/* translate alt attribute via cat tag */}
           <TImage
@@ -216,7 +218,7 @@ export const Block: ComponentType<PageProps & { lang: string }> = ({
           </Tdiv>
         ))}
 
-        <Th2 text="It's Called" />
+        <Th2 tag="h.siteName" />
         <T tag="site" />
         <Translate dictionaryFromTag="madness">
           <T tag="site" />
