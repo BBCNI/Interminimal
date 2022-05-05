@@ -1,9 +1,9 @@
 import { ComponentClass, FunctionComponent, ReactNode } from "react";
 import { TString } from "./index";
 
-export interface TPluralType {
-  readonly [key: string]: string;
-}
+export type TPluralType = {
+  readonly [key in Intl.LDMLPluralRule]: string;
+};
 
 export interface TFatString {
   readonly [key: string]: string | TPluralType;
