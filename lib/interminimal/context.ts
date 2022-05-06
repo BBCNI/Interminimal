@@ -88,7 +88,7 @@ export class LangContext {
     return this.resolve(text).toLang(this.stack);
   }
 
-  // Convenience method: given a TString (or [tag]) and a props object translate the
+  // Convenience method: given a TString (or [tag]) and a props object, translate the
   // string into the current language and update the props' lang attribute as
   // appropriate
   translateTextAndProps(
