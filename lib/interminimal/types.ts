@@ -1,4 +1,10 @@
-import { ComponentClass, FunctionComponent, ReactNode } from "react";
+import {
+  ComponentClass,
+  FunctionComponent,
+  ReactElement,
+  ReactNode,
+  Ref
+} from "react";
 import { TString } from "./string";
 
 export type TPluralType = {
@@ -24,8 +30,8 @@ export type TDictionaryRoot = {
 
 export type AsType =
   | string
-  | FunctionComponent<{ lang?: string }>
-  | ComponentClass<{ lang?: string }, any>;
+  | FunctionComponent<{ lang?: string; ref?: Ref<ReactElement> }>
+  | ComponentClass<{ lang?: string; ref?: Ref<ReactElement> }, any>;
 
 export type MagicPropsPredicate = (
   key: string,
