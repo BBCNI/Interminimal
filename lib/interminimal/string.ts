@@ -21,17 +21,15 @@ export class TString {
 
   toString(count?: number): string {
     if (!this.lang) throw new Error(`Can't translate with undefined lang`);
+
     const ttx = this.dict[this.lang];
+    if (typeof ttx === "string") return ttx;
 
-    // Plurals?
-    if (typeof ttx === "object") {
-      const plur = new Intl.PluralRules(this.lang).select(count ?? 1);
-      if (!(plur in ttx))
-        throw new Error(`Can't map plural ${plur} for ${count ?? 1}`);
-      return ttx[plur] as string;
-    }
+    const plur = new Intl.PluralRules(this.lang).select(count ?? 1);
+    const result = ttx[plur];
+    if (typeof result === "string") return result;
 
-    return ttx;
+    throw new Error(`Can't map plural ${plur} for ${count ?? 1}`);
   }
 
   toLang(langs: string | readonly string[]): TString {
