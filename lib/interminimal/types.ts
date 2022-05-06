@@ -39,7 +39,6 @@ export type MagicPropsPredicate = (
 ) => string | undefined;
 
 export interface LangContextProps {
-  readonly strict?: boolean;
   readonly defaultLang?: string;
   readonly magicProps?: MagicPropsPredicate;
   readonly dictionary?: TDictionaryRoot;

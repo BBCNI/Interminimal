@@ -83,9 +83,6 @@ export const TText: ComponentType<TTextProps> = forwardRef<
 
 TText.displayName = "TText";
 
-const clone = (elt: any, props?: any) =>
-  isValidElement(elt) ? cloneElement(elt, props) : elt;
-
 interface TFormatProps {
   format: string;
   lang: string;
@@ -97,6 +94,9 @@ export const TFormat: ComponentType<TFormatProps> = forwardRef<
   TFormatProps
 >(({ format, lang, children }, ref) => {
   const ctx = useTranslation();
+
+  const clone = (elt: ReactNode, props?: any): ReactNode =>
+    isValidElement(elt) ? cloneElement(elt, props) : elt;
 
   const parts = parseTemplate(format);
 
@@ -127,14 +127,16 @@ export const TFormat: ComponentType<TFormatProps> = forwardRef<
         `Arg out of range %${index} (1..${params.length} are valid)`
       );
 
-    if (ctx.strict && !avail.has(index))
-      throw new Error(`Already using arg %${index}`);
+    if (!avail.has(index)) throw new Error(`Already using arg %${index}`);
 
+    // Mark it used (at least once)
     avail.delete(index);
-    return clone(params[index - 1], index === 1 ? { ref } : {});
+
+    if (ref) return clone(params[index - 1], { ref });
+    return params[index - 1];
   });
 
-  if (ctx.strict && avail.size) throw new Error(`Unused args: ${avail}`);
+  if (avail.size) throw new Error(`Unused args: ${avail}`);
 
   if (Object.keys(dict.$$dict).length)
     return <TranslateLocal dictionary={dict}>{out}</TranslateLocal>;

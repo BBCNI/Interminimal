@@ -18,7 +18,6 @@ const defaultMagicProps: MagicPropsPredicate = (k: string) => {
 
 export class LangContext {
   readonly parent?: LangContext;
-  readonly strict: boolean = true;
   readonly defaultLang: string = "en";
   readonly magicProps: MagicPropsPredicate = defaultMagicProps;
   readonly lang: string[] = [];
