@@ -16,9 +16,9 @@ a {
 
 [lang]::before {
   content: attr(lang);
-  padding-right: 0.5em;
+  padding-right: 0.5rem;
   color: orange;
-  font-size: 0.8em;
+  font-size: 0.8rem;
 }
 
 [lang] {
