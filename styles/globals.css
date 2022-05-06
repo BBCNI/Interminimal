@@ -24,7 +24,7 @@ a {
 [lang] {
   background: linear-gradient(
     90deg,
-    rgba(0, 255, 128, 0.4),
-    rgba(255, 0, 0, 0.1)
+    rgba(128, 255, 0, 0.4),
+    rgba(255, 0, 200, 0.1)
   );
 }
