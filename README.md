@@ -365,7 +365,7 @@ return <T content={postBody}>;
 
 Note that you can't pass a `["tag"]` as the `content` property to cause dictionary lookup; `content` is only for fat strings.
 
-### Template Syntax
+### Template Syntax Summary
 
 We've seen that `%\d+` introduces a placeholder into a template string. Placeholders may optionally be followed by `[text in brackets]` that will be available to child components. There may be no spaces between the placeholder and the opening `[`.
 
