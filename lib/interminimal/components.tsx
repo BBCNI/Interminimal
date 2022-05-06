@@ -21,7 +21,7 @@ const TContext = createContext(new LangContext());
 
 export const useTranslation = (): LangContext => useContext(TContext);
 
-export const Local: ComponentType<
+export const TranslateLocal: ComponentType<
   LangContextProps & { children: ReactNode }
 > = ({ children, ...props }) => {
   const ctx = useTranslation().derive(props);
@@ -68,11 +68,11 @@ export const TText: ComponentType<TTextProps> = forwardRef<
 
   if (lang !== ctx.ambience)
     return (
-      <Local ambient={lang}>
+      <TranslateLocal ambient={lang}>
         <As as={as} ref={ref} {...props} lang={lang}>
           {children}
         </As>
-      </Local>
+      </TranslateLocal>
     );
   return (
     <As as={as} ref={ref} {...props}>
@@ -83,7 +83,7 @@ export const TText: ComponentType<TTextProps> = forwardRef<
 
 TText.displayName = "TText";
 
-const clone = <T,>(elt: T & ReactNode, props?: any) =>
+const clone = (elt: any, props?: any) =>
   isValidElement(elt) ? cloneElement(elt, props) : elt;
 
 interface TFormatProps {
@@ -137,7 +137,7 @@ export const TFormat: ComponentType<TFormatProps> = forwardRef<
   if (ctx.strict && avail.size) throw new Error(`Unused args: ${avail}`);
 
   if (Object.keys(dict.$$dict).length)
-    return <Local dictionary={dict}>{out}</Local>;
+    return <TranslateLocal dictionary={dict}>{out}</TranslateLocal>;
 
   return <Fragment>{out}</Fragment>;
 });
