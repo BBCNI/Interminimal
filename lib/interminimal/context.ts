@@ -148,16 +148,23 @@ export class LangContext {
 
   render(ts: TString, count?: number) {
     const str = ts.toString(count);
-    const parts = str.split(/(?<!%)%\{(.+?)\}/);
-    if (parts.length === 1) return parts[0];
+
+    const parts = str
+      .split(/(%%|%\{.+?\})/)
+      .filter(Boolean)
+      .filter(s => s.length);
+
+    if (parts.length <= 1) return parts[0] ?? "";
     const out = [];
 
-    while (parts.length) {
-      const [frag, tag] = parts.splice(0, 2);
-      if (frag.length) out.push(frag);
-      // TODO detect language mixing here.
-      if (tag)
-        out.push(this.resolveTag(tag).toLang(this.stack).toString(count));
+    while (true) {
+      const tok = parts.shift();
+      if (!tok) break;
+      const m = tok.match(/^%\{(.+)\}$/);
+      const frag = m
+        ? this.resolveTag(m[1]).toLang(this.stack).toString(count)
+        : tok;
+      out.push(frag);
     }
 
     return out.join("");
