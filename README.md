@@ -354,7 +354,7 @@ We can also interpolate the contents of tags (looked up in the dictionary chain)
 
 ### Disabling template substitution
 
-Often you will receive translated text that should not be parsed as a template. If, for example, you recieve the translated text of a blog post from an API you need to be able to render it without worrying that it might contain tokens like `%123` which would be interpreted as placeholders - and which would cause your application throw an error.
+Often you will receive translated text that should not be parsed as a template. If, for example, you recieve the translated text of a blog post from an API you need to be able to render it without worrying that it might contain tokens like `%123` which would be interpreted as placeholders - and which would cause your application to throw an error.
 
 In such cases use the `content` attribute of `T`:
 
