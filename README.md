@@ -86,7 +86,7 @@ Here are some of the things `T` can do:
 - perform flexible template subsitution
 - wrap arbitrary HTML elements and React components with translation goodness.
 
-### Fat Strings
+## Fat Strings
 
 We represent multilingual content as objects that have ISO 639-1 language codes as keys and corresponding translated text as values. Internally Interminimal casts fat strings into `TString` objects.
 
@@ -116,7 +116,7 @@ const cats = {
 };
 ```
 
-### Dictionaries
+## Dictionaries
 
 Translation dictionaries have a `$$dict` key that contains an object that map tags to fat strings:
 
@@ -147,7 +147,7 @@ function MyApp() {
 
 Nested translation contexts may provide topical dictionaries to override or augment dictionaries in containing contexts. This allows, for example, a component to provide its own translations which will temporarily augment the main dictionary.
 
-### Using `T`
+## Using `T`
 
 The simplest use of `T` is to translate a simple fat string. By default the translated text is wrapped in a `span`.
 
@@ -197,7 +197,7 @@ return <Tdiv tag="language" />;
 
 `tBind` also accepts an HTML element name or a React component.
 
-### Properties
+## Properties
 
 With the exception of `text`, `tag`, `content`, `as` and `count`, `T` passes remaining properties to the underlying element.
 
@@ -230,7 +230,7 @@ const pic = { en: "i/pic.jpg", de: "i/pic-de.jpg" };
 return <T as="img" t-alt={caption} t-src={pic} />;
 ```
 
-### Template strings
+## Template strings
 
 Translations can be templated. Placeholders in the translated string (`%1`, `%2` etc) are replaced with the corresponding child components of the `T`.
 
@@ -295,7 +295,7 @@ return (
 );
 ```
 
-### Inline text in template placeholders
+## Inline text in template placeholders
 
 The example above looks up the tags `"one"` and `"two"` in the dictionary and will translate them independently of the containing template. Sometimes it's more convenient to keep all the parts of the string together. Suppose we want to add translation to this markup:
 
@@ -348,11 +348,11 @@ return (
 );
 ```
 
-### Tag lookup in templates
+## Tag lookup in templates
 
 We can also interpolate the contents of tags (looked up in the dictionary chain) into template strings. A template string like `"The name of this site is %{site}"` will look for a tag called `site` and substitute it. This substitution happens early in the rendering of the string so the substituted text can provide further placeholders.
 
-### Disabling template substitution
+## Disabling template substitution
 
 Often you will receive translated text that should not be parsed as a template. If, for example, you recieve the translated text of a blog post from an API you need to be able to render it without worrying that it might contain tokens like `%123` which would be interpreted as placeholders - and which would cause your application to throw an error.
 
@@ -365,7 +365,7 @@ return <T content={postBody}>;
 
 Note that you can't pass a `["tag"]` as the `content` property to cause dictionary lookup; `content` is only for fat strings.
 
-### Template Syntax Summary
+## Template Syntax Summary
 
 We've seen that `%\d+` introduces a placeholder into a template string. Placeholders may optionally be followed by `[text in brackets]` that will be available to child components. There may be no spaces between the placeholder and the opening `[`.
 
@@ -383,7 +383,7 @@ Apart from their use in `%{tagName}` `{` and `}` also have no special significan
 
 Any `%` that isn't followed by a digit or `%`, `[` or `]` is passed through unaltered.
 
-### Plurals: Let's Count Cats!
+# Plurals: Let's Count Cats!
 
 Different languages have different rules for forming plurals. They also have different kinds of plurals: Welsh has six. Here's how we count cats in English, German and Welsh
 
