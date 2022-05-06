@@ -236,7 +236,7 @@ Translations can be templated. Placeholders in the translated string (`%1`, `%2`
 
 If you know your fat strings are not templated you should use the `content` property of `T` to [disable template substitution](#disabling-template-substitution).
 
-When you do want template expansion this is how it works.
+When you do want template substitution this is how it works.
 
 ```js
 const dictionary = {
