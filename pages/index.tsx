@@ -10,12 +10,14 @@ import {
   useState
 } from "react";
 import {
-  TDictionaryRoot,
-  TFatString,
   T,
   tBind,
   tBindMulti,
   Translate
+} from "../lib/interminimal";
+import type {
+  TDictionaryRoot,
+  TFatString
 } from "../lib/interminimal";
 
 import styles from "../styles/Home.module.css";
