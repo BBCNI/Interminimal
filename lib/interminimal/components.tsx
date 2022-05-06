@@ -121,7 +121,8 @@ export const TFormat: ComponentType<TFormatProps> = forwardRef<
     if (typeof part === "string") return part;
     const { index, name, text } = part;
 
-    if (name && text) dict.$$dict[name] = TString.literal(text, lang).dict;
+    if (name && text)
+      dict.$$dict[name] = TString.literal(text, lang).dictionary;
 
     if (index < 1 || index > params.length)
       throw new Error(

@@ -1,8 +1,8 @@
 import { TFatString } from "./types";
 
 export class TString {
-  readonly dict: TFatString;
-  readonly lang: string | undefined;
+  private readonly dict: TFatString;
+  private readonly lang: string | undefined;
 
   constructor(dict: TFatString, lang?: string) {
     if (lang && !(lang in dict)) throw new Error(`${lang} not in dictionary`);
@@ -23,6 +23,10 @@ export class TString {
     const { lang } = this;
     if (!lang) throw new Error(`This TString must have a language`);
     return lang;
+  }
+
+  get dictionary(): TFatString {
+    return this.dict;
   }
 
   toString(count?: number): string {
