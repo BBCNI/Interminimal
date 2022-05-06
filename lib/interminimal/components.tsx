@@ -107,8 +107,9 @@ export const TFormat: ComponentType<TFormatProps> = forwardRef<
   // Make children into a regular array of nodes
   const params = Children.map<ReactNode, any>(children, x => x) || [];
 
-  if (ref && params.length !== 1)
-    throw new Error(`Can only forward refs to single children`);
+  if (process.env.NODE_ENV !== "production")
+    if (ref && params.length !== 1)
+      throw new Error(`Can only forward refs to single children`);
 
   // Set of available indexes
   const avail = new Set(params.map((_x: any, i: number) => i + 1));
@@ -132,11 +133,12 @@ export const TFormat: ComponentType<TFormatProps> = forwardRef<
     // Mark it used (at least once)
     avail.delete(index);
 
-    if (ref) return clone(params[index - 1], { ref });
+    if (ref && index === 1) return clone(params[index - 1], { ref });
     return params[index - 1];
   });
 
-  if (avail.size) throw new Error(`Unused args: ${avail}`);
+  if (process.env.NODE_ENV !== "production")
+    if (avail.size) throw new Error(`Unused args: ${avail}`);
 
   if (Object.keys(dict.$$dict).length)
     return <TranslateLocal dictionary={dict}>{out}</TranslateLocal>;
