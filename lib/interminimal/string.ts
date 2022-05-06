@@ -19,10 +19,14 @@ export class TString {
     return new this({ [lang]: str }, lang);
   }
 
-  toString(count?: number): string {
-    if (!this.lang) throw new Error(`Can't translate with undefined lang`);
+  get language() {
+    const { lang } = this;
+    if (!lang) throw new Error(`This TString must have a language`);
+    return lang;
+  }
 
-    const ttx = this.dict[this.lang];
+  toString(count?: number): string {
+    const ttx = this.dict[this.language];
     if (typeof ttx === "string") return ttx;
 
     const plur = new Intl.PluralRules(this.lang).select(count ?? 1);

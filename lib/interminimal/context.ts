@@ -98,8 +98,8 @@ export class LangContext {
   ) {
     const ts = this.translate(text);
     const str = ts.toString(count);
-    if (ts.lang && ts.lang !== this.ambience)
-      return { str, props: { ...props, lang: ts.lang } };
+    if (ts.language !== this.ambience)
+      return { str, props: { ...props, lang: ts.language } };
     return { str, props };
   }
 
@@ -177,7 +177,9 @@ export class LangContext {
       .map(tok =>
         (match =>
           match
-            ? this.resolveTag(match[1]).toLang(this.stack).toString(count)
+            ? this.resolveTag(match[1])
+                .toLang([ts.language, ...this.stack])
+                .toString(count)
             : tok)(tok.match(/^%\{(.+)\}$/))
       )
       .join("");

@@ -153,14 +153,12 @@ export const T: ComponentType<TProps> = forwardRef<ReactElement, TProps>(
       if (tag || text)
         throw new Error(`Please don't mix content with tag or text`);
       const ts = ctx.translate(content);
-      // We don't expect this to happen - but it keeps TS quiet
-      if (!ts.lang) throw new Error(`No lang on translation`);
       return (
         <TText
           as={as}
           ref={ref}
-          lang={ts.lang}
-          {...ctx.resolveProps(props, ts.lang)}
+          lang={ts.language}
+          {...ctx.resolveProps(props, ts.language)}
         >
           {ts.toString(count)}
         </TText>
@@ -169,12 +167,14 @@ export const T: ComponentType<TProps> = forwardRef<ReactElement, TProps>(
 
     if (tag || text) {
       const ts = ctx.resolve(tag, text);
-      // We don't expect this to happen - but it keeps TS quiet
-      if (!ts.lang) throw new Error(`No lang on translation`);
 
       return (
-        <TText as={as} lang={ts.lang} {...ctx.resolveProps(props, ts.lang)}>
-          <TFormat lang={ts.lang} format={ctx.render(ts, count)}>
+        <TText
+          as={as}
+          lang={ts.language}
+          {...ctx.resolveProps(props, ts.language)}
+        >
+          <TFormat lang={ts.language} format={ctx.render(ts, count)}>
             {children}
           </TFormat>
         </TText>
