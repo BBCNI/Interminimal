@@ -122,13 +122,29 @@ export const T: ComponentType<TProps> = ({
   children,
   tag,
   text,
+  content,
   count,
   as = "span",
   ...props
 }) => {
   const ctx = useTranslation();
+
+  if (content) {
+    if (tag || text)
+      throw new Error(`Please don't mix content with tag or text`);
+    const ts = ctx.castString(content).toLang(ctx.stack);
+    // We don't expect this to happen - but it keeps TS quiet
+    if (!ts.lang) throw new Error(`No lang on translation`);
+    return (
+      <TText as={as} lang={ts.lang} {...ctx.resolveProps(props, ts.lang)}>
+        {ts.toString(count)}
+      </TText>
+    );
+  }
+
   if (tag || text) {
     const ts = ctx.resolve(tag, text);
+    // We don't expect this to happen - but it keeps TS quiet
     if (!ts.lang) throw new Error(`No lang on translation`);
 
     return (

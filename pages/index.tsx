@@ -158,10 +158,6 @@ export const Block: ComponentType<PageProps & { lang: string }> = ({
           <Tli text="Always English" />
           <Tli text={greeting} />
           <Tli text={message} />
-          {/* alternative tag spec */}
-          <Tli text={["one"]} />
-          {/* regular tag spec */}
-          <Tli tag="two" />
           {/* inline fat string */}
           <Tli
             text={{
@@ -184,6 +180,8 @@ export const Block: ComponentType<PageProps & { lang: string }> = ({
           <T tag="one" />
           <T tag="two" />
         </Tp>
+
+        <Tp content={info} />
 
         <Tp text={nested}>
           <Link href="/" passHref={true}>

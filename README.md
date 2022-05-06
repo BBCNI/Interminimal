@@ -199,7 +199,7 @@ return <Tdiv tag="language" />;
 
 ### Properties
 
-With the exception of `text`, `tag`, `as` and `count`, `T` passes remaining properties to the underlying element.
+With the exception of `text`, `tag`, `content`, `as` and `count`, `T` passes remaining properties to the underlying element.
 
 ```js
 return <T as="option" value="X" tag="language" />;
@@ -347,6 +347,19 @@ return (
 ### Tag lookup in templates
 
 We can also interpolate the contents of tags (looked up in the dictionary chain) into template strings. A template string like `"The name of this site is %{site}"` will look for a tag called `site` and substitute it. This substitution happens early in the rendering of the string so the substituted text can provide further placeholders.
+
+### Disabling template substitution
+
+Often you will receive translated text that should not be parsed as a template. If, for example, you recieve the translated text of a blog post from an API you need to be able to render it without worrying that it might contain tokens like `%123` which would be interpreted as placeholders - and which would cause your application throw an error.
+
+In such cases use the `content` attribute of `T`:
+
+```js
+// Don't parse postBody as a template string.
+return <T content={postBody}>;
+```
+
+Note that you can't pass a `["tag"]` as the `content` property to cause dictionary lookup; `content` is only for fat strings.
 
 ### Template Syntax
 

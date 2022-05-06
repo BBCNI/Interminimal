@@ -22,8 +22,6 @@ export type TDictionaryRoot = {
   $$meta?: TDictionaryMeta;
 };
 
-export type TextPropType = TFatString | TString | string | string[];
-
 export type AsType =
   | string
   | FunctionComponent<{ lang?: string }>
@@ -44,10 +42,14 @@ export interface LangContextProps {
   readonly ambient?: string;
 }
 
+export type ContentPropType = TFatString | TString | string;
+export type TextPropType = ContentPropType | string[];
+
 export interface TProps {
   children?: ReactNode;
   tag?: string;
   text?: TextPropType;
+  content?: ContentPropType;
   count?: number;
   as?: AsType;
   [key: string]: any;

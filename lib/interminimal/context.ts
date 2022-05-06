@@ -7,7 +7,8 @@ import {
   LangContextProps,
   TextPropType,
   TFatString,
-  TDictionaryRoot
+  TDictionaryRoot,
+  ContentPropType
 } from "./types";
 
 const defaultMagicProps: MagicPropsPredicate = (k: string) => {
@@ -83,15 +84,19 @@ export class LangContext {
     return new LangContext({ ...rest, ...transformProps(props), parent: this });
   }
 
+  castString(text: ContentPropType) {
+    if (typeof text === "string")
+      return TString.literal(text, this.defaultLang);
+    return TString.cast(text);
+  }
+
   resolveText(text: TextPropType) {
     if (Array.isArray(text)) {
       if (text.length !== 1)
         throw new Error(`To be a valid tag a text property must be [tag]`);
       return this.resolveTag(text[0]);
     }
-    if (typeof text === "string")
-      return TString.literal(text, this.defaultLang);
-    return TString.cast(text);
+    return this.castString(text);
   }
 
   findTag(tag: string): TFatString | TDictionaryRoot {
@@ -147,26 +152,15 @@ export class LangContext {
   }
 
   render(ts: TString, count?: number) {
-    const str = ts.toString(count);
-
-    const parts = str
+    return ts
+      .toString(count)
       .split(/(%%|%\{.+?\})/)
-      .filter(Boolean)
-      .filter(s => s.length);
-
-    if (parts.length <= 1) return parts[0] ?? "";
-    const out = [];
-
-    while (true) {
-      const tok = parts.shift();
-      if (!tok) break;
-      const m = tok.match(/^%\{(.+)\}$/);
-      const frag = m
-        ? this.resolveTag(m[1]).toLang(this.stack).toString(count)
-        : tok;
-      out.push(frag);
-    }
-
-    return out.join("");
+      .map(tok =>
+        (match =>
+          match
+            ? this.resolveTag(match[1]).toLang(this.stack).toString(count)
+            : tok)(tok.match(/^%\{(.+)\}$/))
+      )
+      .join("");
   }
 }
