@@ -152,7 +152,7 @@ export const T: ComponentType<TProps> = forwardRef<ReactElement, TProps>(
     if (content) {
       if (tag || text)
         throw new Error(`Please don't mix content with tag or text`);
-      const ts = ctx.castString(content).toLang(ctx.stack);
+      const ts = ctx.translate(content);
       // We don't expect this to happen - but it keeps TS quiet
       if (!ts.lang) throw new Error(`No lang on translation`);
       return (

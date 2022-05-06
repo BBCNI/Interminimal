@@ -13,12 +13,11 @@ import {
   T,
   tBind,
   tBindMulti,
-  Translate
+  TextPropType,
+  Translate,
+  useTranslation
 } from "../lib/interminimal";
-import type {
-  TDictionaryRoot,
-  TFatString
-} from "../lib/interminimal";
+import type { TDictionaryRoot, TFatString } from "../lib/interminimal";
 
 import styles from "../styles/Home.module.css";
 
@@ -111,9 +110,26 @@ const dictionary: TDictionaryRoot = {
   }
 };
 
-export const Box: ComponentType<{ children: ReactNode; lang?: string }> = ({
+const Box: ComponentType<{ children: ReactNode; lang?: string }> = ({
   children
 }) => <>[{children}]</>;
+
+interface TTitleProps {
+  text: TextPropType;
+  lang?: string;
+}
+
+// Inject page title into a NextJS <Head> component. We have to do the
+// translation explicitly because we can't nest a T inside a Head
+// Use this component *outside* of any other <Head></Head>
+const TTitle: ComponentType<TTitleProps> = ({ text, ...rest }) => {
+  const { str, props } = useTranslation().translateProps(text, rest);
+  return (
+    <Head>
+      <title {...props}>{str}</title>
+    </Head>
+  );
+};
 
 export const Block: ComponentType<PageProps & { lang: string }> = ({
   greeting,
@@ -234,10 +250,12 @@ const Home: NextPage<PageProps> = props => {
     <Translate dictionary={dictionary}>
       <div className={styles.container}>
         <Head>
-          <title>Interminimal</title>
+          {/* <title>Interminimal</title> */}
           <meta name="description" content="Minimal i18n" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
+
+        <TTitle text={["site"]} />
 
         <main className={styles.main}>
           <h1 className={styles.title}>Interminimal</h1>

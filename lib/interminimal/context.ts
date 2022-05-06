@@ -8,7 +8,7 @@ import {
   TextPropType,
   TFatString,
   TDictionaryRoot,
-  ContentPropType
+  StringPropType
 } from "./types";
 
 const defaultMagicProps: MagicPropsPredicate = (k: string) => {
@@ -84,7 +84,26 @@ export class LangContext {
     return new LangContext({ ...rest, ...transformProps(props), parent: this });
   }
 
-  castString(text: ContentPropType) {
+  translate(text: TextPropType) {
+    return this.resolveText(text).toLang(this.stack);
+  }
+
+  // Convenience method: given a TString (or [tag]) and a props object translate the
+  // string into the current language and update the props' lang attribute as
+  // appropriate
+  translateProps(
+    text: TextPropType,
+    { lang, ...props }: { lang?: string } = {},
+    count?: number
+  ) {
+    const ts = this.translate(text);
+    const str = ts.toString(count);
+    if (ts.lang && ts.lang !== this.ambience)
+      return { str, props: { ...props, lang: ts.lang } };
+    return { str, props };
+  }
+
+  castString(text: StringPropType) {
     if (typeof text === "string")
       return TString.literal(text, this.defaultLang);
     return TString.cast(text);
@@ -93,7 +112,7 @@ export class LangContext {
   resolveText(text: TextPropType) {
     if (Array.isArray(text)) {
       if (text.length !== 1)
-        throw new Error(`To be a valid tag a text property must be [tag]`);
+        throw new Error(`A tag must be an array of length 1`);
       return this.resolveTag(text[0]);
     }
     return this.castString(text);
@@ -118,7 +137,7 @@ export class LangContext {
   resolveTag(tag: string): TString {
     const it = this.findTag(tag);
     if ("$$dict" in it) throw new Error(`${tag} is a dictionary`);
-    return TString.cast(it);
+    return this.castString(it);
   }
 
   resolveDictionary(tag: string): TDictionaryRoot {
