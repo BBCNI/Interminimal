@@ -10,16 +10,16 @@ export class TString {
     this.lang = lang;
   }
 
-  static cast(obj: TFatString | TString, lang?: string) {
+  static cast(obj: TFatString | TString, lang?: string): TString {
     if (obj instanceof this) return obj;
     return new this(obj as TFatString, lang);
   }
 
-  static literal(str: string, lang: string) {
+  static literal(str: string, lang: string): TString {
     return new this({ [lang]: str }, lang);
   }
 
-  get language() {
+  get language(): string {
     const { lang } = this;
     if (!lang) throw new Error(`This TString must have a language`);
     return lang;

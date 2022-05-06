@@ -55,15 +55,15 @@ export class LangContext {
     return (this.stackCache = this.stackCache || s());
   }
 
-  get language() {
+  get language(): string {
     return this.stack[0];
   }
 
-  get ambience() {
+  get ambience(): string {
     return this.ambient || this.language;
   }
 
-  derive(props: LangContextProps = {}) {
+  derive(props: LangContextProps = {}): LangContext {
     // Handle dictionaryFromTag
     const transformProps = ({
       dictionaryFromTag,
@@ -84,32 +84,32 @@ export class LangContext {
     return new LangContext({ ...rest, ...transformProps(props), parent: this });
   }
 
-  translate(text: TextPropType) {
-    return this.resolveText(text).toLang(this.stack);
+  translate(text: TextPropType): TString {
+    return this.resolve(text).toLang(this.stack);
   }
 
   // Convenience method: given a TString (or [tag]) and a props object translate the
   // string into the current language and update the props' lang attribute as
   // appropriate
-  translateProps(
+  translateTextAndProps(
     text: TextPropType,
     { lang, ...props }: { lang?: string } = {},
     count?: number
-  ) {
+  ): { str: string; props: {} } {
     const ts = this.translate(text);
-    const str = ts.toString(count);
+    const str = this.render(ts, count);
     if (ts.language !== this.ambience)
       return { str, props: { ...props, lang: ts.language } };
     return { str, props };
   }
 
-  castString(text: StringPropType) {
+  castString(text: StringPropType): TString {
     if (typeof text === "string")
       return TString.literal(text, this.defaultLang);
     return TString.cast(text);
   }
 
-  resolveText(text: TextPropType) {
+  resolve(text: TextPropType): TString {
     if (Array.isArray(text)) {
       if (text.length !== 1)
         throw new Error(`A tag must be an array of length 1`);
@@ -118,7 +118,7 @@ export class LangContext {
     return this.castString(text);
   }
 
-  findTag(tag: string): TFatString | TDictionaryRoot {
+  private findTag(tag: string): TFatString | TDictionaryRoot {
     const { tagCache } = this;
 
     const rt = () => {
@@ -134,43 +134,43 @@ export class LangContext {
     return (tagCache[tag] = tagCache[tag] || rt());
   }
 
-  resolveTag(tag: string): TString {
+  private resolveTag(tag: string): TString {
     const it = this.findTag(tag);
     if ("$$dict" in it) throw new Error(`${tag} is a dictionary`);
     return this.castString(it);
   }
 
-  resolveDictionary(tag: string): TDictionaryRoot {
+  private resolveDictionary(tag: string): TDictionaryRoot {
     const it = this.findTag(tag);
     if ("$$dict" in it) return it as TDictionaryRoot;
     throw new Error(`${tag} is not a dictionary`);
   }
 
-  resolve(tag?: string, text?: TextPropType) {
+  resolveTranslationProps(tag?: string, text?: TextPropType): TString {
     const r = () => {
       if (tag && text) throw new Error(`Got both tag and text`);
-      if (text) return this.resolveText(text);
+      if (text) return this.resolve(text);
       if (tag) return this.resolveTag(tag);
       throw new Error(`No text or tag`);
     };
     return r().toLang(this.stack);
   }
 
-  resolveProps(props: { [key: string]: any }, lang?: string) {
+  resolveMagicProps<T>(props: T, lang?: string): T {
     const { magicProps, stack } = this;
     if (!magicProps) return props;
     const search = lang ? [lang, ...stack] : stack;
 
     const pairs = Object.entries(props).map(([k, v]) => {
       const nk = magicProps(k, v);
-      if (nk) return [nk, this.render(this.resolveText(v).toLang(search))];
+      if (nk) return [nk, this.render(this.resolve(v).toLang(search))];
       return [k, v];
     });
 
     return Object.fromEntries(pairs);
   }
 
-  render(ts: TString, count?: number) {
+  render(ts: TString, count?: number): string {
     return ts
       .toString(count)
       .split(/(%%|%\{.+?\})/)

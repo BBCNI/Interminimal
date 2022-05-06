@@ -19,8 +19,7 @@ import { TString } from "./string";
 
 const TContext = createContext(new LangContext());
 
-export const useTranslation = () => useContext(TContext);
-// Set the ambient language
+export const useTranslation = (): LangContext => useContext(TContext);
 
 export const Local: ComponentType<
   LangContextProps & { children: ReactNode }
@@ -84,7 +83,7 @@ export const TText: ComponentType<TTextProps> = forwardRef<
 
 TText.displayName = "TText";
 
-const clone = (elt: any, props?: any) =>
+const clone = <T,>(elt: T & ReactNode, props?: any) =>
   isValidElement(elt) ? cloneElement(elt, props) : elt;
 
 interface TFormatProps {
@@ -158,7 +157,7 @@ export const T: ComponentType<TProps> = forwardRef<ReactElement, TProps>(
           as={as}
           ref={ref}
           lang={ts.language}
-          {...ctx.resolveProps(props, ts.language)}
+          {...ctx.resolveMagicProps(props, ts.language)}
         >
           {ts.toString(count)}
         </TText>
@@ -166,13 +165,13 @@ export const T: ComponentType<TProps> = forwardRef<ReactElement, TProps>(
     }
 
     if (tag || text) {
-      const ts = ctx.resolve(tag, text);
+      const ts = ctx.resolveTranslationProps(tag, text);
 
       return (
         <TText
           as={as}
           lang={ts.language}
-          {...ctx.resolveProps(props, ts.language)}
+          {...ctx.resolveMagicProps(props, ts.language)}
         >
           <TFormat lang={ts.language} format={ctx.render(ts, count)}>
             {children}
@@ -182,7 +181,12 @@ export const T: ComponentType<TProps> = forwardRef<ReactElement, TProps>(
     }
 
     return (
-      <TText as={as} ref={ref} {...ctx.resolveProps(props)}>
+      <TText
+        as={as}
+        ref={ref}
+        lang={ctx.defaultLang}
+        {...ctx.resolveMagicProps(props)}
+      >
         {children}
       </TText>
     );

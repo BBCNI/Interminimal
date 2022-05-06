@@ -123,7 +123,7 @@ interface TTitleProps {
 // translation explicitly because we can't nest a T inside a Head
 // Use this component *outside* of any other <Head></Head>
 const TTitle: ComponentType<TTitleProps> = ({ text, ...rest }) => {
-  const { str, props } = useTranslation().translateProps(text, rest);
+  const { str, props } = useTranslation().translateTextAndProps(text, rest);
   return (
     <Head>
       <title {...props}>{str}</title>
