@@ -2,7 +2,7 @@ import { TFatString } from "./types";
 
 export class TString {
   readonly dict: TFatString;
-  readonly lang?: string;
+  readonly lang: string | undefined;
 
   constructor(dict: TFatString, lang?: string) {
     if (lang && !(lang in dict)) throw new Error(`${lang} not in dictionary`);
