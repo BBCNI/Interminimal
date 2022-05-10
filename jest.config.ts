@@ -5,6 +5,6 @@ const config: Config.InitialOptions = {
   transform: {
     "^.+\\.tsx?$": "ts-jest"
   },
-  modulePathIgnorePatterns: ["dist/"]
+  modulePathIgnorePatterns: ["<rootDir>/dist/"]
 };
 export default config;
