@@ -1,4 +1,4 @@
-import {
+import React, {
   ComponentType,
   createContext,
   createElement,
@@ -93,8 +93,6 @@ export const TFormat: ComponentType<TFormatProps> = forwardRef<
   ReactElement,
   TFormatProps
 >(({ format, lang, children }, ref) => {
-  const ctx = useTranslation();
-
   const clone = (elt: ReactNode, props?: any): ReactNode =>
     isValidElement(elt) ? cloneElement(elt, props) : elt;
 

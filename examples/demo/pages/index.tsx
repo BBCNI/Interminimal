@@ -15,9 +15,10 @@ import {
   tBindMulti,
   TextPropType,
   Translate,
-  useTranslation
-} from "../lib/interminimal";
-import type { TDictionaryRoot, TFatString } from "../lib/interminimal";
+  useTranslation,
+  TDictionaryRoot,
+  TFatString
+} from "../../..";
 
 import styles from "../styles/Home.module.css";
 

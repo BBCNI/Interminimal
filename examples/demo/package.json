@@ -1,10 +1,13 @@
 {
   "name": "interminimal",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "build": "npm run build:tsc && npm run build:cjs",
-    "build:tsc": "tsc",
-    "build:cjs": "tsc --module commonjs --outDir dist/cjs"
+    "dev": "next dev -p 3007",
+    "pike": "next dev -p 26173",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "prettier": {
     "tabWidth": 2,
@@ -23,9 +26,8 @@
     "endOfLine": "lf"
   },
   "dependencies": {
-    "lodash": "^4.17.21"
-  },
-  "peerDependencies": {
+    "lodash": "^4.17.21",
+    "next": "12.1.5",
     "react": "18.1.0",
     "react-dom": "18.1.0"
   },
@@ -36,11 +38,6 @@
     "@types/react-dom": "18.0.3",
     "eslint": "8.14.0",
     "eslint-config-next": "12.1.5",
-    "typescript": "4.6.4",
-    "react": "18.1.0",
-    "react-dom": "18.1.0"
-  },
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/esm/index.d.ts"
+    "typescript": "4.6.4"
+  }
 }
