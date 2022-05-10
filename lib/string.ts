@@ -11,7 +11,10 @@ export class TString {
   }
 
   static cast(obj: TFatString | TString, lang?: string): TString {
-    if (obj instanceof this) return obj;
+    if (obj instanceof this) {
+      if (lang) return obj.toLang([lang]);
+      return obj;
+    }
     return new this(obj as TFatString, lang);
   }
 
