@@ -35,6 +35,21 @@ describe("LangContext", () => {
     expect(ctx3.ambience).toBe("en");
   });
 
+  it("should allow ambience overload", () => {
+    const ctx = new LangContext({ lang: "cy", defaultLang: "en" });
+    const amb1 = ctx.derive({ ambient: "en" });
+    const amb2 = amb1.derive({ ambient: "en" });
+    expect(ctx.ambience).toBe("cy");
+    expect(ctx.language).toBe("cy");
+    expect(ctx.stack).toEqual(["cy", "en"]);
+    expect(amb1.ambience).toBe("en");
+    expect(amb1.language).toBe("cy");
+    expect(amb1.stack).toEqual(["cy", "en"]);
+    expect(amb2.ambience).toBe("en");
+    expect(amb2.language).toBe("cy");
+    expect(amb2.stack).toEqual(["cy", "en"]);
+  });
+
   it("should translate strings", () => {
     const ctx = new LangContext({ lang: "cy", defaultLang: "en", dictionary });
     const ts = ctx.translate("Hello");
@@ -119,14 +134,12 @@ describe("LangContext", () => {
     const ctx = new LangContext({ lang: "en", defaultLang: "fr", dictionary });
     const got = ctx.translateTextAndProps(["site"], { ok: true });
     expect(got).toEqual({ str: "Interminimal", props: { ok: true } });
-    console.log(got);
   });
 
   it("should translate text and props", () => {
     const ctx = new LangContext({ lang: "fr", defaultLang: "en", dictionary });
     const got = ctx.translateTextAndProps(["site"]);
     expect(got).toEqual({ str: "Interminimal", props: { lang: "en" } });
-    console.log(got);
   });
 
   it("should throw if dictionary is invalid", () => {
