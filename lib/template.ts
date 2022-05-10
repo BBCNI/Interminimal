@@ -16,6 +16,7 @@ const parse = (format: string) => {
   // to have ["%1", "["] instead.
   const tokens = format.split(/(%%|%\[|%]|%\d+|\[|])/).filter(t => t.length);
 
+  // Parse the next tokens
   const parsePart = (stopAt?: string) => {
     const out: TemplateToken[] = [];
 
@@ -31,33 +32,37 @@ const parse = (format: string) => {
       if (stopAt) {
         if (!tok) throw new Error(`Missing ${stopAt}`);
         if (tok === stopAt) break;
-      } else {
-        if (!tok) break;
       }
 
-      const m = tok.match(/^%(\d+|[%\[\]])$/);
+      if (!tok) break;
+
+      const m = tok.match(/^%(\d+|.)$/);
       if (m) {
-        // % escape?
-        if (!/^\d+$/.test(m[1])) {
-          put(m[1]);
+        const arg = m[1];
+
+        // Not a number so % escape?
+        if (!/^\d+$/.test(arg)) {
+          put(arg);
           continue;
         }
 
-        const pl: TemplatePlaceholder = { index: Number(m[1]) };
+        const pl: TemplatePlaceholder = { index: Number(arg) };
 
         // Following literal?
         if (tokens.length && tokens[0] === "[") {
           tokens.shift();
           pl.name = tok;
-          // Because this is a recursive syntax but we want to flatten
-          // it to a single level, we handle subexpressions by parsing
-          // them and re-stringifying.
+          // Because this is a recursive syntax that we want to flatten
+          // to a single level, we handle subexpressions by parsing
+          // and re-stringifying them.
           pl.text = stringifyTemplate(parsePart("]"));
         }
 
         out.push(pl);
         continue;
       }
+
+      // Just stash the token
       put(tok);
     }
 
