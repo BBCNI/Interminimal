@@ -92,7 +92,7 @@ export class LangContext {
   // appropriate
   translateTextAndProps(
     text: TextPropType,
-    { lang, ...props }: { lang?: string } = {},
+    { lang, ...props }: { lang?: string; [key: string]: any } = {},
     count?: number
   ): { str: string; props: {} } {
     const ts = this.translate(text);
@@ -157,7 +157,7 @@ export class LangContext {
 
   resolveMagicProps<T>(props: T, lang?: string): T {
     const { magicProps, stack } = this;
-    if (!magicProps) return props;
+
     const search = lang ? [lang, ...stack] : stack;
 
     const pairs = Object.entries(props).map(([k, v]) => {

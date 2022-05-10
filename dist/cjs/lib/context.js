@@ -180,8 +180,6 @@ var LangContext = /** @class */ (function () {
     LangContext.prototype.resolveMagicProps = function (props, lang) {
         var _this = this;
         var _a = this, magicProps = _a.magicProps, stack = _a.stack;
-        if (!magicProps)
-            return props;
         var search = lang ? __spreadArray([lang], stack, true) : stack;
         var pairs = Object.entries(props).map(function (_a) {
             var k = _a[0], v = _a[1];

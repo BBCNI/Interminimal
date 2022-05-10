@@ -17,6 +17,7 @@ export declare class LangContext {
     translate(text: TextPropType): TString;
     translateTextAndProps(text: TextPropType, { lang, ...props }?: {
         lang?: string;
+        [key: string]: any;
     }, count?: number): {
         str: string;
         props: {};

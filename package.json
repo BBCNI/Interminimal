@@ -6,7 +6,7 @@
     "build:tsc": "tsc",
     "build:cjs": "tsc --module commonjs --outDir dist/cjs",
     "test": "jest --coverage",
-    "tdd": "jest --watch --coverage"
+    "tdd": "jest --watchAll --coverage"
   },
   "prettier": {
     "tabWidth": 2,
