@@ -1,65 +1,70 @@
 import { TemplateToken, TemplatePlaceholder } from "./types";
 
-const parse = (format: string): TemplateToken[] => {
+const escapePercent = (text: string) => text.replace(/([%\[\]])/g, "%$1");
+
+const stringifyNode = (pl: string | TemplatePlaceholder) =>
+  typeof pl === "string"
+    ? escapePercent(pl)
+    : `%${pl.index}` + ("text" in pl ? `[${pl.text}]` : "");
+
+export const stringifyTemplate = (ast: TemplateToken[]) =>
+  ast.map(stringifyNode).join("");
+
+const parse = (format: string) => {
   // Use a capturing split to tokenise. We filter out empty tokens here so
   // that we don't trip over e.g. ["%1", "", "["] in the main loop. We want
   // to have ["%1", "["] instead.
   const tokens = format.split(/(%%|%\[|%]|%\d+|\[|])/).filter(t => t.length);
 
-  // Parse "[...]""
-  const literal = () => {
-    tokens.shift(); // "["
-    const out = [];
-    let level = 0;
-    while (tokens.length) {
+  const parsePart = (stopAt?: string) => {
+    const out: TemplateToken[] = [];
+
+    const put = (frag: string) => {
+      if (out.length && typeof out[out.length - 1] === "string")
+        out[out.length - 1] += frag;
+      else out.push(frag);
+    };
+
+    while (true) {
       const tok = tokens.shift();
-      if (tok === "]") {
-        if (level === 0) return out.join("");
-        level--;
-      } else if (tok === "[") {
-        level++;
+
+      if (stopAt) {
+        if (!tok) throw new Error(`Missing ${stopAt}`);
+        if (tok === stopAt) break;
+      } else {
+        if (!tok) break;
       }
-      out.push(tok);
-    }
-    throw new Error(`Missing ] in template`);
-  };
 
-  const out: TemplateToken[] = [];
+      const m = tok.match(/^%(\d+|[%\[\]])$/);
+      if (m) {
+        // % escape?
+        if (!/^\d+$/.test(m[1])) {
+          put(m[1]);
+          continue;
+        }
 
-  // Append to output, merging adjacent strings
-  const put = (frag: string) => {
-    if (out.length && typeof out[out.length - 1] === "string")
-      out[out.length - 1] += frag;
-    else out.push(frag);
-  };
+        const pl: TemplatePlaceholder = { index: Number(m[1]) };
 
-  while (true) {
-    const tok = tokens.shift();
-    if (tok === undefined) break;
-    const m = tok.match(/^%(\d+|[%\[\]])$/);
-    if (m) {
-      // % escape?
-      if (Number.isNaN(m[1])) {
-        put(m[1]);
+        // Following literal?
+        if (tokens.length && tokens[0] === "[") {
+          tokens.shift();
+          pl.name = tok;
+          // Because this is a recursive syntax but we want to flatten
+          // it to a single level, we handle subexpressions by parsing
+          // them and re-stringifying.
+          pl.text = stringifyTemplate(parsePart("]"));
+        }
+
+        out.push(pl);
         continue;
       }
-
-      const pl: TemplatePlaceholder = { index: Number(m[1]) };
-
-      // Following literal?
-      if (tokens.length && tokens[0] === "[") {
-        pl.name = tok;
-        pl.text = literal();
-      }
-
-      out.push(pl);
-      continue;
+      put(tok);
     }
 
-    put(tok);
-  }
+    return out;
+  };
 
-  return out;
+  return parsePart();
 };
 
 const cache: { [key: string]: TemplateToken[] } = {};
