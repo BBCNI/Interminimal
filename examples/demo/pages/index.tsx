@@ -18,7 +18,7 @@ import {
   useTranslation,
   TDictionaryRoot,
   TFatString
-} from "../../..";
+} from "interminimal";
 
 import styles from "../styles/Home.module.css";
 
