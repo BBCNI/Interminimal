@@ -14,7 +14,7 @@ describe("TSString", () => {
   it("should cast a fat string", () => {
     const ts = TString.cast({ en: "Hello" });
     expect(ts.dictionary).toEqual({ en: "Hello" });
-    const tsf = ts.toLang("fr"); // can't do it but not an error
+    const tsf = ts.toLang("fr");
     expect(tsf.language).toBe("en");
     expect(tsf.toString()).toBe("Hello");
     expect(() => ts.language).toThrow(/must have/);
