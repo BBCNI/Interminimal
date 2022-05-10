@@ -109,6 +109,8 @@ export const TFormat: ComponentType<TFormatProps> = forwardRef<
 
   if (process.env.NODE_ENV !== "production")
     if (ref && params.length !== 1)
+      // Passing a ref is a special case which only allows
+      // a single child
       throw new Error(`Can only forward refs to single children`);
 
   // Set of available indexes
@@ -131,9 +133,12 @@ export const TFormat: ComponentType<TFormatProps> = forwardRef<
 
     if (!avail.has(index)) throw new Error(`Already using arg %${index}`);
 
-    // Mark it used (at least once)
+    // Mark it used
     avail.delete(index);
 
+    // If we're passing a ref clone it in. Only do this to the first
+    // parameter. This check pretty redundant - there's a check above
+    // that enforces singularity in the ref passed case.
     if (ref && index === 1) return clone(params[index - 1], { ref });
     return params[index - 1];
   });
@@ -211,10 +216,11 @@ export const tBind = (as: AsType): ComponentType<TProps> => {
         </T>
       )
     );
-    const asName =
-      typeof as === "string" ? as : as.displayName ?? as.name ?? "anon";
-    bound.displayName = `T${asName}`;
-    Object.defineProperty(bound, "name", { value: bound.displayName });
+    const asName = typeof as === "string" ? as : as.displayName ?? as.name;
+    if (asName) {
+      bound.displayName = `T${asName}`;
+      Object.defineProperty(bound, "name", { value: bound.displayName });
+    }
     return bound;
   };
 
