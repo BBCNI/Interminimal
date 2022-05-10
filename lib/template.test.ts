@@ -46,6 +46,10 @@ describe("parseTemplate", () => {
       expect(ast2).toEqual(ast);
       const t3 = stringifyTemplate(ast2);
       expect(t3).toBe(t2);
+
+      // Verify caching
+      const ast3 = parseTemplate(t3);
+      expect(ast3).toBe(ast2); // toBe checks ref equality
     }
   });
 

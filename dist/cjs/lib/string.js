@@ -9,8 +9,11 @@ var TString = /** @class */ (function () {
         this.lang = lang;
     }
     TString.cast = function (obj, lang) {
-        if (obj instanceof this)
+        if (obj instanceof this) {
+            if (lang)
+                return obj.toLang([lang]);
             return obj;
+        }
         return new this(obj, lang);
     };
     TString.literal = function (str, lang) {

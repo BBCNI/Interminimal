@@ -11,6 +11,10 @@ describe("TSString", () => {
     expect(tsf.toString()).toBe("Hello");
   });
 
+  it("should fail if explicit lang is absent from dictionary", () => {
+    expect(() => new TString({ huh: "Huh?" }, "en")).toThrow(/not in/);
+  });
+
   it("should cast a fat string", () => {
     const ts = TString.cast({ en: "Hello" });
     expect(ts.dictionary).toEqual({ en: "Hello" });
@@ -24,6 +28,38 @@ describe("TSString", () => {
     const ts1 = TString.cast({ en: "Hello" });
     const ts2 = TString.cast(ts1);
     expect(ts1).toBe(ts2);
+  });
+
+  it("should set language of existing TString in cast", () => {
+    const ts1 = TString.cast({ en: "Hello" });
+    const ts2 = TString.cast(ts1, "fr");
+    expect(ts2.language).toBe("en");
+    expect(ts2).not.toBe(ts1);
+    expect(() => ts1.language).toThrow(/must have/);
+  });
+
+  it("should handle undefined / null in toLang args", () => {
+    const ts = new TString({ en: "Hello", de: "Hallo" }, "en");
+    const tsde = ts.toLang(["cy", null, "de", "en"] as string[]);
+    expect(tsde.language).toBe("de");
+    expect(tsde.toString()).toBe("Hallo");
+  });
+
+  it("should return this if no translation required", () => {
+    const ts = new TString({ en: "Hello", de: "Hallo" }, "en");
+    const ts2 = ts.toLang(["fr", "en"]);
+    expect(ts2).toBe(ts);
+  });
+
+  it("should return any translation if no match", () => {
+    const ts = new TString({ en: "Hello" });
+    const ts2 = ts.toLang("fr");
+    expect(ts2.language).toBe("en");
+  });
+
+  it("should fail if no languages are available", () => {
+    const ts = new TString({});
+    expect(() => ts.toLang("en")).toThrow(/no translations/i);
   });
 
   it("should lookup plurals", () => {
@@ -80,5 +116,17 @@ describe("TSString", () => {
       );
       expect(got).toEqual(want);
     }
+  });
+
+  it("should default to a count of 1", () => {
+    const ts = new TString({ en: { one: "cat", other: "cats" } }, "en");
+    expect(ts.toString(0)).toBe("cats");
+    expect(ts.toString()).toBe("cat");
+  });
+
+  it("should fail on unmatched plurals", () => {
+    const ts = new TString({ en: { other: "cats" } });
+    expect(() => ts.toLang("en").toString(1)).toThrow(/map plural/);
+    expect(() => ts.toLang("en").toString()).toThrow(/map plural/);
   });
 });
