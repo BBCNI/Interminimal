@@ -363,7 +363,11 @@ In such cases use the `content` attribute of `T`:
 return <T content={postBody}>;
 ```
 
-Note that you can't pass a `["tag"]` as the `content` property to cause dictionary lookup; `content` is only for fat strings.
+Note that you can pass a `["tag"]` as the `content` property to cause dictionary lookup:
+
+```js
+return <T content={["literal"]}>;
+```
 
 ## Template Syntax Summary
 
