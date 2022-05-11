@@ -1,9 +1,8 @@
 import { TString } from "./string";
-import { MagicPropsPredicate, LangContextProps, TextPropType, TDictionaryRoot, StringPropType } from "./types";
+import { LangContextProps, TextPropType, TDictionaryRoot, StringPropType } from "./types";
 export declare class LangContext {
     readonly parent?: LangContext;
     readonly defaultLang: string;
-    readonly magicProps: MagicPropsPredicate;
     readonly lang: string[];
     readonly ambient?: string;
     readonly dictionary?: TDictionaryRoot;

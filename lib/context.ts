@@ -3,7 +3,6 @@ import castArray from "lodash/castArray";
 import { TString } from "./string";
 
 import {
-  MagicPropsPredicate,
   LangContextProps,
   TextPropType,
   TFatString,
@@ -11,15 +10,9 @@ import {
   StringPropType
 } from "./types";
 
-const defaultMagicProps: MagicPropsPredicate = (k: string) => {
-  const m = k.match(/^t-(.+)$/);
-  if (m) return m[1];
-};
-
 export class LangContext {
   readonly parent?: LangContext;
   readonly defaultLang: string = "en";
-  readonly magicProps: MagicPropsPredicate = defaultMagicProps;
   readonly lang: string[] = [];
   readonly ambient?: string;
   readonly dictionary?: TDictionaryRoot;
@@ -157,12 +150,17 @@ export class LangContext {
   }
 
   resolveMagicProps<T>(props: T, lang?: string): T {
-    const { magicProps, stack } = this;
+    const { stack } = this;
+
+    const mapMagic = (k: string) => {
+      const m = k.match(/^t-(.+)$/);
+      if (m) return m[1];
+    };
 
     const search = lang ? [lang, ...stack] : stack;
 
     const pairs = Object.entries(props).map(([k, v]) => {
-      const nk = magicProps(k, v);
+      const nk = mapMagic(k);
       if (nk) return [nk, this.render(this.resolve(v).toLang(search))];
       return [k, v];
     });

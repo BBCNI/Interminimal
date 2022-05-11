@@ -33,14 +33,8 @@ export type AsType =
   | FunctionComponent<{ lang?: string; ref?: Ref<ReactElement> }>
   | ComponentClass<{ lang?: string; ref?: Ref<ReactElement> }, any>;
 
-export type MagicPropsPredicate = (
-  key: string,
-  value: any
-) => string | undefined;
-
 export interface LangContextProps {
   readonly defaultLang?: string;
-  readonly magicProps?: MagicPropsPredicate;
   readonly dictionary?: TDictionaryRoot;
   readonly dictionaryFromTag?: string;
   readonly lang?: string | string[];

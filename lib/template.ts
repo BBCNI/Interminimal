@@ -2,7 +2,7 @@ import { TemplateToken, TemplatePlaceholder } from "./types";
 
 const escapePercent = (text: string) => text.replace(/([%\[\]])/g, "%$1");
 
-const stringifyNode = (pl: string | TemplatePlaceholder) =>
+const stringifyNode = (pl: TemplateToken) =>
   typeof pl === "string"
     ? escapePercent(pl)
     : `%${pl.index}` + ("text" in pl ? `[${pl.text}]` : "");

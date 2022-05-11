@@ -32,16 +32,10 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 import uniq from "lodash/uniq";
 import castArray from "lodash/castArray";
 import { TString } from "./string";
-var defaultMagicProps = function (k) {
-    var m = k.match(/^t-(.+)$/);
-    if (m)
-        return m[1];
-};
 var LangContext = /** @class */ (function () {
     function LangContext(props) {
         if (props === void 0) { props = {}; }
         this.defaultLang = "en";
-        this.magicProps = defaultMagicProps;
         this.lang = [];
         this.stackCache = null;
         this.tagCache = {};
@@ -174,11 +168,16 @@ var LangContext = /** @class */ (function () {
     };
     LangContext.prototype.resolveMagicProps = function (props, lang) {
         var _this = this;
-        var _a = this, magicProps = _a.magicProps, stack = _a.stack;
+        var stack = this.stack;
+        var mapMagic = function (k) {
+            var m = k.match(/^t-(.+)$/);
+            if (m)
+                return m[1];
+        };
         var search = lang ? __spreadArray([lang], stack, true) : stack;
         var pairs = Object.entries(props).map(function (_a) {
             var k = _a[0], v = _a[1];
-            var nk = magicProps(k, v);
+            var nk = mapMagic(k);
             if (nk)
                 return [nk, _this.render(_this.resolve(v).toLang(search))];
             return [k, v];

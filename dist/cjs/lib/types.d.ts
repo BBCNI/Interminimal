@@ -27,10 +27,8 @@ export declare type AsType = string | FunctionComponent<{
     lang?: string;
     ref?: Ref<ReactElement>;
 }, any>;
-export declare type MagicPropsPredicate = (key: string, value: any) => string | undefined;
 export interface LangContextProps {
     readonly defaultLang?: string;
-    readonly magicProps?: MagicPropsPredicate;
     readonly dictionary?: TDictionaryRoot;
     readonly dictionaryFromTag?: string;
     readonly lang?: string | string[];
