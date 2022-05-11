@@ -161,8 +161,9 @@ var LangContext = /** @class */ (function () {
     LangContext.prototype.resolveTranslationProps = function (tag, text) {
         var _this = this;
         var r = function () {
-            if (tag && text)
-                throw new Error("Got both tag and text");
+            if (process.env.NODE_ENV !== "production")
+                if (tag && text)
+                    throw new Error("Got both tag and text");
             if (text)
                 return _this.resolve(text);
             if (tag)

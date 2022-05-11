@@ -45,7 +45,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tBindMulti = exports.tBind = exports.T = exports.TFormat = exports.TText = exports.Translate = exports.TranslateLocal = exports.useTranslation = void 0;
+exports.tBindMulti = exports.tBind = exports.T = exports.TFormat = exports.TText = exports.As = exports.Translate = exports.TranslateLocal = exports.useTranslation = void 0;
 var react_1 = __importStar(require("react"));
 var template_1 = require("./template");
 var context_1 = require("./context");
@@ -67,31 +67,34 @@ var Translate = function (_a) {
 };
 exports.Translate = Translate;
 // Create a component with the specified tag
-var As = (0, react_1.forwardRef)(function (_a, ref) {
+exports.As = (0, react_1.forwardRef)(function (_a, ref) {
     var as = _a.as, children = _a.children, props = __rest(_a, ["as", "children"]);
     return (0, react_1.createElement)(as, __assign({ ref: ref }, props), children);
 });
-As.displayName = "As";
+exports.As.displayName = "As";
 exports.TText = (0, react_1.forwardRef)(function (_a, ref) {
     var children = _a.children, lang = _a.lang, as = _a.as, props = __rest(_a, ["children", "lang", "as"]);
     var ctx = (0, exports.useTranslation)();
     if (lang !== ctx.ambience)
         return (react_1.default.createElement(exports.TranslateLocal, { ambient: lang },
-            react_1.default.createElement(As, __assign({ as: as, ref: ref }, props, { lang: lang }), children)));
-    return (react_1.default.createElement(As, __assign({ as: as, ref: ref }, props), children));
+            react_1.default.createElement(exports.As, __assign({ as: as, ref: ref }, props, { lang: lang }), children)));
+    return (react_1.default.createElement(exports.As, __assign({ as: as, ref: ref }, props), children));
 });
 exports.TText.displayName = "TText";
 exports.TFormat = (0, react_1.forwardRef)(function (_a, ref) {
     var format = _a.format, lang = _a.lang, children = _a.children;
     var clone = function (elt, props) {
-        return (0, react_1.isValidElement)(elt) ? (0, react_1.cloneElement)(elt, props) : elt;
+        if ((0, react_1.isValidElement)(elt))
+            return (0, react_1.cloneElement)(elt, props);
+        if (process.env.NODE_ENV !== "production")
+            throw new Error("Can't add props to a non-element");
     };
     var parts = (0, template_1.parseTemplate)(format);
     // Bail out quickly in the simple case
     if (parts.length === 1 && typeof parts[0] === "string")
         return react_1.default.createElement(react_1.Fragment, null, parts[0]);
     // Make children into a regular array of nodes
-    var params = react_1.Children.map(children, function (x) { return x; }) || [];
+    var params = react_1.Children.map(children, function (x) { return x; });
     if (process.env.NODE_ENV !== "production")
         if (ref && params.length !== 1)
             // Passing a ref is a special case which only allows
@@ -128,32 +131,40 @@ exports.TFormat = (0, react_1.forwardRef)(function (_a, ref) {
     return react_1.default.createElement(react_1.Fragment, null, out);
 });
 exports.TFormat.displayName = "TFormat";
+var noRef = function (ref) {
+    if (ref)
+        throw new Error("Can't pass ref");
+};
 exports.T = (0, react_1.forwardRef)(function (_a, ref) {
     var children = _a.children, tag = _a.tag, text = _a.text, content = _a.content, count = _a.count, _b = _a.as, as = _b === void 0 ? "span" : _b, props = __rest(_a, ["children", "tag", "text", "content", "count", "as"]);
     var ctx = (0, exports.useTranslation)();
     if (content) {
-        if (tag || text)
-            throw new Error("Please don't mix content with tag or text");
+        if (process.env.NODE_ENV !== "production") {
+            if (tag || text)
+                throw new Error("Please don't mix content with tag or text");
+            noRef(ref);
+        }
         var ts = ctx.translate(content);
-        return (react_1.default.createElement(exports.TText, __assign({ as: as, ref: ref, lang: ts.language }, ctx.resolveMagicProps(props, ts.language)), ts.toString(count)));
+        return (react_1.default.createElement(exports.TText, __assign({ as: as, lang: ts.language }, ctx.resolveMagicProps(props, ts.language)), ts.toString(count)));
     }
     if (tag || text) {
         var ts = ctx.resolveTranslationProps(tag, text);
         return (react_1.default.createElement(exports.TText, __assign({ as: as, lang: ts.language }, ctx.resolveMagicProps(props, ts.language)),
-            react_1.default.createElement(exports.TFormat, { lang: ts.language, format: ctx.render(ts, count) }, children)));
+            react_1.default.createElement(exports.TFormat, { ref: ref, lang: ts.language, format: ctx.render(ts, count) }, children)));
     }
-    return (react_1.default.createElement(exports.TText, __assign({ as: as, ref: ref, lang: ctx.defaultLang }, ctx.resolveMagicProps(props)), children));
+    if (process.env.NODE_ENV !== "production")
+        noRef(ref);
+    return (react_1.default.createElement(exports.TText, __assign({ as: as, lang: ctx.defaultLang }, ctx.resolveMagicProps(props)), children));
 });
 exports.T.displayName = "T";
 var boundMap = new Map();
 var tBind = function (as) {
     var bind = function (as) {
-        var _a;
         var bound = (0, react_1.forwardRef)(function (_a, ref) {
             var children = _a.children, props = __rest(_a, ["children"]);
             return (react_1.default.createElement(exports.T, __assign({ as: as, ref: ref }, props), children));
         });
-        var asName = typeof as === "string" ? as : (_a = as.displayName) !== null && _a !== void 0 ? _a : as.name;
+        var asName = typeof as === "string" ? as : as.displayName;
         if (asName) {
             bound.displayName = "T".concat(asName);
             Object.defineProperty(bound, "name", { value: bound.displayName });
