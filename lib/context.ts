@@ -147,7 +147,8 @@ export class LangContext {
 
   resolveTranslationProps(tag?: string, text?: TextPropType): TString {
     const r = () => {
-      if (tag && text) throw new Error(`Got both tag and text`);
+      if (process.env.NODE_ENV !== "production")
+        if (tag && text) throw new Error(`Got both tag and text`);
       if (text) return this.resolve(text);
       if (tag) return this.resolveTag(tag);
       throw new Error(`No text or tag`);

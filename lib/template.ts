@@ -34,7 +34,8 @@ const parse = (format: string) => {
       const tok = tokens.shift();
 
       if (stopAt) {
-        if (!tok) throw new Error(`Missing ${stopAt}`);
+        if (process.env.NODE_ENV !== "production")
+          if (!tok) throw new Error(`Missing ${stopAt}`);
         if (tok === stopAt) break;
       }
 
