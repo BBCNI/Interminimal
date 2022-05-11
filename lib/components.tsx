@@ -82,8 +82,10 @@ export const TFormat: ComponentType<TFormatProps> = forwardRef<
   ReactElement,
   TFormatProps
 >(({ format, lang, children }, ref) => {
-  const clone = (elt: ReactNode, props?: any): ReactNode =>
-    isValidElement(elt) ? cloneElement(elt, props) : elt;
+  const clone = (elt: ReactNode, props?: any): ReactNode => {
+    if (isValidElement(elt)) return cloneElement(elt, props);
+    throw new Error(`Can't add props to a non-element`);
+  };
 
   const parts = parseTemplate(format);
 
@@ -92,7 +94,7 @@ export const TFormat: ComponentType<TFormatProps> = forwardRef<
     return <Fragment>{parts[0]}</Fragment>;
 
   // Make children into a regular array of nodes
-  const params = Children.map<ReactNode, any>(children, x => x) || [];
+  const params = Children.map<ReactNode, any>(children, x => x);
 
   if (process.env.NODE_ENV !== "production")
     if (ref && params.length !== 1)
@@ -152,7 +154,6 @@ export const T: ComponentType<TProps> = forwardRef<ReactElement, TProps>(
       return (
         <TText
           as={as}
-          ref={ref}
           lang={ts.language}
           {...ctx.resolveMagicProps(props, ts.language)}
         >
@@ -178,12 +179,7 @@ export const T: ComponentType<TProps> = forwardRef<ReactElement, TProps>(
     }
 
     return (
-      <TText
-        as={as}
-        ref={ref}
-        lang={ctx.defaultLang}
-        {...ctx.resolveMagicProps(props)}
-      >
+      <TText as={as} lang={ctx.defaultLang} {...ctx.resolveMagicProps(props)}>
         {children}
       </TText>
     );
@@ -203,7 +199,7 @@ export const tBind = (as: AsType): ComponentType<TProps> => {
         </T>
       )
     );
-    const asName = typeof as === "string" ? as : as.displayName ?? as.name;
+    const asName = typeof as === "string" ? as : as.displayName;
     if (asName) {
       bound.displayName = `T${asName}`;
       Object.defineProperty(bound, "name", { value: bound.displayName });

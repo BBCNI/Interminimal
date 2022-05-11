@@ -1,5 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Interminimal Components should allow element of Translate to be overridden 1`] = `
+<p>
+  <span>
+    Hello!
+  </span>
+</p>
+`;
+
+exports[`Interminimal Components should bind T as a component 1`] = `
+<div>
+  <a
+    href="/"
+  >
+    Link
+  </a>
+</div>
+`;
+
 exports[`Interminimal Components should bind T to a tag 1`] = `
 <div>
   <p>
@@ -11,13 +29,15 @@ exports[`Interminimal Components should bind T to a tag 1`] = `
 </div>
 `;
 
-exports[`Interminimal Components should pass refs 1`] = `
+exports[`Interminimal Components should pass refs via Format 1`] = `
 <div>
   <span>
     [
-    <span>
+    <a
+      href="/"
+    >
       Link
-    </span>
+    </a>
     ]
   </span>
 </div>

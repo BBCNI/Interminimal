@@ -1,7 +1,7 @@
-import React, { ComponentType, ReactNode, Ref } from "react";
+import React, { ComponentType, FunctionComponent, ReactNode, Ref } from "react";
 import R from "react-test-renderer";
 
-import { As, Translate, T, tBindMulti } from "./components";
+import { As, Translate, T, tBind, tBindMulti } from "./components";
 
 import { TDictionaryRoot } from "./types";
 
@@ -16,6 +16,22 @@ const dictionary: TDictionaryRoot = {
     maybe: { $$dict: { site: { en: "Something else" } } }
   }
 };
+
+interface MyLinkProps {
+  ref?: Ref<string>;
+  href: string;
+  refValue: string;
+  children: ReactNode;
+}
+
+const MyLink: ComponentType<MyLinkProps> = React.forwardRef<
+  string,
+  MyLinkProps
+>(({ children, href, refValue }, ref) => {
+  // @ts-ignore
+  if (ref) ref.current = refValue;
+  return <a href={href}>{children}</a>;
+});
 
 beforeEach(() => {
   jest.spyOn(console, "error");
@@ -74,6 +90,16 @@ describe("Interminimal Components", () => {
     ).toMatchSnapshot();
   });
 
+  it("should allow element of Translate to be overridden", () => {
+    expect(
+      R.create(
+        <Translate as="p" lang="en">
+          <T content="Hello!" />
+        </Translate>
+      ).toJSON()
+    ).toMatchSnapshot();
+  });
+
   it("should bind T to a tag", () => {
     const [Tp, Ti] = tBindMulti(["p", "i"]);
     expect(
@@ -81,6 +107,17 @@ describe("Interminimal Components", () => {
         <Translate lang="en">
           <Tp text="para" />
           <Ti text="italic" />
+        </Translate>
+      ).toJSON()
+    ).toMatchSnapshot();
+  });
+
+  it("should bind T as a component", () => {
+    const TMyLink = tBind(MyLink as FunctionComponent);
+    expect(
+      R.create(
+        <Translate lang="en">
+          <TMyLink href="/" text="Link" />
         </Translate>
       ).toJSON()
     ).toMatchSnapshot();
@@ -123,36 +160,29 @@ describe("Interminimal Components", () => {
     ).toMatchSnapshot();
   });
 
-  it("should pass refs", () => {
+  it("should pass refs via Format", () => {
     const ref = React.createRef<boolean>();
 
-    interface MyLinkProps {
-      ref?: Ref<boolean>;
-      children: ReactNode;
-    }
-
-    const MyLink: ComponentType<MyLinkProps> = React.forwardRef<
-      boolean,
-      MyLinkProps
-    >(({ children }, ref) => {
-      // @ts-ignore
-      if (ref) ref.current = true;
-      return <span>{children}</span>;
-    });
-
+    // Test that MyLink gets a ref even though there's no explicit
+    // ref in it's properties.
     expect(
       R.create(
-        <Translate lang="en" dictionary={dictionary}>
+        <Translate lang="en">
           <T ref={ref} text="[%1]">
-            <MyLink>Link</MyLink>
+            <MyLink refValue="foo" href="/">
+              Link
+            </MyLink>
           </T>
         </Translate>
       ).toJSON()
     ).toMatchSnapshot();
-    expect(ref.current).toBeTruthy();
+    expect(ref.current).toBe("foo");
   });
 
-  // Negative cases
+  ////////////////////
+  // Negative cases //
+  ////////////////////
+
   it("should fail for indexes out of range", () => {
     expect(() =>
       R.create(
@@ -163,6 +193,31 @@ describe("Interminimal Components", () => {
         </Translate>
       )
     ).toThrow(/out of range/);
+  });
+
+  it("should fail for unused children", () => {
+    expect(() =>
+      R.create(
+        <Translate lang="en">
+          <T text="%1">
+            <span />
+            <span />
+          </T>
+        </Translate>
+      )
+    ).toThrow(/unused args/i);
+  });
+
+  it("should fail for reused children", () => {
+    expect(() =>
+      R.create(
+        <Translate lang="en">
+          <T text="%1%1">
+            <span />
+          </T>
+        </Translate>
+      )
+    ).toThrow(/already/i);
   });
 
   it("should fail if tag + content provided", () => {
@@ -187,5 +242,18 @@ describe("Interminimal Components", () => {
         </Translate>
       )
     ).toThrow(/only forward/);
+  });
+
+  it("should fail to pass refs non-element", () => {
+    const ref = React.createRef();
+    expect(() =>
+      R.create(
+        <Translate lang="en">
+          <T ref={ref} text="%1%2">
+            Hello!
+          </T>
+        </Translate>
+      )
+    ).toThrow(/non-element/i);
   });
 });

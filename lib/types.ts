@@ -66,7 +66,7 @@ export interface TTextProps {
 export interface TFormatProps {
   format: string;
   lang: string;
-  children?: ReactNode;
+  children: ReactNode;
   ref?: Ref<ReactElement>;
 }
 
