@@ -12,7 +12,6 @@ import React, {
   ReactElement
 } from "react";
 
-import { parseTemplate } from "./template";
 import {
   LangContextProps,
   AsType,
@@ -22,6 +21,8 @@ import {
   TTextProps,
   TFormatProps
 } from "./types";
+
+import { parseTemplate } from "./template";
 import { LangContext } from "./context";
 import { TString } from "./string";
 
