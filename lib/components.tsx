@@ -13,7 +13,15 @@ import React, {
 } from "react";
 
 import { parseTemplate } from "./template";
-import { LangContextProps, AsType, TProps, TDictionaryRoot } from "./types";
+import {
+  LangContextProps,
+  AsType,
+  TProps,
+  TDictionaryRoot,
+  AsProps,
+  TTextProps,
+  TFormatProps
+} from "./types";
 import { LangContext } from "./context";
 import { TString } from "./string";
 
@@ -39,26 +47,13 @@ export const Translate: ComponentType<
   );
 };
 
-interface AsProps {
-  as: AsType;
-  children?: ReactNode;
-  [key: string]: any;
-}
-
 // Create a component with the specified tag
-const As: ComponentType<AsProps> = forwardRef<ReactElement, AsProps>(
+export const As: ComponentType<AsProps> = forwardRef<ReactElement, AsProps>(
   ({ as, children, ...props }, ref) =>
     createElement(as, { ref, ...props }, children)
 );
 
 As.displayName = "As";
-
-interface TTextProps {
-  children: ReactNode;
-  lang: string;
-  as: AsType;
-  [key: string]: any;
-}
 
 export const TText: ComponentType<TTextProps> = forwardRef<
   ReactElement,
@@ -82,12 +77,6 @@ export const TText: ComponentType<TTextProps> = forwardRef<
 });
 
 TText.displayName = "TText";
-
-interface TFormatProps {
-  format: string;
-  lang: string;
-  children?: ReactNode;
-}
 
 export const TFormat: ComponentType<TFormatProps> = forwardRef<
   ReactElement,
@@ -181,7 +170,7 @@ export const T: ComponentType<TProps> = forwardRef<ReactElement, TProps>(
           lang={ts.language}
           {...ctx.resolveMagicProps(props, ts.language)}
         >
-          <TFormat lang={ts.language} format={ctx.render(ts, count)}>
+          <TFormat ref={ref} lang={ts.language} format={ctx.render(ts, count)}>
             {children}
           </TFormat>
         </TText>

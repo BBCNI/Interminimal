@@ -1,0 +1,113 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Interminimal Components should bind T to a tag 1`] = `
+<div>
+  <p>
+    para
+  </p>
+  <i>
+    italic
+  </i>
+</div>
+`;
+
+exports[`Interminimal Components should pass refs 1`] = `
+<div>
+  <span>
+    [
+    <span>
+      Link
+    </span>
+    ]
+  </span>
+</div>
+`;
+
+exports[`Interminimal Components should pass template fragments down 1`] = `
+<div>
+  <span>
+    Here is a 
+    <a
+      href="/"
+    >
+      link
+    </a>
+     and this 
+    <i>
+      is italic
+    </i>
+  </span>
+</div>
+`;
+
+exports[`Interminimal Components should render <As> 1`] = `<div />`;
+
+exports[`Interminimal Components should render <As> 2`] = `<h1 />`;
+
+exports[`Interminimal Components should render <Translate> 1`] = `
+<div
+  lang="fr"
+>
+  <span
+    lang="en"
+  >
+    Hello
+  </span>
+</div>
+`;
+
+exports[`Interminimal Components should render <Translate> 2`] = `
+<div>
+  <span>
+    Hello
+  </span>
+</div>
+`;
+
+exports[`Interminimal Components should render content 1`] = `
+<div>
+  <span>
+    Second: %2, first: %1
+  </span>
+</div>
+`;
+
+exports[`Interminimal Components should render templates 1`] = `
+<div>
+  <span>
+    Second: 
+    <span>
+      Two
+    </span>
+    , first: 
+    <span>
+      One
+    </span>
+  </span>
+</div>
+`;
+
+exports[`Interminimal Components should resolve tags 1`] = `
+<div>
+  <span>
+    Let's Translate!
+  </span>
+  <div
+    lang="fr"
+  >
+    <span>
+      Traduisons!
+    </span>
+  </div>
+</div>
+`;
+
+exports[`Interminimal Components should translate properties 1`] = `
+<div>
+  <span
+    title="Let's Translate!"
+  >
+    Some text
+  </span>
+</div>
+`;

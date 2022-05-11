@@ -50,6 +50,26 @@ export interface LangContextProps {
 export type StringPropType = TFatString | TString | string;
 export type TextPropType = TFatString | TString | string | string[];
 
+export interface AsProps {
+  as: AsType;
+  children?: ReactNode;
+  [key: string]: any;
+}
+
+export interface TTextProps {
+  children: ReactNode;
+  lang: string;
+  as: AsType;
+  [key: string]: any;
+}
+
+export interface TFormatProps {
+  format: string;
+  lang: string;
+  children?: ReactNode;
+  ref?: Ref<ReactElement>;
+}
+
 export interface TProps {
   children?: ReactNode;
   tag?: string;
