@@ -58,6 +58,7 @@ describe("Interminimal Components", () => {
         </Translate>
       ).toJSON()
     ).toMatchSnapshot();
+
     expect(
       R.create(
         <Translate lang="en">
