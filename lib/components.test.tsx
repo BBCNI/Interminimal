@@ -251,7 +251,7 @@ describe("Interminimal Components", () => {
     ).toThrow(/only forward/);
   });
 
-  it("should fail to pass refs non-element", () => {
+  it("should fail to pass refs to non-elements", () => {
     const ref = React.createRef();
     expect(() =>
       R.create(
