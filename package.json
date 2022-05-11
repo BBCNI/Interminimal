@@ -1,6 +1,6 @@
 {
   "name": "interminimal",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Simple React translations",
   "scripts": {
     "build": "npm run build:tsc && npm run build:cjs",
