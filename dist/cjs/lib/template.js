@@ -11,10 +11,6 @@ var stringifyTemplate = function (ast) {
     return ast.map(stringifyNode).join("");
 };
 exports.stringifyTemplate = stringifyTemplate;
-// TODO: implement this as a raw parse - which returns recursive ASTs all the way down.
-// When asked for a particular level of that AST, stringify any children. Cache both ASTs
-// and partial strings (maybe?). Think that eliminates the N^depth behaviour of the this
-// implementation. But do remember that N^depth where depth > 1 will be rare.
 var parse = function (format) {
     // Use a capturing split to tokenise. We filter out empty tokens here so
     // that we don't trip over e.g. ["%1", "", "["] in the main loop. We want
