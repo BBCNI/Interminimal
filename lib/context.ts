@@ -11,11 +11,11 @@ import {
 } from "./types";
 
 export class LangContext {
-  readonly parent?: LangContext;
   readonly defaultLang: string = "en";
-  readonly lang: string[] = [];
-  readonly ambient?: string;
-  readonly dictionary?: TDictionaryRoot;
+  private readonly parent?: LangContext;
+  private readonly lang: string[] = [];
+  private readonly ambient?: string;
+  private readonly dictionary?: TDictionaryRoot;
 
   private stackCache: readonly string[] | null = null;
   private tagCache: { [key: string]: TFatString | TDictionaryRoot } = {};

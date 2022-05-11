@@ -1,11 +1,11 @@
 import { TString } from "./string";
-import { LangContextProps, TextPropType, TDictionaryRoot, StringPropType } from "./types";
+import { LangContextProps, TextPropType, StringPropType } from "./types";
 export declare class LangContext {
-    readonly parent?: LangContext;
     readonly defaultLang: string;
-    readonly lang: string[];
-    readonly ambient?: string;
-    readonly dictionary?: TDictionaryRoot;
+    private readonly parent?;
+    private readonly lang;
+    private readonly ambient?;
+    private readonly dictionary?;
     private stackCache;
     private tagCache;
     constructor(props?: LangContextProps);
