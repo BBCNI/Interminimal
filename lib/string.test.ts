@@ -40,9 +40,9 @@ describe("TSString", () => {
 
   it("should handle undefined / null in toLang args", () => {
     const ts = new TString({ en: "Hello", de: "Hallo" }, "en");
-    const tsde = ts.toLang(["cy", null, "de", "en"] as string[]);
-    expect(tsde.language).toBe("de");
-    expect(tsde.toString()).toBe("Hallo");
+    const ts2 = ts.toLang(["cy", null, "de", "en"] as string[]);
+    expect(ts2.language).toBe("de");
+    expect(ts2.toString()).toBe("Hallo");
   });
 
   it("should return this if no translation required", () => {
