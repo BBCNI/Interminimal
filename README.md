@@ -96,7 +96,7 @@ Here's a simple example:
 { en: "Hello", fr: "Bonjour" }
 ```
 
-When looking for a translation `T` tries the containing context's desired language `lang` first. If that fails to find a translation it walks up the context stack trying each `lang` in turn. Then it tries `defaultLang`. If none of those yield a translation it will use the first of any languages present in the fat string. Translation can only fail completely is the fat string is just an empty object.
+When looking for a translation `T` tries the containing context's desired language `lang` first. If that fails to find a translation it walks up the context stack trying each `lang` in turn. Then it tries `defaultLang`. If none of those yield a translation it will use the first of any languages present in the fat string. Translation can only fail completely if the fat string is just an empty object.
 
 Fat strings can also handle pluralisation - which is quite involved for languages such as Welsh. Here's how we'd represent translations for a count of cats. The `%1` in the strings is a placeholder for the number of cats - we'll see how to use that soon.
 
