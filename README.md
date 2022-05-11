@@ -300,7 +300,12 @@ return (
 The example above looks up the tags `"one"` and `"two"` in the dictionary and will translate them independently of the containing template. Sometimes it's more convenient to keep all the parts of the string together. Suppose we want to add translation to this markup:
 
 ```html
-<span>Here's a <a href="/">useful link</a> and here's some <i>italic text<i></span>
+<span>
+  Here's a
+  <a href="/">useful link</a>
+  and here's some
+  <i>italic text<i>
+</span>
 ```
 
 Here's how we might do it:
