@@ -8,5 +8,6 @@
     "tsconfig.json": "tsconfig.*.json",
     "package.json": "package-lock.json, yarn.lock",
     "*": "${basename}.*.${extname}"
-  }
+  },
+  "explorer.fileNesting.expand": false
 }
