@@ -171,7 +171,7 @@ export class LangContext {
   render(ts: TString, count?: number): string {
     return ts
       .toString(count)
-      .split(/(%%|%\{.+?\})/)
+      .split(/(%%|%\{[^%]+?\})/)
       .map(tok =>
         (match =>
           match

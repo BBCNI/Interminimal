@@ -194,7 +194,7 @@ var LangContext = /** @class */ (function () {
         var _this = this;
         return ts
             .toString(count)
-            .split(/(%%|%\{.+?\})/)
+            .split(/(%%|%\{[^%]+?\})/)
             .map(function (tok) {
             return (function (match) {
                 return match
