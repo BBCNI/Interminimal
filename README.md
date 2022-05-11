@@ -385,7 +385,7 @@ The brackets `[` and `]` are only special after a placeholder - you can use them
 
 Apart from their use in `%{tagName}` `{` and `}` also have no special significance and may be used unescaped.
 
-Any `%` that isn't followed by a digit or `%`, `[` or `{` is passed through unaltered so for most text you won't have to worry about escaping special characters. If in doubt you can escape _any_ character by prefixing it with `%`.
+Any `%` that isn't followed by a digit or `%`, `[` or `]` is passed through unaltered so for most text you won't have to worry about escaping special characters. If in doubt you can escape _any_ character by prefixing it with `%`.
 
 # Plurals: Let's Count Cats!
 
