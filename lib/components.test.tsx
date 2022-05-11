@@ -123,6 +123,12 @@ describe("Interminimal Components", () => {
     ).toMatchSnapshot();
   });
 
+  it("should cache bound components", () => {
+    const Tp1 = tBind("p");
+    const Tp2 = tBind("p");
+    expect(Tp2).toBe(Tp1);
+  });
+
   it("should resolve tags", () => {
     expect(
       R.create(
@@ -255,5 +261,27 @@ describe("Interminimal Components", () => {
         </Translate>
       )
     ).toThrow(/non-element/i);
+  });
+
+  it("should fail to pass refs to content", () => {
+    const ref = React.createRef();
+    expect(() =>
+      R.create(
+        <Translate lang="en">
+          <T ref={ref} content="Hello" />
+        </Translate>
+      )
+    ).toThrow(/pass ref/i);
+  });
+
+  it("should fail to pass refs to regular children", () => {
+    const ref = React.createRef();
+    expect(() =>
+      R.create(
+        <Translate lang="en">
+          <T ref={ref}>Hello</T>
+        </Translate>
+      )
+    ).toThrow(/pass ref/i);
   });
 });

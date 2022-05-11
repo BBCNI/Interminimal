@@ -9,7 +9,8 @@ import React, {
   cloneElement,
   isValidElement,
   forwardRef,
-  ReactElement
+  ReactElement,
+  Ref
 } from "react";
 
 import {
@@ -85,7 +86,8 @@ export const TFormat: ComponentType<TFormatProps> = forwardRef<
 >(({ format, lang, children }, ref) => {
   const clone = (elt: ReactNode, props?: any): ReactNode => {
     if (isValidElement(elt)) return cloneElement(elt, props);
-    throw new Error(`Can't add props to a non-element`);
+    if (process.env.NODE_ENV !== "production")
+      throw new Error(`Can't add props to a non-element`);
   };
 
   const parts = parseTemplate(format);
@@ -144,13 +146,21 @@ export const TFormat: ComponentType<TFormatProps> = forwardRef<
 
 TFormat.displayName = "TFormat";
 
+const noRef = (ref: Ref<ReactElement>) => {
+  if (ref) throw new Error(`Can't pass ref`);
+};
+
 export const T: ComponentType<TProps> = forwardRef<ReactElement, TProps>(
   ({ children, tag, text, content, count, as = "span", ...props }, ref) => {
     const ctx = useTranslation();
 
     if (content) {
-      if (tag || text)
-        throw new Error(`Please don't mix content with tag or text`);
+      if (process.env.NODE_ENV !== "production") {
+        if (tag || text)
+          throw new Error(`Please don't mix content with tag or text`);
+        noRef(ref);
+      }
+
       const ts = ctx.translate(content);
       return (
         <TText
@@ -178,6 +188,8 @@ export const T: ComponentType<TProps> = forwardRef<ReactElement, TProps>(
         </TText>
       );
     }
+
+    if (process.env.NODE_ENV !== "production") noRef(ref);
 
     return (
       <TText as={as} lang={ctx.defaultLang} {...ctx.resolveMagicProps(props)}>
