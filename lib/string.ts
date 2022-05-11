@@ -33,10 +33,11 @@ export class TString {
   }
 
   toString(count?: number): string {
-    const ttx = this.dict[this.language];
+    const { language } = this;
+    const ttx = this.dict[language];
     if (typeof ttx === "string") return ttx;
 
-    const plur = new Intl.PluralRules(this.lang).select(count ?? 1);
+    const plur = new Intl.PluralRules(language).select(count ?? 1);
     const result = ttx[plur];
     if (typeof result === "string") return result;
 
