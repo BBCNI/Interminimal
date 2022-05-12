@@ -6,6 +6,7 @@ const config: Config.InitialOptions = {
     "^.+\\.tsx?$": "ts-jest"
   },
   modulePathIgnorePatterns: ["<rootDir>/dist/", "<rootDir>/demo/"],
+  collectCoverage: true,
   coverageThreshold: {
     global: { branches: 100, functions: 100, lines: 100, statements: 100 }
   }
