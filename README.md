@@ -116,6 +116,20 @@ const cats = {
 };
 ```
 
+## Language Agnostic Fat Strings
+
+Some text is the same in any language. For example, the name of a product may not have to be translated and should be treated as if it's already in the target language. In that case use `"*"` as the language key:
+
+```js
+const brand = { "*": "Hexten" };
+```
+
+If necessary overrides may still be provided for specific languages:
+
+```js
+const brand = { "*": "Hexten", "fr": "Hexadécimal dix" };
+```
+
 ## Dictionaries
 
 Translation dictionaries have a `$$dict` key that contains an object that map tags to fat strings:
