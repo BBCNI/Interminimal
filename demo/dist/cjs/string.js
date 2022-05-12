@@ -59,7 +59,7 @@ var TString = /** @class */ (function () {
             if (missing.length)
                 throw new Error("Missing plural categories: ".concat(missing.join(", ")));
             if (extra.length)
-                throw new Error("Unknown plural categories: [".concat(extra.join(", "), "]"));
+                throw new Error("Unknown plural categories: ".concat(extra.join(", ")));
         }
         var plur = pl.select(count !== null && count !== void 0 ? count : 1);
         // istanbul ignore next - we can only have a missing plural in prod.

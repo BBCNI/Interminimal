@@ -54,7 +54,7 @@ export class TString {
       if (missing.length)
         throw new Error(`Missing plural categories: ${missing.join(", ")}`);
       if (extra.length)
-        throw new Error(`Unknown plural categories: [${extra.join(", ")}]`);
+        throw new Error(`Unknown plural categories: ${extra.join(", ")}`);
     }
 
     const plur = pl.select(count ?? 1);
