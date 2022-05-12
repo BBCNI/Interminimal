@@ -25,3 +25,7 @@
 .cat {
   margin: 0.5rem 1rem;
 }
+
+.clock {
+  font-family: monospace;
+}

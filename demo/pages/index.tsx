@@ -2,6 +2,8 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect } from "react";
+
 import {
   ChangeEvent,
   ComponentType,
@@ -9,6 +11,7 @@ import {
   ReactNode,
   useState
 } from "react";
+
 import {
   T,
   tBind,
@@ -17,7 +20,8 @@ import {
   Translate,
   useTranslation,
   TDictionaryRoot,
-  TFatString
+  TFatString,
+  TText
 } from "../dist/esm";
 
 import styles from "../styles/Home.module.css";
@@ -111,6 +115,31 @@ const dictionary: TDictionaryRoot = {
   }
 };
 
+// Demo how to use Intl with Interminimal
+
+const DateFormat: ComponentType<
+  { date: Date } & Intl.DateTimeFormatOptions
+> = ({ date, ...opt }) => {
+  const ctx = useTranslation();
+  const dtf = new Intl.DateTimeFormat(ctx.languages, opt);
+  const { locale } = dtf.resolvedOptions();
+  return <TText lang={locale}>{dtf.format(date)}</TText>;
+};
+
+export const Clock: ComponentType<Intl.DateTimeFormatOptions> = ({
+  ...opt
+}) => {
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => {
+    const update = () => setNow(new Date());
+    const timer = setInterval(update, 5000);
+    update();
+    return () => clearInterval(timer);
+  }, []);
+  if (!now) return null;
+  return <DateFormat date={now} {...opt} />;
+};
+
 const Box: ComponentType<{ children: ReactNode; lang?: string }> = ({
   children
 }) => <>[{children}]</>;
@@ -171,6 +200,11 @@ export const Block: ComponentType<PageProps & { lang: string }> = ({
             <Toption key={lang} value={lang} tag={lang} />
           ))}
         </select>
+        <Th2 text="Time" />
+
+        <div className={styles.clock}>
+          <Clock dateStyle="full" timeStyle="full" />
+        </div>
 
         <Th2 text="Phrases" />
         <ul>
@@ -262,6 +296,12 @@ const Home: NextPage<PageProps> = props => {
           <h1 className={styles.title}>Interminimal</h1>
           <div></div>
           <div className={styles.blocks}>
+            {/* <Translate lang="cy">
+              <div className={styles.clock}>
+                <Clock dateStyle="full" timeStyle="full" />
+              </div>
+            </Translate> */}
+
             <Block {...props} lang="cy" />
             <Block {...props} lang="en" />
             <Block {...props} lang="fr" />

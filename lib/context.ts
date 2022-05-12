@@ -47,6 +47,11 @@ export class LangContext {
     return (this.stackCache = this.stackCache || s());
   }
 
+  // r/w version of stack for apis that require string[]
+  get languages(): string[] {
+    return this.stack.slice(0);
+  }
+
   get language(): string {
     return this.stack[0];
   }

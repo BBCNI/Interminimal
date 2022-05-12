@@ -1,7 +1,7 @@
 import React, { ComponentType, FunctionComponent, ReactNode, Ref } from "react";
 import R from "react-test-renderer";
 
-import { As, Translate, T, tBind, tBindMulti } from "./components";
+import { As, Translate, T, TText, tBind, tBindMulti } from "./components";
 
 import { TDictionaryRoot } from "./types";
 
@@ -184,6 +184,16 @@ describe("Interminimal Components", () => {
       ).toJSON()
     ).toMatchSnapshot();
     expect(ref.current).toBe("foo");
+  });
+
+  it("should create a span with TText", () => {
+    expect(
+      R.create(
+        <Translate lang="en">
+          <TText lang="fr">Hello</TText>
+        </Translate>
+      ).toJSON()
+    ).toMatchSnapshot();
   });
 
   ////////////////////

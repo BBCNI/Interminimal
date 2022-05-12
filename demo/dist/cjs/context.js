@@ -72,6 +72,14 @@ var LangContext = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(LangContext.prototype, "languages", {
+        // r/w version of stack for apis that require string[]
+        get: function () {
+            return this.stack.slice(0);
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(LangContext.prototype, "language", {
         get: function () {
             return this.stack[0];

@@ -39,15 +39,21 @@ describe("LangContext", () => {
     const ctx = new LangContext({ lang: "cy", defaultLang: "en" });
     const amb1 = ctx.derive({ ambient: "en" });
     const amb2 = amb1.derive({ ambient: "en" });
+
     expect(ctx.ambience).toBe("cy");
     expect(ctx.language).toBe("cy");
     expect(ctx.stack).toEqual(["cy", "en"]);
+    expect(ctx.languages).toEqual(["cy", "en"]);
+
     expect(amb1.ambience).toBe("en");
     expect(amb1.language).toBe("cy");
     expect(amb1.stack).toEqual(["cy", "en"]);
+    expect(amb1.languages).toEqual(["cy", "en"]);
+
     expect(amb2.ambience).toBe("en");
     expect(amb2.language).toBe("cy");
     expect(amb2.stack).toEqual(["cy", "en"]);
+    expect(amb2.languages).toEqual(["cy", "en"]);
   });
 
   it("should translate strings", () => {

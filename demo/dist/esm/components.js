@@ -44,7 +44,7 @@ export var As = forwardRef(function (_a, ref) {
 });
 As.displayName = "As";
 export var TText = forwardRef(function (_a, ref) {
-    var children = _a.children, lang = _a.lang, as = _a.as, props = __rest(_a, ["children", "lang", "as"]);
+    var children = _a.children, lang = _a.lang, _b = _a.as, as = _b === void 0 ? "span" : _b, props = __rest(_a, ["children", "lang", "as"]);
     var ctx = useTranslation();
     if (lang !== ctx.ambience)
         return (React.createElement(TranslateLocal, { ambient: lang },

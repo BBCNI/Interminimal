@@ -44,7 +44,7 @@ export interface AsProps {
 export interface TTextProps {
     children: ReactNode;
     lang: string;
-    as: AsType;
+    as?: AsType;
     [key: string]: any;
 }
 export interface TFormatProps {

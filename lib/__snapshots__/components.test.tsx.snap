@@ -1,8 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[
-  `Interminimal Components should allow element of Translate to be overridden 1`
-] = `
+exports[`Interminimal Components should allow element of Translate to be overridden 1`] = `
 <p>
   <span>
     Hello!
@@ -28,6 +26,16 @@ exports[`Interminimal Components should bind T to a tag 1`] = `
   <i>
     italic
   </i>
+</div>
+`;
+
+exports[`Interminimal Components should create a span with TText 1`] = `
+<div>
+  <span
+    lang="fr"
+  >
+    Hello
+  </span>
 </div>
 `;
 

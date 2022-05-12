@@ -60,7 +60,7 @@ As.displayName = "As";
 export const TText: ComponentType<TTextProps> = forwardRef<
   ReactElement,
   TTextProps
->(({ children, lang, as, ...props }, ref) => {
+>(({ children, lang, as = "span", ...props }, ref) => {
   const ctx = useTranslation();
 
   if (lang !== ctx.ambience)
