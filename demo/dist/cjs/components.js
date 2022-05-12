@@ -75,7 +75,6 @@ exports.As.displayName = "As";
 exports.TText = (0, react_1.forwardRef)(function (_a, ref) {
     var children = _a.children, lang = _a.lang, _b = _a.as, as = _b === void 0 ? "span" : _b, props = __rest(_a, ["children", "lang", "as"]);
     var ctx = (0, exports.useTranslation)();
-    console.log("in TText ambience is ".concat(ctx.ambience, " and lang is ").concat(lang));
     if (lang !== ctx.ambience)
         return (react_1.default.createElement(exports.TranslateLocal, { ambient: lang },
             react_1.default.createElement(exports.As, __assign({ as: as, ref: ref }, props, { lang: lang }), children)));
