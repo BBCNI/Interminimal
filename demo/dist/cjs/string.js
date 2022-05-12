@@ -66,6 +66,7 @@ var TString = /** @class */ (function () {
         return ttx[plur] || "";
     };
     TString.prototype.toLang = function (langs) {
+        var _a;
         if (!Array.isArray(langs))
             return this.toLang([langs]);
         for (var _i = 0, langs_1 = langs; _i < langs_1.length; _i++) {
@@ -76,6 +77,12 @@ var TString = /** @class */ (function () {
                 return this;
             if (lang in this.dict)
                 return new TString(this.dict, lang);
+        }
+        // Wildcard language matches anything. Used for e.g. brand names that
+        // are the same in any language.
+        if ("*" in this.dict) {
+            var tx = this.dict["*"];
+            return new TString((_a = {}, _a[langs[0]] = tx, _a["*"] = tx, _a), langs[0]);
         }
         if (this.lang)
             return this;

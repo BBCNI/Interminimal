@@ -124,6 +124,32 @@ describe("TSString", () => {
     expect(ts.toString()).toBe("cat");
   });
 
+  it("should allow default language '*'", () => {
+    const ts = new TString({ "*": "XYZ" });
+    const tsx = ts.toLang("en");
+    expect(tsx.toString()).toBe("XYZ");
+    expect(tsx.language).toBe("en");
+  });
+
+  it("should only use the default after other languages", () => {
+    const ts = new TString({ "*": "XYZ", "en": "English", "fr": "French" });
+    {
+      const tsx = ts.toLang("de");
+      expect(tsx.toString()).toBe("XYZ");
+      expect(tsx.language).toBe("de");
+    }
+    {
+      const tsx = ts.toLang("en");
+      expect(tsx.toString()).toBe("English");
+      expect(tsx.language).toBe("en");
+    }
+    {
+      const tsx = ts.toLang("fr");
+      expect(tsx.toString()).toBe("French");
+      expect(tsx.language).toBe("fr");
+    }
+  });
+
   it("should fail on unmatched plurals", () => {
     const ts = new TString({ en: { other: "cats" } });
     expect(() => ts.toLang("en").toString(1)).toThrow(/missing plural/i);

@@ -63,7 +63,7 @@ export async function getServerSideProps() {
 // Translation dictionary
 const dictionary: TDictionaryRoot = {
   $$dict: {
-    "site": { en: "Interminimal" },
+    "site": { "*": "Interminimal", "fr": "Chose internationale" },
     // Numbers
     "one": {
       en: "One",
