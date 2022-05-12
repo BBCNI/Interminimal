@@ -78,14 +78,14 @@ var TString = /** @class */ (function () {
             if (lang in this.dict)
                 return new TString(this.dict, lang);
         }
+        if (this.lang)
+            return this;
         // Wildcard language matches anything. Used for e.g. brand names that
         // are the same in any language.
         if ("*" in this.dict) {
             var tx = this.dict["*"];
             return new TString((_a = {}, _a[langs[0]] = tx, _a["*"] = tx, _a), langs[0]);
         }
-        if (this.lang)
-            return this;
         var fallback = Object.keys(this.dict)[0];
         if (!fallback)
             throw new Error("No translations available");
