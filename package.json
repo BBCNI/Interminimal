@@ -8,9 +8,7 @@
     "build:cjs": "tsc --module commonjs --outDir dist/cjs",
     "test": "jest --coverage",
     "tdd": "jest --watchAll --coverage",
-    "preflight": "npm test && npm run build",
-    "prepublish": "npm run preflight",
-    "prepack": "npm run preflight"
+    "bundle": "npm test && npm run build"
   },
   "repository": {
     "type": "git",
