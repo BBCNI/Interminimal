@@ -3,6 +3,7 @@ import { parseTemplate, stringifyTemplate } from "./template";
 describe("parseTemplate", () => {
   it("should parse and stringify template strings", () => {
     const tests = [
+      { t: "Hello", want: ["Hello"] },
       { t: "%1", want: [{ index: 1 }] },
       { t: "%1%2", want: [{ index: 1 }, { index: 2 }] },
       { t: "%", want: ["%"] },
@@ -28,10 +29,15 @@ describe("parseTemplate", () => {
           " after"
         ]
       },
-      {
-        t: "[",
-        want: ["["]
-      }
+      { t: "[", want: ["["] },
+      { t: "%1[%%1]", want: [{ index: 1, name: "%1", text: "%%1" }] },
+      { t: "%1[]] OK!", want: [{ index: 1, name: "%1", text: "" }, "] OK!"] },
+
+      // % in other contexts is literal
+      { t: "%", want: ["%"] },
+      { t: ".%", want: [".%"] },
+      { t: "%.", want: ["%."] },
+      { t: ".%.", want: [".%."] }
     ];
 
     for (const { t, want } of tests) {
@@ -47,9 +53,11 @@ describe("parseTemplate", () => {
       const t3 = stringifyTemplate(ast2);
       expect(t3).toBe(t2);
 
-      // Verify caching
-      const ast3 = parseTemplate(t3);
-      expect(ast3).toBe(ast2); // toBe checks ref equality
+      // Verify caching. Strings without placeholders aren't cached
+      if (/%/.test(t3)) {
+        const ast3 = parseTemplate(t3);
+        expect(ast3).toBe(ast2); // toBe checks ref equality
+      }
     }
   });
 

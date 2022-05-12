@@ -14,7 +14,9 @@ const parse = (format: string) => {
   // Use a capturing split to tokenise. We filter out empty tokens here so
   // that we don't trip over e.g. ["%1", "", "["] in the main loop. We want
   // to have ["%1", "["] instead.
-  const tokens = format.split(/(%\d+|%%|%\[|%\]|\[|\])/).filter(t => t.length);
+  const tokens = format
+    .split(/(%\d+|%%|%\[|%\]|\[|\]|%)/)
+    .filter(t => t.length);
 
   // Parse the next tokens
   const parsePart = (stopAt?: string) => {
