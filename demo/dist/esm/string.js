@@ -1,3 +1,8 @@
+import difference from "lodash/difference";
+var diffs = function (a, b) { return [
+    difference(a, b),
+    difference(b, a)
+]; };
 var TString = /** @class */ (function () {
     function TString(dict, lang) {
         if (lang && !(lang in dict))
@@ -39,11 +44,20 @@ var TString = /** @class */ (function () {
         var ttx = this.dict[language];
         if (typeof ttx === "string")
             return ttx;
-        var plur = new Intl.PluralRules(language).select(count !== null && count !== void 0 ? count : 1);
-        var result = ttx[plur];
-        if (typeof result === "string")
-            return result;
-        throw new Error("Can't map plural ".concat(plur, " for ").concat(count !== null && count !== void 0 ? count : 1));
+        var pl = new Intl.PluralRules(language);
+        if (process.env.NODE_ENV !== "production") {
+            // Check that our fat string has all the required
+            // plural categories.
+            var pluralCategories = pl.resolvedOptions().pluralCategories;
+            var _a = diffs(pluralCategories, Object.keys(ttx)), missing = _a[0], extra = _a[1];
+            if (missing.length)
+                throw new Error("Missing plural categories: ".concat(missing.join(", ")));
+            if (extra.length)
+                throw new Error("Unknown plural categories: [".concat(extra.join(", "), "]"));
+        }
+        var plur = pl.select(count !== null && count !== void 0 ? count : 1);
+        // istanbul ignore next - we can only have a missing plural in prod.
+        return ttx[plur] || "";
     };
     TString.prototype.toLang = function (langs) {
         if (!Array.isArray(langs))
