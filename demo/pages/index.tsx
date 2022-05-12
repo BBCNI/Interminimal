@@ -72,6 +72,7 @@ const dictionary: TDictionaryRoot = {
       cy: "Un"
     },
     "two": { en: "Two", fr: "Deux", de: "Zwei", cy: "Dau" },
+    "three": { en: "Three" },
     // Language names
     "en": { en: "English", fr: "Anglais" },
     "fr": { fr: "Français" },
@@ -111,7 +112,11 @@ const dictionary: TDictionaryRoot = {
         "%2[hefyd lefel dau gyda %1[lefel tri]]]"
     },
     // A nested dictionary for use with dictionaryFromTag
-    "madness": { $$dict: { site: { en: "Or maybe something else" } } },
+    "madness": {
+      $$dict: {
+        site: { en: "Or maybe something else", fr: "Ou peut-être autre chose" }
+      }
+    },
     "h.siteName": { en: "It's Called", fr: "C'est Appelé" },
     "h.someCats": { en: "Some Cats", fr: "Quelques Chats", cy: "Rhai Cathod" }
   }
@@ -242,6 +247,7 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
 }) => {
   const lang1 = useLanguageState(lang);
   const lang2 = useLanguageState("en");
+  const lang3 = useLanguageState("en");
 
   const counts = [0, 1, 1.5, 2, 3, 6, 42];
 
@@ -255,9 +261,12 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
 
   return (
     <div>
-      <Translate lang={[lang1.lang, lang2.lang]}>
+      <Translate lang={[lang1.lang, lang2.lang, lang3.lang]}>
         <LanguagePicker label={["one"]} state={lang1} />{" "}
-        <LanguagePicker label={["two"]} state={lang2} />
+        <LanguagePicker label={["two"]} state={lang2} />{" "}
+        <LanguagePicker label={["three"]} state={lang3} />
+        <Th2 text="Languages" />
+        <Stack />
         <Th2 text="Time" />
         <div className={styles.clock}>
           <Clock dateStyle="full" timeStyle="full" />
@@ -275,15 +284,12 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
             }}
           />
         </ul>
-        <Th2 text="Languages" />
-        <Stack />
         <Th2 text="Info" />
         {/* `info` has two placeholders which we fill with "one" and "two" */}
         <Tp text={info}>
           <T tag="one" />
           <T tag="two" />
         </Tp>
-        <Tp content={info} />
         <Tp text={nested}>
           <Link href="/" passHref={true}>
             <T as="a" tag="%1" />
