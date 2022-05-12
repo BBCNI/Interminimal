@@ -88,7 +88,7 @@ Here are some of the things `T` can do:
 
 ## Fat Strings
 
-We represent multilingual content as objects that have ISO 639-1 language codes as keys and corresponding translated text as values. Internally Interminimal casts fat strings into `TString` objects.
+We represent multilingual content as objects that have IETF BCP 47 language codes as keys and corresponding translated text as values. Internally Interminimal casts fat strings into `TString` objects.
 
 Here's a simple example:
 
