@@ -185,31 +185,57 @@ const TTitle: ComponentType<TTitleProps> = ({ text, ...rest }) => {
   );
 };
 
-export const Block: ComponentType<PageProps & { lang: string }> = ({
+interface LanguageState {
+  lang: string;
+  setLang: (lang: string) => void;
+}
+
+const useLanguageState = (defaultLang: string): LanguageState => {
+  const [lang, setLang] = useState(defaultLang);
+  return { lang, setLang };
+};
+
+const langs = ["en", "fr", "de", "cy"];
+
+const LanguagePicker: ComponentType<{
+  label: string;
+  state: LanguageState;
+}> = ({ label, state }) => {
+  // Bake an alternative to <T as="li" ...>
+  const [Toption] = tBindMulti(["option"]);
+
+  const onChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    e.preventDefault();
+    state.setLang(e.target.value);
+  };
+
+  return (
+    <label>
+      <T text={label} />
+      {": "}
+      <select value={state.lang} onChange={onChange}>
+        {langs.map(lang => (
+          <Toption key={lang} value={lang} tag={lang} />
+        ))}
+      </select>
+    </label>
+  );
+};
+
+const Block: ComponentType<PageProps & { lang: string }> = ({
   greeting,
   message,
   info,
   nested,
   lang
 }) => {
-  const [curLang, setLang] = useState(lang);
+  const lang1 = useLanguageState(lang);
+  const lang2 = useLanguageState("en");
 
-  const onChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    e.preventDefault();
-    setLang(e.target.value);
-  };
-
-  const langs = ["en", "fr", "de", "cy"];
   const counts = [0, 1, 1.5, 2, 3, 6, 42];
 
   // Bake an alternative to <T as="li" ...>
-  const [Tli, Toption, Tdiv, Th2, Tp] = tBindMulti([
-    "li",
-    "option",
-    "div",
-    "h2",
-    "p"
-  ]);
+  const [Tli, Tdiv, Th2, Tp] = tBindMulti(["li", "div", "h2", "p"]);
 
   // Unfortunately we have to cast next/Image as a FunctionComponent.
   // Not sure what a better fix for this might be.
@@ -218,93 +244,80 @@ export const Block: ComponentType<PageProps & { lang: string }> = ({
 
   return (
     <div>
-      <Translate lang={curLang}>
-        <select value={curLang} onChange={onChange}>
-          {langs.map(lang => (
-            <Toption key={lang} value={lang} tag={lang} />
-          ))}
-        </select>
-        <Th2 text="Time" />
-
-        <div className={styles.clock}>
-          <Clock dateStyle="full" timeStyle="full" />
-        </div>
-
-        <Th2 text="Phrases" />
-        <ul>
-          <Tli text="Always English" />
-          <Tli text={greeting} />
-          <Tli text={message} />
-          {/* inline fat string */}
-          <Tli
-            text={{
-              en: "Where is the spinach? (%{site})",
-              fr: "Où sont les épinards? (%{site})"
-            }}
-          />
-        </ul>
-
-        <Th2 text="Languages" />
-
-        <ul>
-          {langs.map(lang => (
-            <Tli key={lang} tag={lang} />
-          ))}
-        </ul>
-
-        <TList>
-          {langs.map(lang => (
-            <T key={lang} tag={lang} />
-          ))}
-        </TList>
-
-        <Th2 text="Info" />
-        {/* `info` has two placeholders which we fill with "one" and "two" */}
-        <Tp text={info}>
-          <T tag="one" />
-          <T tag="two" />
-        </Tp>
-
-        <Tp content={info} />
-
-        <Tp text={nested}>
-          <Link href="/" passHref={true}>
-            <T as="a" tag="%1" />
-          </Link>
-          <T as="i" tag="%2" />
-        </Tp>
-
-        <Tp tag="silly">
-          <TBox tag="%1">
-            <TBox tag="%1" />
-            <TBox tag="%2">
+      <Translate lang={lang2.lang}>
+        <Translate lang={lang1.lang}>
+          <LanguagePicker label="1" state={lang1} />{" "}
+          <LanguagePicker label="2" state={lang2} />
+          <Th2 text="Time" />
+          <div className={styles.clock}>
+            <Clock dateStyle="full" timeStyle="full" />
+          </div>
+          <Th2 text="Phrases" />
+          <ul>
+            <Tli text="Always English" />
+            <Tli text={greeting} />
+            <Tli text={message} />
+            {/* inline fat string */}
+            <Tli
+              text={{
+                en: "Where is the spinach? (%{site})",
+                fr: "Où sont les épinards? (%{site})"
+              }}
+            />
+          </ul>
+          <Th2 text="Languages" />
+          <ul>
+            {langs.map(lang => (
+              <Tli key={lang} tag={lang} />
+            ))}
+          </ul>
+          <TList>
+            {langs.map(lang => (
+              <T key={lang} tag={lang} />
+            ))}
+          </TList>
+          <Th2 text="Info" />
+          {/* `info` has two placeholders which we fill with "one" and "two" */}
+          <Tp text={info}>
+            <T tag="one" />
+            <T tag="two" />
+          </Tp>
+          <Tp content={info} />
+          <Tp text={nested}>
+            <Link href="/" passHref={true}>
+              <T as="a" tag="%1" />
+            </Link>
+            <T as="i" tag="%2" />
+          </Tp>
+          <Tp tag="silly">
+            <TBox tag="%1">
               <TBox tag="%1" />
+              <TBox tag="%2">
+                <TBox tag="%1" />
+              </TBox>
             </TBox>
-          </TBox>
-        </Tp>
-
-        <Th2 tag="h.someCats" />
-        <figure className={styles.cat}>
-          {/* translate alt attribute via cat tag */}
-          <TImage
-            t-alt={["cat"]}
-            width="500"
-            height="200"
-            src="http://placekitten.com/g/500/200"
-          />
-        </figure>
-
-        {/* many cats, many plurals */}
-        {counts.map((n, i) => (
-          <Tdiv key={i} tag="cats" count={n}>
-            {String(n)}
-          </Tdiv>
-        ))}
-
-        <Th2 tag="h.siteName" />
-        <T tag="site" />
-        <Translate dictionaryFromTag="madness">
+          </Tp>
+          <Th2 tag="h.someCats" />
+          <figure className={styles.cat}>
+            {/* translate alt attribute via cat tag */}
+            <TImage
+              t-alt={["cat"]}
+              width="500"
+              height="200"
+              src="http://placekitten.com/g/500/200"
+            />
+          </figure>
+          {/* many cats, many plurals */}
+          {counts.map((n, i) => (
+            <Tdiv key={i} tag="cats" count={n}>
+              {String(n)}
+            </Tdiv>
+          ))}
+          <Th2 tag="h.siteName" />
           <T tag="site" />
+          <Translate dictionaryFromTag="madness">
+            <T tag="site" />
+          </Translate>
         </Translate>
       </Translate>
     </div>
@@ -333,7 +346,7 @@ const Home: NextPage<PageProps> = props => {
               </div>
             </Translate> */}
 
-            <Block {...props} lang="cy" />
+            <Block {...props} lang="de" />
             <Block {...props} lang="en" />
             <Block {...props} lang="fr" />
           </div>
