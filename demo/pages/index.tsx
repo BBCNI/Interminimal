@@ -198,7 +198,7 @@ const useLanguageState = (defaultLang: string): LanguageState => {
 const langs = ["en", "fr", "de", "cy"];
 
 const LanguagePicker: ComponentType<{
-  label: string;
+  label: TextPropType;
   state: LanguageState;
 }> = ({ label, state }) => {
   // Bake an alternative to <T as="li" ...>
@@ -246,8 +246,8 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
     <div>
       <Translate lang={lang2.lang}>
         <Translate lang={lang1.lang}>
-          <LanguagePicker label="1" state={lang1} />{" "}
-          <LanguagePicker label="2" state={lang2} />
+          <LanguagePicker label={["one"]} state={lang1} />{" "}
+          <LanguagePicker label={["two"]} state={lang2} />
           <Th2 text="Time" />
           <div className={styles.clock}>
             <Clock dateStyle="full" timeStyle="full" />
