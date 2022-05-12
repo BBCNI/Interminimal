@@ -126,7 +126,12 @@ describe("TSString", () => {
 
   it("should fail on unmatched plurals", () => {
     const ts = new TString({ en: { other: "cats" } });
-    expect(() => ts.toLang("en").toString(1)).toThrow(/map plural/);
-    expect(() => ts.toLang("en").toString()).toThrow(/map plural/);
+    expect(() => ts.toLang("en").toString(1)).toThrow(/missing plural/i);
+    expect(() => ts.toLang("en").toString()).toThrow(/missing plural/i);
+  });
+
+  it("should fail on unknown plurals", () => {
+    const ts = new TString({ en: { one: "cat", other: "cats", many: "herd" } });
+    expect(() => ts.toLang("en").toString(0)).toThrow(/unknown plural/i);
   });
 });
