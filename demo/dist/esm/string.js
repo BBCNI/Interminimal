@@ -82,8 +82,6 @@ var TString = /** @class */ (function () {
             if (lang in this.dict)
                 return new TString(this.dict, lang);
         }
-        if (this.lang)
-            return this;
         // Wildcard language matches anything. Used for e.g. proper nouns that
         // are the same in any language.
         if ("*" in this.dict) {
@@ -91,6 +89,8 @@ var TString = /** @class */ (function () {
             ts[langs[0]] = this.dict["*"];
             return new TString(ts, langs[0]);
         }
+        if (this.lang)
+            return this;
         var fallback = Object.keys(this.dict)[0];
         if (!fallback)
             throw new Error("No translations available");
