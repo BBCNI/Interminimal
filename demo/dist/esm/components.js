@@ -65,7 +65,7 @@ export var TFormat = forwardRef(function (_a, ref) {
     if (parts.length === 1 && typeof parts[0] === "string")
         return React.createElement(Fragment, null, parts[0]);
     // Make children into a regular array of nodes
-    var params = Children.map(children, function (x) { return x; });
+    var params = Children.toArray(children);
     if (process.env.NODE_ENV !== "production")
         if (ref && params.length !== 1)
             // Passing a ref is a special case which only allows

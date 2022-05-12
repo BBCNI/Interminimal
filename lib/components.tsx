@@ -97,7 +97,7 @@ export const TFormat: ComponentType<TFormatProps> = forwardRef<
     return <Fragment>{parts[0]}</Fragment>;
 
   // Make children into a regular array of nodes
-  const params = Children.map<ReactNode, any>(children, x => x);
+  const params = Children.toArray(children);
 
   if (process.env.NODE_ENV !== "production")
     if (ref && params.length !== 1)

@@ -3,6 +3,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
+import { Children } from "react";
 
 import {
   ChangeEvent,
@@ -21,7 +22,8 @@ import {
   useTranslation,
   TDictionaryRoot,
   TFatString,
-  TText
+  TText,
+  TString
 } from "../dist/esm";
 
 import styles from "../styles/Home.module.css";
@@ -130,13 +132,31 @@ const DateFormat: ComponentType<
   return <TText lang={locale}>{dtf.format(date)}</TText>;
 };
 
+const TList: ComponentType<{
+  children: ReactNode;
+  type?: "conjunction" | "disjunction";
+  style?: "long" | "short" | "narrow";
+}> = ({ children, ...opt }) => {
+  const ctx = useTranslation();
+  // @ts-ignore - no type mapping available
+  const lf = new Intl.ListFormat(ctx.languages, opt);
+  const { locale } = lf.resolvedOptions();
+  // Make the children into a list of args, %1, %2 etc
+  const list = Children.toArray(children).map((_x, i) => `%${i + 1}`);
+  // Format the list into a template string and make the translated
+  // template and locale into a TString
+  const ts = TString.literal(lf.format(list), locale);
+  // Format it using T
+  return <T text={ts}>{children}</T>;
+};
+
 export const Clock: ComponentType<Intl.DateTimeFormatOptions> = ({
   ...opt
 }) => {
   const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
     const update = () => setNow(new Date());
-    const timer = setInterval(update, 5000);
+    const timer = setInterval(update, 500);
     update();
     return () => clearInterval(timer);
   }, []);
@@ -225,11 +245,18 @@ export const Block: ComponentType<PageProps & { lang: string }> = ({
         </ul>
 
         <Th2 text="Languages" />
+
         <ul>
           {langs.map(lang => (
             <Tli key={lang} tag={lang} />
           ))}
         </ul>
+
+        <TList>
+          {langs.map(lang => (
+            <T key={lang} tag={lang} />
+          ))}
+        </TList>
 
         <Th2 text="Info" />
         {/* `info` has two placeholders which we fill with "one" and "two" */}
