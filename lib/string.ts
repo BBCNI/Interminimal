@@ -76,8 +76,9 @@ export class TString {
     // Wildcard language matches anything. Used for e.g. brand names that
     // are the same in any language.
     if ("*" in this.dict) {
-      const tx = this.dict["*"];
-      return new TString({ [langs[0]]: tx, "*": tx }, langs[0]);
+      const ts = { ...this.dict };
+      ts[langs[0]] = this.dict["*"];
+      return new TString(ts, langs[0]);
     }
 
     const fallback = Object.keys(this.dict)[0];

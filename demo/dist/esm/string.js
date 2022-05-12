@@ -1,3 +1,14 @@
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 import difference from "lodash/difference";
 var diffs = function (a, b) { return [
     difference(a, b),
@@ -60,7 +71,6 @@ var TString = /** @class */ (function () {
         return ttx[plur] || "";
     };
     TString.prototype.toLang = function (langs) {
-        var _a;
         if (!Array.isArray(langs))
             return this.toLang([langs]);
         for (var _i = 0, langs_1 = langs; _i < langs_1.length; _i++) {
@@ -77,8 +87,9 @@ var TString = /** @class */ (function () {
         // Wildcard language matches anything. Used for e.g. brand names that
         // are the same in any language.
         if ("*" in this.dict) {
-            var tx = this.dict["*"];
-            return new TString((_a = {}, _a[langs[0]] = tx, _a["*"] = tx, _a), langs[0]);
+            var ts = __assign({}, this.dict);
+            ts[langs[0]] = this.dict["*"];
+            return new TString(ts, langs[0]);
         }
         var fallback = Object.keys(this.dict)[0];
         if (!fallback)
