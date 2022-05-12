@@ -11,7 +11,7 @@ var parse = function (format) {
     // Use a capturing split to tokenise. We filter out empty tokens here so
     // that we don't trip over e.g. ["%1", "", "["] in the main loop. We want
     // to have ["%1", "["] instead.
-    var tokens = format.split(/(%\d+|%.|\[|\])/).filter(function (t) { return t.length; });
+    var tokens = format.split(/(%\d+|%%|%\[|%\]|\[|\])/).filter(function (t) { return t.length; });
     // Parse the next tokens
     var parsePart = function (stopAt) {
         var out = [];

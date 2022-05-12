@@ -38,10 +38,11 @@ var TString = /** @class */ (function () {
         configurable: true
     });
     TString.prototype.toString = function (count) {
-        var ttx = this.dict[this.language];
+        var language = this.language;
+        var ttx = this.dict[language];
         if (typeof ttx === "string")
             return ttx;
-        var plur = new Intl.PluralRules(this.lang).select(count !== null && count !== void 0 ? count : 1);
+        var plur = new Intl.PluralRules(language).select(count !== null && count !== void 0 ? count : 1);
         var result = ttx[plur];
         if (typeof result === "string")
             return result;
