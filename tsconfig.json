@@ -15,6 +15,6 @@
     "suppressImplicitAnyIndexErrors": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["demo/lib/**/*.ts", "demo/lib/**/*.tsx"],
-  "exclude": ["node_modules", "dist", "**/*.test.*", "**/*.config.*"]
+  "include": ["lib/**/*.ts", "lib/**/*.tsx"],
+  "exclude": ["node_modules", "demo", "dist", "**/*.test.*", "**/*.config.*"]
 }
