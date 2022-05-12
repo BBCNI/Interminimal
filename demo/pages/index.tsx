@@ -116,13 +116,17 @@ const dictionary: TDictionaryRoot = {
 };
 
 // Demo how to use Intl with Interminimal
-
 const DateFormat: ComponentType<
   { date: Date } & Intl.DateTimeFormatOptions
 > = ({ date, ...opt }) => {
   const ctx = useTranslation();
+  // Use our languages stack to find a format
   const dtf = new Intl.DateTimeFormat(ctx.languages, opt);
+  // Find out which language was matched...
   const { locale } = dtf.resolvedOptions();
+  // ...and pass it to TText so that if it's not the same as the
+  // ambient language we get a lang="..." property on the generated
+  // element.
   return <TText lang={locale}>{dtf.format(date)}</TText>;
 };
 
