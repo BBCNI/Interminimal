@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.TString = void 0;
 var TString = /** @class */ (function () {
     function TString(dict, lang) {
         if (lang && !(lang in dict))
@@ -42,7 +39,15 @@ var TString = /** @class */ (function () {
         var ttx = this.dict[language];
         if (typeof ttx === "string")
             return ttx;
-        var plur = new Intl.PluralRules(language).select(count !== null && count !== void 0 ? count : 1);
+        var pl = new Intl.PluralRules(language);
+        console.log({ pl: pl });
+        if (process.env.NODE_ENV !== "production") {
+            // Check that our fat string supports all the
+            // plural categories
+            var pluralCategories = pl.resolvedOptions().pluralCategories;
+            console.log(pluralCategories);
+        }
+        var plur = pl.select(count !== null && count !== void 0 ? count : 1);
         var result = ttx[plur];
         if (typeof result === "string")
             return result;
@@ -69,4 +74,4 @@ var TString = /** @class */ (function () {
     };
     return TString;
 }());
-exports.TString = TString;
+export { TString };
