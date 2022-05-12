@@ -8,7 +8,9 @@
     "build:cjs": "tsc --module commonjs --outDir demo/dist/cjs",
     "test": "jest --coverage",
     "tdd": "jest --watchAll --coverage",
-    "bundle": "npm test && npm run build",
+    "prepack": "npm test && npm run build",
+    "postversion": "npm publish",
+    "postpublish": "git push origin --all && git push origin --tags",
     "dev": "tsc --watch"
   },
   "repository": {
