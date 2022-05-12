@@ -65,24 +65,25 @@ export class TString {
 
   toLang(langs: string | readonly string[]): TString {
     if (!Array.isArray(langs)) return this.toLang([langs] as readonly string[]);
-    for (const lang of langs) {
-      if (!lang) continue;
-      if (lang === this.lang) return this;
-      if (lang in this.dict) return new TString(this.dict, lang);
+    const { lang, dict } = this;
+    for (const l of langs) {
+      if (!l) continue;
+      if (l === lang) return this;
+      if (l in dict) return new TString(dict, l);
     }
 
     // Wildcard language matches anything. Used for e.g. proper nouns that
     // are the same in any language.
-    if ("*" in this.dict) {
-      const ts = { ...this.dict };
-      ts[langs[0]] = this.dict["*"];
+    if ("*" in dict) {
+      const ts = { ...dict };
+      ts[langs[0]] = dict["*"];
       return new TString(ts, langs[0]);
     }
 
-    if (this.lang) return this;
+    if (lang) return this;
 
-    const fallback = Object.keys(this.dict)[0];
+    const fallback = Object.keys(dict)[0];
     if (!fallback) throw new Error(`No translations available`);
-    return new TString(this.dict, fallback);
+    return new TString(dict, fallback);
   }
 }

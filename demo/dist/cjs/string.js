@@ -79,28 +79,29 @@ var TString = /** @class */ (function () {
     TString.prototype.toLang = function (langs) {
         if (!Array.isArray(langs))
             return this.toLang([langs]);
+        var _a = this, lang = _a.lang, dict = _a.dict;
         for (var _i = 0, langs_1 = langs; _i < langs_1.length; _i++) {
-            var lang = langs_1[_i];
-            if (!lang)
+            var l = langs_1[_i];
+            if (!l)
                 continue;
-            if (lang === this.lang)
+            if (l === lang)
                 return this;
-            if (lang in this.dict)
-                return new TString(this.dict, lang);
+            if (l in dict)
+                return new TString(dict, l);
         }
         // Wildcard language matches anything. Used for e.g. proper nouns that
         // are the same in any language.
-        if ("*" in this.dict) {
-            var ts = __assign({}, this.dict);
-            ts[langs[0]] = this.dict["*"];
+        if ("*" in dict) {
+            var ts = __assign({}, dict);
+            ts[langs[0]] = dict["*"];
             return new TString(ts, langs[0]);
         }
-        if (this.lang)
+        if (lang)
             return this;
-        var fallback = Object.keys(this.dict)[0];
+        var fallback = Object.keys(dict)[0];
         if (!fallback)
             throw new Error("No translations available");
-        return new TString(this.dict, fallback);
+        return new TString(dict, fallback);
     };
     return TString;
 }());
