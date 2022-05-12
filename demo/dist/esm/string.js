@@ -84,7 +84,7 @@ var TString = /** @class */ (function () {
         }
         if (this.lang)
             return this;
-        // Wildcard language matches anything. Used for e.g. brand names that
+        // Wildcard language matches anything. Used for e.g. proper nouns that
         // are the same in any language.
         if ("*" in this.dict) {
             var ts = __assign({}, this.dict);
