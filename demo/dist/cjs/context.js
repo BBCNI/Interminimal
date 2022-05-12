@@ -73,7 +73,7 @@ var LangContext = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(LangContext.prototype, "languages", {
-        // r/w version of stack for apis that require string[]
+        // r/w public version of stack for apis that require string[]
         get: function () {
             return this.stack.slice(0);
         },
@@ -96,7 +96,6 @@ var LangContext = /** @class */ (function () {
     });
     LangContext.prototype.derive = function (props) {
         var _this = this;
-        if (props === void 0) { props = {}; }
         // Handle dictionaryFromTag
         var transformProps = function (_a) {
             var dictionaryFromTag = _a.dictionaryFromTag, rest = __rest(_a, ["dictionaryFromTag"]);

@@ -222,6 +222,17 @@ const LanguagePicker: ComponentType<{
   );
 };
 
+const Stack: ComponentType = () => {
+  const ctx = useTranslation();
+  return (
+    <TList>
+      {ctx.languages.map(lang => (
+        <T key={lang} tag={lang} />
+      ))}
+    </TList>
+  );
+};
+
 const Block: ComponentType<PageProps & { lang: string }> = ({
   greeting,
   message,
@@ -244,80 +255,69 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
 
   return (
     <div>
-      <Translate lang={lang2.lang}>
-        <Translate lang={lang1.lang}>
-          <LanguagePicker label={["one"]} state={lang1} />{" "}
-          <LanguagePicker label={["two"]} state={lang2} />
-          <Th2 text="Time" />
-          <div className={styles.clock}>
-            <Clock dateStyle="full" timeStyle="full" />
-          </div>
-          <Th2 text="Phrases" />
-          <ul>
-            <Tli text="Always English" />
-            <Tli text={greeting} />
-            <Tli text={message} />
-            {/* inline fat string */}
-            <Tli
-              text={{
-                en: "Where is the spinach? (%{site})",
-                fr: "Où sont les épinards? (%{site})"
-              }}
-            />
-          </ul>
-          <Th2 text="Languages" />
-          <ul>
-            {langs.map(lang => (
-              <Tli key={lang} tag={lang} />
-            ))}
-          </ul>
-          <TList>
-            {langs.map(lang => (
-              <T key={lang} tag={lang} />
-            ))}
-          </TList>
-          <Th2 text="Info" />
-          {/* `info` has two placeholders which we fill with "one" and "two" */}
-          <Tp text={info}>
-            <T tag="one" />
-            <T tag="two" />
-          </Tp>
-          <Tp content={info} />
-          <Tp text={nested}>
-            <Link href="/" passHref={true}>
-              <T as="a" tag="%1" />
-            </Link>
-            <T as="i" tag="%2" />
-          </Tp>
-          <Tp tag="silly">
-            <TBox tag="%1">
+      <Translate lang={[lang1.lang, lang2.lang]}>
+        <LanguagePicker label={["one"]} state={lang1} />{" "}
+        <LanguagePicker label={["two"]} state={lang2} />
+        <Th2 text="Time" />
+        <div className={styles.clock}>
+          <Clock dateStyle="full" timeStyle="full" />
+        </div>
+        <Th2 text="Phrases" />
+        <ul>
+          <Tli text="Always English" />
+          <Tli text={greeting} />
+          <Tli text={message} />
+          {/* inline fat string */}
+          <Tli
+            text={{
+              en: "Where is the spinach? (%{site})",
+              fr: "Où sont les épinards? (%{site})"
+            }}
+          />
+        </ul>
+        <Th2 text="Languages" />
+        <Stack />
+        <Th2 text="Info" />
+        {/* `info` has two placeholders which we fill with "one" and "two" */}
+        <Tp text={info}>
+          <T tag="one" />
+          <T tag="two" />
+        </Tp>
+        <Tp content={info} />
+        <Tp text={nested}>
+          <Link href="/" passHref={true}>
+            <T as="a" tag="%1" />
+          </Link>
+          <T as="i" tag="%2" />
+        </Tp>
+        <Tp tag="silly">
+          <TBox tag="%1">
+            <TBox tag="%1" />
+            <TBox tag="%2">
               <TBox tag="%1" />
-              <TBox tag="%2">
-                <TBox tag="%1" />
-              </TBox>
             </TBox>
-          </Tp>
-          <Th2 tag="h.someCats" />
-          <figure className={styles.cat}>
-            {/* translate alt attribute via cat tag */}
-            <TImage
-              t-alt={["cat"]}
-              width="500"
-              height="200"
-              src="http://placekitten.com/g/500/200"
-            />
-          </figure>
-          {/* many cats, many plurals */}
-          {counts.map((n, i) => (
-            <Tdiv key={i} tag="cats" count={n}>
-              {String(n)}
-            </Tdiv>
-          ))}
-          <Th2 tag="h.siteName" />
+          </TBox>
+        </Tp>
+        <Th2 tag="h.someCats" />
+        <figure className={styles.cat}>
+          {/* translate alt attribute via cat tag */}
+          <TImage
+            t-alt={["cat"]}
+            width="500"
+            height="200"
+            src="http://placekitten.com/g/500/200"
+          />
+        </figure>
+        {/* many cats, many plurals */}
+        {counts.map((n, i) => (
+          <Tdiv key={i} tag="cats" count={n}>
+            {String(n)}
+          </Tdiv>
+        ))}
+        <Th2 tag="h.siteName" />
+        <T tag="site" />
+        <Translate dictionaryFromTag="madness">
           <T tag="site" />
-          <Translate dictionaryFromTag="madness">
-            <T tag="site" />
-          </Translate>
         </Translate>
       </Translate>
     </div>

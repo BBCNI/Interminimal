@@ -22,15 +22,15 @@ describe("LangContext", () => {
 
   it("should create a language stack", () => {
     const ctx = new LangContext({ lang: "cy", defaultLang: "en" });
-    expect(ctx.stack).toEqual(["cy", "en"]);
+    expect(ctx.languages).toEqual(["cy", "en"]);
     expect(ctx.language).toBe("cy");
     expect(ctx.ambience).toBe("cy");
     const ctx2 = ctx.derive({ lang: "de", defaultLang: "fr" });
-    expect(ctx2.stack).toEqual(["de", "cy", "en"]);
+    expect(ctx2.languages).toEqual(["de", "cy", "en"]);
     expect(ctx2.language).toBe("de");
     expect(ctx2.ambience).toBe("de");
     const ctx3 = ctx2.derive({ lang: "en" });
-    expect(ctx3.stack).toEqual(["en", "de", "cy"]);
+    expect(ctx3.languages).toEqual(["en", "de", "cy"]);
     expect(ctx3.language).toBe("en");
     expect(ctx3.ambience).toBe("en");
   });
@@ -42,17 +42,14 @@ describe("LangContext", () => {
 
     expect(ctx.ambience).toBe("cy");
     expect(ctx.language).toBe("cy");
-    expect(ctx.stack).toEqual(["cy", "en"]);
     expect(ctx.languages).toEqual(["cy", "en"]);
 
     expect(amb1.ambience).toBe("en");
     expect(amb1.language).toBe("cy");
-    expect(amb1.stack).toEqual(["cy", "en"]);
     expect(amb1.languages).toEqual(["cy", "en"]);
 
     expect(amb2.ambience).toBe("en");
     expect(amb2.language).toBe("cy");
-    expect(amb2.stack).toEqual(["cy", "en"]);
     expect(amb2.languages).toEqual(["cy", "en"]);
   });
 
@@ -162,11 +159,5 @@ describe("LangContext", () => {
         dictionaryFromTag: "foo"
       })
     ).toThrow(/both/i);
-  });
-
-  it("should use parent stack if no override", () => {
-    const ctx = new LangContext({ lang: "fr", defaultLang: "en", dictionary });
-    const ctx2 = ctx.derive();
-    expect(ctx2.stack).toBe(ctx.stack);
   });
 });

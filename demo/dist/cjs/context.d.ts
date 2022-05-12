@@ -9,11 +9,11 @@ export declare class LangContext {
     private stackCache;
     private tagCache;
     constructor(props?: LangContextProps);
-    get stack(): readonly string[];
+    private get stack();
     get languages(): string[];
     get language(): string;
     get ambience(): string;
-    derive(props?: LangContextProps): LangContext;
+    derive(props: LangContextProps): LangContext;
     translate(text: TextPropType): TString;
     translateTextAndProps(text: TextPropType, { lang, ...props }?: {
         lang?: string;

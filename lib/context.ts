@@ -29,7 +29,7 @@ export class LangContext {
     Object.assign(this, { lang: langs, dictionary, ...rest });
   }
 
-  get stack(): readonly string[] {
+  private get stack(): readonly string[] {
     const seal = (o: string[]) => Object.freeze(uniq(o));
     const s = () => {
       const { parent, lang, defaultLang } = this;
@@ -47,7 +47,7 @@ export class LangContext {
     return (this.stackCache = this.stackCache || s());
   }
 
-  // r/w version of stack for apis that require string[]
+  // r/w public version of stack for apis that require string[]
   get languages(): string[] {
     return this.stack.slice(0);
   }
@@ -60,7 +60,7 @@ export class LangContext {
     return this.ambient || this.language;
   }
 
-  derive(props: LangContextProps = {}): LangContext {
+  derive(props: LangContextProps): LangContext {
     // Handle dictionaryFromTag
     const transformProps = ({
       dictionaryFromTag,
