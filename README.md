@@ -88,7 +88,7 @@ Here are some of the things `T` can do:
 
 ## Fat Strings
 
-We represent multilingual content as objects that have IETF BCP 47 language codes as keys and corresponding translated text as values. Internally Interminimal casts fat strings into `TString` objects.
+We represent multilingual content as objects that have IETF BCP 47 language codes as keys and corresponding translated text as values. Internally _Interminimal_ casts fat strings into `TString` objects.
 
 Here's a simple example:
 
@@ -460,6 +460,83 @@ function CountCats() {
 The `count` property of `T` is used select the language-appropriate plural.
 
 Plurals don't have to be templated but it's often a good idea because it allows the translator to vary where the number appears in the text.
+
+# Use with Intl
+
+The [ECMAScript Internationalization API](https://tc39.es/ecma402/#intl-object) provides language sensitive string comparison, number formatting, date and time formatting, pluralisation rules and more. With the exception of pluralisation _Interminimal_ doesn't attempt to wrap any of the `Intl` APIs but it does make it easy to work with them. It's a conscious decision not attempt to integrate `Intl` functionality more tightly:
+
+- locales vary by browser and may differ from Node's implementation
+- `Intl` support isn't complete across all browsers
+- _Interminimal_ is supposed to be minimal
+- it's easy to use `Intl` with _Interminimal_ so why abstract it further?
+
+Bear in mind when using the `Intl` APIs that locale and feature support varies by browser and will also likely be different between NodeJS and any particular browser. That can cause problems for Server Side Rendering - for example, at the time of writing, Node 18 has support for Welsh Date/Time formatting but Chrome does not. An SSR Welsh page will therefore render date / time strings differently on initial render and hydration.
+
+With that caveat `Intl` is extremely useful so let's see how it works. Here's a component that wraps `Intl.DateTimeFormat`:
+
+```js
+const TDateFormat = ({ date, ...opt }) => {
+  const ctx = useTranslation();
+  // Use our languages stack to find a format for our locale
+  const dtf = new Intl.DateTimeFormat(ctx.languages, opt);
+  // Find out which language was matched...
+  const { locale } = dtf.resolvedOptions();
+  // Format the date and create a literal ts with the available
+  // locale
+  const ts = TString.literal(dtf.format(date), locale);
+  // Format it using T
+  return <T text={ts} />;
+};
+```
+
+We use it like this:
+
+```js
+return <TDateFormat date={theDate} dateStyle="full" timeStyle="full" />;
+```
+
+Most of the `Intl` APIs can be wrapped into components in a similar way. For example here's a component that wraps `Intl.ListFormat`. It translates the formatting of lists of items (`"This, that, and something else"`).
+
+```js
+const TList = ({ children, ...opt }) => {
+  const ctx = useTranslation();
+  // Use our languages stack to find a format for our locale
+  const lf = new Intl.ListFormat(ctx.languages, opt);
+  // Find out which language was matched...
+  const { locale } = lf.resolvedOptions();
+  // Make the children into a list of args, %1, %2 etc
+  const list = Children.toArray(children).map((_x, i) => `%${i + 1}`);
+  // Format the list into a template string and make the translated
+  // template and locale into a TString
+  const ts = TString.literal(lf.format(list), locale);
+  // Format it using T
+  return <T text={ts}>{children}</T>;
+};
+```
+
+Use it like this:
+
+```js
+return (
+  <TList>
+    <T tag="one" />
+    <T tag="two" />
+    <T tag="three" />
+  </TList>
+);
+// en: One, Two, and Three
+// de: Eins, zwei und drei
+```
+
+Generally speaking the pattern is
+
+- attempt to create an instance of the API for our preferred languages
+- check which locale was actually found
+- format our data using the API
+- wrap it in a `TString` with the correct lang (`locale`)
+- render it with `<T text={ts}>`
+
+A similar technique is likely to work with internationalisation APIs other than `Intl`.
 
 # Summary
 

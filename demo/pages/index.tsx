@@ -22,7 +22,6 @@ import {
   useTranslation,
   TDictionaryRoot,
   TFatString,
-  TText,
   TString
 } from "../dist/esm";
 
@@ -131,14 +130,15 @@ const DateFormat: ComponentType<
   { date: Date } & Intl.DateTimeFormatOptions
 > = ({ date, ...opt }) => {
   const ctx = useTranslation();
-  // Use our languages stack to find a format
+  // Use our languages stack to find a format for our locale
   const dtf = new Intl.DateTimeFormat(ctx.languages, opt);
   // Find out which language was matched...
   const { locale } = dtf.resolvedOptions();
-  // ...and pass it to TText so that if it's not the same as the
-  // ambient language we get a lang="..." property on the generated
-  // element.
-  return <TText lang={locale}>{dtf.format(date)}</TText>;
+  // Format the date and create a literal ts with the available
+  // locale
+  const ts = TString.literal(dtf.format(date), locale);
+  // Format it using T
+  return <T text={ts} />;
 };
 
 const TList: ComponentType<{
