@@ -505,7 +505,11 @@ const TList = ({ children, ...opt }) => {
   // Find out which language was matched...
   const { locale } = lf.resolvedOptions();
   // Make the children into a list of args, %1, %2 etc
-  const list = Children.toArray(children).map((_x, i) => `%${i + 1}`);
+  const list = Array.from(
+    { length: Children.count(children) },
+    (_v, i) => `%${i + 1}`
+  );
+
   // Format the list into a template string and make the translated
   // template and locale into a TString
   const ts = TString.literal(lf.format(list), locale);
