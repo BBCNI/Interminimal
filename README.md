@@ -469,12 +469,12 @@ Plurals don't have to be templated but it's often a good idea because it allows 
 
 `T` supports plurals and templating. Templating can nest to any depth. Templates can re-order child components.
 
-## CI Status
+# CI Status
 
-![CI Status](https://github.com/BBCNI/Interminimal/actions/workflows/node.js.yml/badge.svg)
+[![CI Status](https://github.com/BBCNI/Interminimal/actions/workflows/node.js.yml/badge.svg)](https://github.com/BBCNI/Interminimal/actions/workflows/node.js.yml)
 
 [![CodeQL](https://github.com/BBCNI/Interminimal/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/BBCNI/Interminimal/actions/workflows/codeql-analysis.yml)
 
-## License
+# License
 
 [MIT](LICENSE)
