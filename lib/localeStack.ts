@@ -6,7 +6,7 @@ export class LocaleStack {
   constructor(stack: readonly string[] = [], parent?: LocaleStack) {
     if (stack.length && !parent)
       throw new Error(`Root LocaleStack can't have a stack`);
-    this.stack = stack;
+    this.stack = Object.freeze(stack);
     this.parent = parent;
   }
 

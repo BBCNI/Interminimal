@@ -16,7 +16,7 @@ var LocaleStack = /** @class */ (function () {
         this.next = {};
         if (stack.length && !parent)
             throw new Error("Root LocaleStack can't have a stack");
-        this.stack = stack;
+        this.stack = Object.freeze(stack);
         this.parent = parent;
     }
     LocaleStack.prototype.splice = function (lang, path) {
