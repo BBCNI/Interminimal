@@ -38,6 +38,8 @@ exports.LangContext = void 0;
 var uniq_1 = __importDefault(require("lodash/uniq"));
 var castArray_1 = __importDefault(require("lodash/castArray"));
 var string_1 = require("./string");
+// import { LocaleStack } from "./localeStack";
+// const localeRoot = new LocaleStack();
 var LangContext = /** @class */ (function () {
     function LangContext(props) {
         if (props === void 0) { props = {}; }

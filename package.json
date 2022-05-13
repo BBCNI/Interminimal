@@ -2,6 +2,7 @@
   "name": "interminimal",
   "version": "1.0.6",
   "description": "Simple React translations",
+  "type": "module",
   "scripts": {
     "build": "npm run build:tsc && npm run build:cjs",
     "build:tsc": "tsc",
@@ -49,6 +50,7 @@
     "endOfLine": "lf"
   },
   "dependencies": {
+    "bcp-47-match": "^2.0.2",
     "lodash": "^4.17.21"
   },
   "peerDependencies": {

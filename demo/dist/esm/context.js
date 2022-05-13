@@ -32,6 +32,8 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 import uniq from "lodash/uniq";
 import castArray from "lodash/castArray";
 import { TString } from "./string";
+// import { LocaleStack } from "./localeStack";
+// const localeRoot = new LocaleStack();
 var LangContext = /** @class */ (function () {
     function LangContext(props) {
         if (props === void 0) { props = {}; }

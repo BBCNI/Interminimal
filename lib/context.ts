@@ -10,6 +10,10 @@ import {
   StringPropType
 } from "./types";
 
+// import { LocaleStack } from "./localeStack";
+
+// const localeRoot = new LocaleStack();
+
 export class LangContext {
   readonly defaultLang: string = "en";
   private readonly parent?: LangContext;
