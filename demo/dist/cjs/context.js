@@ -35,16 +35,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LangContext = void 0;
-var uniq_1 = __importDefault(require("lodash/uniq"));
 var castArray_1 = __importDefault(require("lodash/castArray"));
 var string_1 = require("./string");
-// import { LocaleStack } from "./localeStack";
-// const localeRoot = new LocaleStack();
+var localeStack_1 = require("./localeStack");
+var localeRoot = new localeStack_1.LocaleStack();
 var LangContext = /** @class */ (function () {
     function LangContext(props) {
         if (props === void 0) { props = {}; }
         this.defaultLang = "en";
         this.lang = [];
+        this.ls = localeRoot;
         this.stackCache = null;
         this.tagCache = {};
         var lang = props.lang, dictionary = props.dictionary, rest = __rest(props, ["lang", "dictionary"]);
@@ -52,24 +52,15 @@ var LangContext = /** @class */ (function () {
             throw new Error("Invalid dictionary (missing $$dict key)");
         // Upgrade lang to array if necessary.
         var langs = (0, castArray_1.default)(lang).filter(Boolean);
-        Object.assign(this, __assign({ lang: langs, dictionary: dictionary }, rest));
+        Object.assign(this, __assign(__assign({}, rest), { lang: langs, dictionary: dictionary }));
+        var ldContext = this.parent
+            ? this.parent.ls
+            : localeRoot.resolve([this.defaultLang]);
+        this.ls = ldContext.resolve(langs);
     }
     Object.defineProperty(LangContext.prototype, "stack", {
         get: function () {
-            var _this = this;
-            var seal = function (o) { return Object.freeze((0, uniq_1.default)(o)); };
-            var s = function () {
-                var _a = _this, parent = _a.parent, lang = _a.lang, defaultLang = _a.defaultLang;
-                if (parent) {
-                    // Optimisation: if we don't add any languages our stack
-                    // is the same as our parent's.
-                    if (lang.length === 0)
-                        return parent.stack;
-                    return seal(lang.concat(parent.stack));
-                }
-                return seal(lang.concat(defaultLang));
-            };
-            return (this.stackCache = this.stackCache || s());
+            return this.ls.stack;
         },
         enumerable: false,
         configurable: true
@@ -108,7 +99,7 @@ var LangContext = /** @class */ (function () {
             }
             return rest;
         };
-        var _a = this, dictionary = _a.dictionary, stackCache = _a.stackCache, tagCache = _a.tagCache, lang = _a.lang, rest = __rest(_a, ["dictionary", "stackCache", "tagCache", "lang"]);
+        var _a = this, dictionary = _a.dictionary, stackCache = _a.stackCache, tagCache = _a.tagCache, lang = _a.lang, ls = _a.ls, rest = __rest(_a, ["dictionary", "stackCache", "tagCache", "lang", "ls"]);
         return new LangContext(__assign(__assign(__assign({}, rest), transformProps(props)), { parent: this }));
     };
     LangContext.prototype.translate = function (text) {

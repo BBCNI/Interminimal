@@ -1,4 +1,3 @@
-import uniq from "lodash/uniq";
 import castArray from "lodash/castArray";
 import { TString } from "./string";
 
@@ -10,9 +9,9 @@ import {
   StringPropType
 } from "./types";
 
-// import { LocaleStack } from "./localeStack";
+import { LocaleStack } from "./localeStack";
 
-// const localeRoot = new LocaleStack();
+const localeRoot = new LocaleStack();
 
 export class LangContext {
   readonly defaultLang: string = "en";
@@ -20,35 +19,33 @@ export class LangContext {
   private readonly lang: string[] = [];
   private readonly ambient?: string;
   private readonly dictionary?: TDictionaryRoot;
+  private readonly ls: LocaleStack = localeRoot;
 
   private stackCache: readonly string[] | null = null;
   private tagCache: { [key: string]: TFatString | TDictionaryRoot } = {};
 
-  constructor(props: LangContextProps = {}) {
+  constructor(props: LangContextProps & { parent?: LangContext } = {}) {
     const { lang, dictionary, ...rest } = props;
     if (dictionary && !("$$dict" in dictionary))
       throw new Error(`Invalid dictionary (missing $$dict key)`);
     // Upgrade lang to array if necessary.
     const langs = castArray(lang).filter(Boolean);
-    Object.assign(this, { lang: langs, dictionary, ...rest });
+
+    Object.assign(this, {
+      ...rest,
+      lang: langs,
+      dictionary
+    });
+
+    const ldContext = this.parent
+      ? this.parent.ls
+      : localeRoot.resolve([this.defaultLang]);
+
+    this.ls = ldContext.resolve(langs);
   }
 
-  private get stack(): readonly string[] {
-    const seal = (o: string[]) => Object.freeze(uniq(o));
-    const s = () => {
-      const { parent, lang, defaultLang } = this;
-
-      if (parent) {
-        // Optimisation: if we don't add any languages our stack
-        // is the same as our parent's.
-        if (lang.length === 0) return parent.stack;
-        return seal(lang.concat(parent.stack));
-      }
-
-      return seal(lang.concat(defaultLang));
-    };
-
-    return (this.stackCache = this.stackCache || s());
+  private get stack() {
+    return this.ls.stack;
   }
 
   // r/w public version of stack for apis that require string[]
@@ -81,7 +78,7 @@ export class LangContext {
       return rest;
     };
 
-    const { dictionary, stackCache, tagCache, lang, ...rest } = this;
+    const { dictionary, stackCache, tagCache, lang, ls, ...rest } = this;
     return new LangContext({ ...rest, ...transformProps(props), parent: this });
   }
 

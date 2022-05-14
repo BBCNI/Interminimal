@@ -6,9 +6,12 @@ export declare class LangContext {
     private readonly lang;
     private readonly ambient?;
     private readonly dictionary?;
+    private readonly ls;
     private stackCache;
     private tagCache;
-    constructor(props?: LangContextProps);
+    constructor(props?: LangContextProps & {
+        parent?: LangContext;
+    });
     private get stack();
     get languages(): string[];
     get language(): string;

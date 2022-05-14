@@ -32,6 +32,7 @@ export interface LangContextProps {
     readonly dictionary?: TDictionaryRoot;
     readonly dictionaryFromTag?: string;
     readonly lang?: string | string[];
+    readonly ls?: any;
     readonly ambient?: string;
 }
 export declare type StringPropType = TFatString | TString | string;

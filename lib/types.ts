@@ -38,6 +38,7 @@ export interface LangContextProps {
   readonly dictionary?: TDictionaryRoot;
   readonly dictionaryFromTag?: string;
   readonly lang?: string | string[];
+  readonly ls?: any; // tmp
   readonly ambient?: string;
 }
 
