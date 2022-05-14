@@ -19,7 +19,7 @@ export class LangContext {
   private readonly lang: string[] = [];
   private readonly ambient?: string;
   private readonly dictionary?: TDictionaryRoot;
-  private readonly ls: LocaleStack = localeRoot;
+  private readonly locale: LocaleStack = localeRoot;
 
   private stackCache: readonly string[] | null = null;
   private tagCache: { [key: string]: TFatString | TDictionaryRoot } = {};
@@ -28,29 +28,28 @@ export class LangContext {
     const { lang, dictionary, ...rest } = props;
     if (dictionary && !("$$dict" in dictionary))
       throw new Error(`Invalid dictionary (missing $$dict key)`);
+
     // Upgrade lang to array if necessary.
     const langs = castArray(lang).filter(Boolean);
 
-    Object.assign(this, {
-      ...rest,
-      lang: langs,
-      dictionary
-    });
+    Object.assign(this, { ...rest, lang: langs, dictionary });
 
     const ldContext = this.parent
-      ? this.parent.ls
+      ? this.parent.locale
       : localeRoot.resolve([this.defaultLang]);
 
-    this.ls = ldContext.resolve(langs);
+    this.locale = ldContext.resolve(langs);
   }
 
-  private get stack() {
-    return this.ls.stack;
+  private get stack(): readonly string[] {
+    return this.locale.stack;
   }
 
-  // r/w public version of stack for apis that require string[]
+  // Version of the stack for APIs that don't like readonly string[].
+  // The array is still frozen so any attempts at modification will
+  // fail.
   get languages(): string[] {
-    return this.stack.slice(0);
+    return this.stack as string[];
   }
 
   get language(): string {
@@ -78,7 +77,14 @@ export class LangContext {
       return rest;
     };
 
-    const { dictionary, stackCache, tagCache, lang, ls, ...rest } = this;
+    const {
+      dictionary,
+      stackCache,
+      tagCache,
+      lang,
+      locale: ls,
+      ...rest
+    } = this;
     return new LangContext({ ...rest, ...transformProps(props), parent: this });
   }
 
@@ -156,18 +162,16 @@ export class LangContext {
   }
 
   resolveMagicProps<T>(props: T, lang?: string): T {
-    const { stack } = this;
-
     const mapMagic = (k: string) => {
       const m = k.match(/^t-(.+)$/);
       if (m) return m[1];
     };
 
-    const search = lang ? [lang, ...stack] : stack;
+    const search = lang ? this.locale.resolve([lang]) : this.locale;
 
     const pairs = Object.entries(props).map(([k, v]) => {
       const nk = mapMagic(k);
-      if (nk) return [nk, this.render(this.resolve(v).toLang(search))];
+      if (nk) return [nk, this.render(this.resolve(v).toLang(search.stack))];
       return [k, v];
     });
 

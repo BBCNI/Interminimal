@@ -44,7 +44,7 @@ var LangContext = /** @class */ (function () {
         if (props === void 0) { props = {}; }
         this.defaultLang = "en";
         this.lang = [];
-        this.ls = localeRoot;
+        this.locale = localeRoot;
         this.stackCache = null;
         this.tagCache = {};
         var lang = props.lang, dictionary = props.dictionary, rest = __rest(props, ["lang", "dictionary"]);
@@ -54,21 +54,23 @@ var LangContext = /** @class */ (function () {
         var langs = (0, castArray_1.default)(lang).filter(Boolean);
         Object.assign(this, __assign(__assign({}, rest), { lang: langs, dictionary: dictionary }));
         var ldContext = this.parent
-            ? this.parent.ls
+            ? this.parent.locale
             : localeRoot.resolve([this.defaultLang]);
-        this.ls = ldContext.resolve(langs);
+        this.locale = ldContext.resolve(langs);
     }
     Object.defineProperty(LangContext.prototype, "stack", {
         get: function () {
-            return this.ls.stack;
+            return this.locale.stack;
         },
         enumerable: false,
         configurable: true
     });
     Object.defineProperty(LangContext.prototype, "languages", {
-        // r/w public version of stack for apis that require string[]
+        // Version of the stack for APIs that don't like readonly string[].
+        // The array is still frozen so any attempts at modification will
+        // fail.
         get: function () {
-            return this.stack.slice(0);
+            return this.stack;
         },
         enumerable: false,
         configurable: true
@@ -99,7 +101,7 @@ var LangContext = /** @class */ (function () {
             }
             return rest;
         };
-        var _a = this, dictionary = _a.dictionary, stackCache = _a.stackCache, tagCache = _a.tagCache, lang = _a.lang, ls = _a.ls, rest = __rest(_a, ["dictionary", "stackCache", "tagCache", "lang", "ls"]);
+        var _a = this, dictionary = _a.dictionary, stackCache = _a.stackCache, tagCache = _a.tagCache, lang = _a.lang, ls = _a.locale, rest = __rest(_a, ["dictionary", "stackCache", "tagCache", "lang", "locale"]);
         return new LangContext(__assign(__assign(__assign({}, rest), transformProps(props)), { parent: this }));
     };
     LangContext.prototype.translate = function (text) {
@@ -174,18 +176,17 @@ var LangContext = /** @class */ (function () {
     };
     LangContext.prototype.resolveMagicProps = function (props, lang) {
         var _this = this;
-        var stack = this.stack;
         var mapMagic = function (k) {
             var m = k.match(/^t-(.+)$/);
             if (m)
                 return m[1];
         };
-        var search = lang ? __spreadArray([lang], stack, true) : stack;
+        var search = lang ? this.locale.resolve([lang]) : this.locale;
         var pairs = Object.entries(props).map(function (_a) {
             var k = _a[0], v = _a[1];
             var nk = mapMagic(k);
             if (nk)
-                return [nk, _this.render(_this.resolve(v).toLang(search))];
+                return [nk, _this.render(_this.resolve(v).toLang(search.stack))];
             return [k, v];
         });
         return Object.fromEntries(pairs);
