@@ -168,7 +168,7 @@ export const Clock: ComponentType<Intl.DateTimeFormatOptions> = ({
   const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
     const update = () => setNow(new Date());
-    const timer = setInterval(update, 500);
+    const timer = setInterval(update, 5000);
     update();
     return () => clearInterval(timer);
   }, []);
@@ -274,10 +274,10 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
         <LanguagePicker label={["three"]} state={lang3} />
         <Th2 text="Languages" />
         <Stack />
-        <Th2 text="Time" />
+        {/* <Th2 text="Time" />
         <div className={styles.clock}>
           <Clock dateStyle="full" timeStyle="full" />
-        </div>
+        </div> */}
         <Th2 text="Phrases" />
         <ul>
           <Tli text="Always English" />

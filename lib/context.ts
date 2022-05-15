@@ -179,15 +179,14 @@ export class LangContext {
   }
 
   render(ts: TString, count?: number): string {
+    const stack = this.locale.resolve([ts.language]).stack;
     return ts
       .toString(count)
       .split(/(%%|%\{[^%]+?\})/)
       .map(tok =>
         (match =>
           match
-            ? this.resolveTag(match[1])
-                .toLang([ts.language, ...this.stack])
-                .toString(count)
+            ? this.resolveTag(match[1]).toLang(stack).toString(count)
             : tok)(tok.match(/^%\{(.+)\}$/))
       )
       .join("");

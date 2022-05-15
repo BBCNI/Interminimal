@@ -20,15 +20,6 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 import castArray from "lodash/castArray";
 import { TString } from "./string";
 import { LocaleStack } from "./localeStack";
@@ -187,15 +178,14 @@ var LangContext = /** @class */ (function () {
     };
     LangContext.prototype.render = function (ts, count) {
         var _this = this;
+        var stack = this.locale.resolve([ts.language]).stack;
         return ts
             .toString(count)
             .split(/(%%|%\{[^%]+?\})/)
             .map(function (tok) {
             return (function (match) {
                 return match
-                    ? _this.resolveTag(match[1])
-                        .toLang(__spreadArray([ts.language], _this.stack, true))
-                        .toString(count)
+                    ? _this.resolveTag(match[1]).toLang(stack).toString(count)
                     : tok;
             })(tok.match(/^%\{(.+)\}$/));
         })
