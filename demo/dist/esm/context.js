@@ -42,6 +42,7 @@ var LangContext = /** @class */ (function () {
             ? this.parent.locale
             : localeRoot.resolve([this.defaultLang]);
         this.locale = ldContext.resolve(langs);
+        this.root = this.parent ? this.parent.root : this;
     }
     Object.defineProperty(LangContext.prototype, "stack", {
         get: function () {
@@ -159,6 +160,12 @@ var LangContext = /** @class */ (function () {
         };
         return r().toLang(this.stack);
     };
+    LangContext.prototype.resolveLocales = function (langs) {
+        return this.locale.resolve(langs).stack;
+    };
+    LangContext.prototype.canonicaliseLocales = function (langs) {
+        return this.root.resolveLocales(langs);
+    };
     LangContext.prototype.resolveMagicProps = function (props, lang) {
         var _this = this;
         var mapMagic = function (k) {
@@ -166,19 +173,19 @@ var LangContext = /** @class */ (function () {
             if (m)
                 return m[1];
         };
-        var search = lang ? this.locale.resolve([lang]) : this.locale;
+        var search = lang ? this.resolveLocales([lang]) : this.locale.stack;
         var pairs = Object.entries(props).map(function (_a) {
             var k = _a[0], v = _a[1];
             var nk = mapMagic(k);
             if (nk)
-                return [nk, _this.render(_this.resolve(v).toLang(search.stack))];
+                return [nk, _this.render(_this.resolve(v).toLang(search))];
             return [k, v];
         });
         return Object.fromEntries(pairs);
     };
     LangContext.prototype.render = function (ts, count) {
         var _this = this;
-        var stack = this.locale.resolve([ts.language]).stack;
+        var stack = this.resolveLocales([ts.language]);
         return ts
             .toString(count)
             .split(/(%%|%\{[^%]+?\})/)

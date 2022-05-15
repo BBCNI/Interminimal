@@ -16,6 +16,7 @@ const localeRoot = new LocaleStack();
 export class LangContext {
   readonly defaultLang: string = "en";
   private readonly parent?: LangContext;
+  private readonly root: LangContext;
   private readonly lang: string[] = [];
   private readonly ambient?: string;
   private readonly dictionary?: TDictionaryRoot;
@@ -39,6 +40,7 @@ export class LangContext {
       : localeRoot.resolve([this.defaultLang]);
 
     this.locale = ldContext.resolve(langs);
+    this.root = this.parent ? this.parent.root : this;
   }
 
   private get stack(): readonly string[] {
@@ -161,17 +163,25 @@ export class LangContext {
     return r().toLang(this.stack);
   }
 
+  resolveLocales(langs: string[]) {
+    return this.locale.resolve(langs).stack;
+  }
+
+  canonicaliseLocales(langs: string[]) {
+    return this.root.resolveLocales(langs);
+  }
+
   resolveMagicProps<T>(props: T, lang?: string): T {
     const mapMagic = (k: string) => {
       const m = k.match(/^t-(.+)$/);
       if (m) return m[1];
     };
 
-    const search = lang ? this.locale.resolve([lang]) : this.locale;
+    const search = lang ? this.resolveLocales([lang]) : this.locale.stack;
 
     const pairs = Object.entries(props).map(([k, v]) => {
       const nk = mapMagic(k);
-      if (nk) return [nk, this.render(this.resolve(v).toLang(search.stack))];
+      if (nk) return [nk, this.render(this.resolve(v).toLang(search))];
       return [k, v];
     });
 
@@ -179,7 +189,7 @@ export class LangContext {
   }
 
   render(ts: TString, count?: number): string {
-    const stack = this.locale.resolve([ts.language]).stack;
+    const stack = this.resolveLocales([ts.language]);
     return ts
       .toString(count)
       .split(/(%%|%\{[^%]+?\})/)

@@ -116,6 +116,27 @@ const cats = {
 };
 ```
 
+## Finding the best language
+
+_Interminimal_ attempts to find the best translation for the requested languages:
+
+```js
+const colour = {
+  "en": "color",
+  "en-GB": "colour",
+  "de": "Farbe"
+};
+
+// and later
+
+ts.toLang(["en-AU"]); // -> color
+ts.toLang(["en-GB"]); // -> colour
+ts.toLang(["en"]); // -> color
+ts.toLang(["de-AT"]); // -> Farbe
+```
+
+The `en-GB` tag is able to satisfy `en`. In general the most specific match wins.
+
 ## Language Agnostic Fat Strings
 
 Some text is the same in any language. For example, the name of a product may not have to be translated and should be treated as if it's already in the target language. In that case use `"*"` as the language key:

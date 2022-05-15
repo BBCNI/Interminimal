@@ -3,6 +3,7 @@ import { LangContextProps, TextPropType, StringPropType } from "./types";
 export declare class LangContext {
     readonly defaultLang: string;
     private readonly parent?;
+    private readonly root;
     private readonly lang;
     private readonly ambient?;
     private readonly dictionary?;
@@ -31,6 +32,8 @@ export declare class LangContext {
     private resolveTag;
     private resolveDictionary;
     resolveTranslationProps(tag?: string, text?: TextPropType): TString;
+    resolveLocales(langs: string[]): readonly string[];
+    canonicaliseLocales(langs: string[]): readonly string[];
     resolveMagicProps<T>(props: T, lang?: string): T;
     render(ts: TString, count?: number): string;
 }

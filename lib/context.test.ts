@@ -162,4 +162,17 @@ describe("LangContext", () => {
       })
     ).toThrow(/both/i);
   });
+
+  it("should canonicalise locale stacks", () => {
+    const ctx = new LangContext({ lang: "fr", defaultLang: "en", dictionary });
+    const enCtx = ctx.derive({ lang: "en" });
+    const frCtx = enCtx.derive({ lang: "fr" });
+    // Sanity check
+    expect(frCtx.languages).toEqual(["fr", "en"]);
+    // Check reference identity (toBe or not to be)
+    expect(ctx.canonicaliseLocales(["fr", "fr", "en", "fr"])).toBe(
+      frCtx.languages
+    );
+    expect(enCtx.canonicaliseLocales(["fr", "en", "fr"])).toBe(frCtx.languages);
+  });
 });
