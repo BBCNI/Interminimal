@@ -17,7 +17,6 @@ export class LangContext {
   readonly defaultLang: string = "en";
   private readonly parent?: LangContext;
   private readonly root: LangContext;
-  private readonly lang: string[] = [];
   private readonly ambient?: string;
   private readonly dictionary?: TDictionaryRoot;
   private readonly locale: LocaleStack = localeRoot;
@@ -33,11 +32,13 @@ export class LangContext {
     // Upgrade lang to array if necessary.
     const langs = castArray(lang).filter(Boolean);
 
-    Object.assign(this, { ...rest, lang: langs, dictionary });
+    Object.assign(this, { ...rest, dictionary });
 
-    const ldContext = this.parent
+    let ldContext = this.parent
       ? this.parent.locale
       : localeRoot.resolve([this.defaultLang]);
+
+    // if (props.defaultLang) ldContext = ldContext.resolve([props.defaultLang]);
 
     this.locale = ldContext.resolve(langs);
     this.root = this.parent ? this.parent.root : this;
@@ -79,14 +80,7 @@ export class LangContext {
       return rest;
     };
 
-    const {
-      dictionary,
-      stackCache,
-      tagCache,
-      lang,
-      locale: ls,
-      ...rest
-    } = this;
+    const { dictionary, stackCache, tagCache, locale: ls, ...rest } = this;
     return new LangContext({ ...rest, ...transformProps(props), parent: this });
   }
 

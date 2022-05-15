@@ -28,7 +28,6 @@ var LangContext = /** @class */ (function () {
     function LangContext(props) {
         if (props === void 0) { props = {}; }
         this.defaultLang = "en";
-        this.lang = [];
         this.locale = localeRoot;
         this.stackCache = null;
         this.tagCache = {};
@@ -37,10 +36,11 @@ var LangContext = /** @class */ (function () {
             throw new Error("Invalid dictionary (missing $$dict key)");
         // Upgrade lang to array if necessary.
         var langs = castArray(lang).filter(Boolean);
-        Object.assign(this, __assign(__assign({}, rest), { lang: langs, dictionary: dictionary }));
+        Object.assign(this, __assign(__assign({}, rest), { dictionary: dictionary }));
         var ldContext = this.parent
             ? this.parent.locale
             : localeRoot.resolve([this.defaultLang]);
+        // if (props.defaultLang) ldContext = ldContext.resolve([props.defaultLang]);
         this.locale = ldContext.resolve(langs);
         this.root = this.parent ? this.parent.root : this;
     }
@@ -87,7 +87,7 @@ var LangContext = /** @class */ (function () {
             }
             return rest;
         };
-        var _a = this, dictionary = _a.dictionary, stackCache = _a.stackCache, tagCache = _a.tagCache, lang = _a.lang, ls = _a.locale, rest = __rest(_a, ["dictionary", "stackCache", "tagCache", "lang", "locale"]);
+        var _a = this, dictionary = _a.dictionary, stackCache = _a.stackCache, tagCache = _a.tagCache, ls = _a.locale, rest = __rest(_a, ["dictionary", "stackCache", "tagCache", "locale"]);
         return new LangContext(__assign(__assign(__assign({}, rest), transformProps(props)), { parent: this }));
     };
     LangContext.prototype.translate = function (text) {

@@ -4,7 +4,6 @@ export declare class LangContext {
     readonly defaultLang: string;
     private readonly parent?;
     private readonly root;
-    private readonly lang;
     private readonly ambient?;
     private readonly dictionary?;
     private readonly locale;
