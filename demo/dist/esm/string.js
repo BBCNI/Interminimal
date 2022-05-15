@@ -100,6 +100,7 @@ var TString = /** @class */ (function () {
             return new TString(dict, first);
         var resolveKey = function () {
             var tags = Object.keys(dict);
+            // console.log(`langs: [${langs.join(", ")}], tags: [${tags.join(", ")}]`);
             if (tags.length > 1) {
                 // Only do expensive lookup if we have no choice.
                 var best = bestLocale(tags, __spreadArray([], langs, true));

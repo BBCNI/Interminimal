@@ -169,13 +169,11 @@ const TList: ComponentType<{
   return <T text={ts}>{children}</T>;
 };
 
-export const Clock: ComponentType<Intl.DateTimeFormatOptions> = ({
-  ...opt
-}) => {
+const Clock: ComponentType<Intl.DateTimeFormatOptions> = ({ ...opt }) => {
   const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
     const update = () => setNow(new Date());
-    const timer = setInterval(update, 5000);
+    const timer = setInterval(update, 500);
     update();
     return () => clearInterval(timer);
   }, []);
@@ -281,10 +279,10 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
         <LanguagePicker label={["three"]} state={lang3} />
         <Th2 text="Languages" />
         <Stack />
-        {/* <Th2 text="Time" />
+        <Th2 text="Time" />
         <div className={styles.clock}>
           <Clock dateStyle="full" timeStyle="full" />
-        </div> */}
+        </div>
         <Th2 text="Phrases" />
         <ul>
           <Tli text="Always English" />

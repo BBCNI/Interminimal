@@ -41,7 +41,7 @@ export class LocaleStack {
 
     // Ask our parent to do the splice with our primary language
     // appended to the path. Thus when lang is found the ancestor
-    // that finds it can reconstitute the path from below lang
+    // that finds it can reconstitute the path from above lang
     return this.parent.splice(lang, path.concat(this.stack[0]));
   }
 

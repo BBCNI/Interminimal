@@ -79,6 +79,7 @@ export class TString {
 
     const resolveKey = () => {
       const tags = Object.keys(dict);
+      // console.log(`langs: [${langs.join(", ")}], tags: [${tags.join(", ")}]`);
       if (tags.length > 1) {
         // Only do expensive lookup if we have no choice.
         const best = bestLocale(tags, [...langs]);
