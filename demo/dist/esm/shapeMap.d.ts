@@ -1,3 +1,1 @@
-export declare function shapeSlot(obj: {
-    [key: string]: any;
-}): WeakMap<any, any>;
+export declare function shapeSlot<K, U, V>(obj: K & object): WeakMap<U & object, V>;

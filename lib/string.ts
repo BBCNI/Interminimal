@@ -20,11 +20,11 @@ export class TString {
   }
 
   static cast(obj: TFatString | TString, lang?: string): TString {
-    if (obj instanceof this) {
+    if (obj instanceof TString) {
       if (lang) return obj.toLang([lang]);
       return obj;
     }
-    return new this(obj as TFatString, lang);
+    return new this(obj, lang);
   }
 
   static literal(str: string, lang: string): TString {
@@ -41,8 +41,8 @@ export class TString {
     return this.dict;
   }
 
-  private get slot(): WeakMap<any, any> {
-    return shapeSlot(this.dict);
+  private get slot(): WeakMap<readonly string[], string> {
+    return shapeSlot<TFatString, readonly string[], string>(this.dict);
   }
 
   toString(count?: number): string {
@@ -79,8 +79,11 @@ export class TString {
 
     const resolveKey = () => {
       const tags = Object.keys(dict);
-      const best = bestLocale(tags, [...langs]);
-      if (best) return best;
+      if (tags.length > 1) {
+        // Only do expensive lookup if we have no choice.
+        const best = bestLocale(tags, [...langs]);
+        if (best) return best;
+      }
       if ("*" in dict) return "*";
       if (lang) return lang;
       return tags[0];

@@ -27,10 +27,21 @@ export class LocaleStack {
     this.parent = parent;
   }
 
+  // Return a node whose stack has lang moved to its head, removing
+  // a prior instance of lang. Fails if there's no prior instance of
+  // lang in the stack.
   private splice(lang: string, path: string[]): LocaleStack {
     // istanbul ignore next - guarded by condition in constructor
     if (!this.parent) throw new Error(`No parent. Shouldn't happen.`);
+
+    // We've found the previous instance of lang in the stack so
+    // splice the accumulated path onto our parent (i.e. just above
+    // the previous instance of lang)
     if (lang === this.stack[0]) return this.parent.resolve([lang, ...path]);
+
+    // Ask our parent to do the splice with our primary language
+    // appended to the path. Thus when lang is found the ancestor
+    // that finds it can reconstitute the path from below lang
     return this.parent.splice(lang, path.concat(this.stack[0]));
   }
 

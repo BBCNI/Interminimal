@@ -25,19 +25,6 @@ var diffs = function (a, b) { return [
     difference(a, b),
     difference(b, a)
 ]; };
-var wildCache = new WeakMap();
-var wildSlot = function (dict) {
-    var slot = wildCache.get(dict);
-    if (!slot)
-        wildCache.set(dict, (slot = {}));
-    return slot;
-};
-// Cached wildcard expansion
-var wildExpand = function (dict, lang) {
-    var _a;
-    var slot = wildSlot(dict);
-    return (slot[lang] = slot[lang] || __assign(__assign({}, dict), (_a = {}, _a[lang] = dict["*"], _a)));
-};
 var TString = /** @class */ (function () {
     function TString(dict, lang) {
         if (lang && !(lang in dict))
@@ -46,7 +33,7 @@ var TString = /** @class */ (function () {
         this.lang = lang;
     }
     TString.cast = function (obj, lang) {
-        if (obj instanceof this) {
+        if (obj instanceof TString) {
             if (lang)
                 return obj.toLang([lang]);
             return obj;
@@ -102,8 +89,9 @@ var TString = /** @class */ (function () {
         return ttx[plur] || "";
     };
     TString.prototype.toLang = function (langs) {
+        var _a;
         var _this = this;
-        var _a = this, lang = _a.lang, dict = _a.dict;
+        var _b = this, lang = _b.lang, dict = _b.dict;
         // Fast cases - no need to consult cache
         var first = langs[0];
         if (first === lang)
@@ -112,9 +100,12 @@ var TString = /** @class */ (function () {
             return new TString(dict, first);
         var resolveKey = function () {
             var tags = Object.keys(dict);
-            var best = bestLocale(tags, __spreadArray([], langs, true));
-            if (best)
-                return best;
+            if (tags.length > 1) {
+                // Only do expensive lookup if we have no choice.
+                var best = bestLocale(tags, __spreadArray([], langs, true));
+                if (best)
+                    return best;
+            }
             if ("*" in dict)
                 return "*";
             if (lang)
@@ -132,7 +123,7 @@ var TString = /** @class */ (function () {
         if (!key)
             throw new Error("No translations available");
         if (key === "*")
-            return new TString(wildExpand(dict, langs[0]), langs[0]);
+            return new TString(__assign(__assign({}, dict), (_a = {}, _a[langs[0]] = dict["*"], _a)), langs[0]);
         if (key === lang)
             return this;
         return new TString(dict, key);
