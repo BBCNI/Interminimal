@@ -71,9 +71,12 @@ export class TString {
 
   toLang(langs: readonly string[]): TString {
     const { lang, dict } = this;
+
+    const first = langs[0];
+    if (first === lang) return this;
+    if (first in dict) return new TString(dict, first);
+
     const resolveKey = () => {
-      // Fast path - our preferred language is there
-      if (langs[0] in dict) return langs[0];
       const tags = Object.keys(dict);
       const best = bestLocale(tags, [...langs]);
       if (best) return best;
