@@ -9,9 +9,7 @@ import {
   StringPropType
 } from "./types";
 
-import { LocaleStack } from "./localeStack";
-
-const localeRoot = new LocaleStack();
+import { localeRoot, LocaleStack } from "./localeStack";
 
 export class LangContext {
   readonly defaultLang: string = "en";

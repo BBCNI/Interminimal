@@ -22,8 +22,7 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 import castArray from "lodash/castArray";
 import { TString } from "./string";
-import { LocaleStack } from "./localeStack";
-var localeRoot = new LocaleStack();
+import { localeRoot } from "./localeStack";
 var LangContext = /** @class */ (function () {
     function LangContext(props) {
         if (props === void 0) { props = {}; }

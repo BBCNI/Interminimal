@@ -64,3 +64,4 @@ var LocaleStack = /** @class */ (function () {
     return LocaleStack;
 }());
 export { LocaleStack };
+export var localeRoot = new LocaleStack();

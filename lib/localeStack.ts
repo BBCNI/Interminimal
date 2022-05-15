@@ -60,3 +60,5 @@ export class LocaleStack {
     return nextNode.resolve(tail);
   }
 }
+
+export const localeRoot = new LocaleStack();
