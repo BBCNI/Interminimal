@@ -87,7 +87,7 @@ var LangContext = /** @class */ (function () {
             }
             return rest;
         };
-        var drDL = function (_a) {
+        var trDL = function (_a) {
             var defaultLang = _a.defaultLang, rest = __rest(_a, ["defaultLang"]);
             if (defaultLang) {
                 var lang = rest.lang, other = __rest(rest, ["lang"]);
@@ -96,7 +96,7 @@ var LangContext = /** @class */ (function () {
             return rest;
         };
         var _a = this, dictionary = _a.dictionary, stackCache = _a.stackCache, tagCache = _a.tagCache, locale = _a.locale, rest = __rest(_a, ["dictionary", "stackCache", "tagCache", "locale"]);
-        return new LangContext(__assign(__assign(__assign({}, rest), trDFT(drDL(props))), { parent: this }));
+        return new LangContext(__assign(__assign(__assign({}, rest), trDFT(trDL(props))), { parent: this }));
     };
     LangContext.prototype.translate = function (text) {
         return this.resolve(text).toLang(this.stack);

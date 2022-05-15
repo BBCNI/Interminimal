@@ -77,7 +77,7 @@ export class LangContext {
       return rest;
     };
 
-    const drDL = ({ defaultLang, ...rest }: LangContextProps) => {
+    const trDL = ({ defaultLang, ...rest }: LangContextProps) => {
       if (defaultLang) {
         const { lang, ...other } = rest;
         return {
@@ -91,7 +91,7 @@ export class LangContext {
 
     const { dictionary, stackCache, tagCache, locale, ...rest } = this;
 
-    return new LangContext({ ...rest, ...trDFT(drDL(props)), parent: this });
+    return new LangContext({ ...rest, ...trDFT(trDL(props)), parent: this });
   }
 
   translate(text: TextPropType): TString {
