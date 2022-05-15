@@ -50,7 +50,6 @@
     "endOfLine": "lf"
   },
   "dependencies": {
-    "bcp-47-match": "^2.0.2",
     "lodash": "^4.17.21"
   },
   "peerDependencies": {

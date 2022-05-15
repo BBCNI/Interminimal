@@ -10,12 +10,23 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TString = void 0;
 var difference_1 = __importDefault(require("lodash/difference"));
+var shapeMap_1 = require("./shapeMap");
+var bcp47_1 = require("./bcp47");
 var diffs = function (a, b) { return [
     (0, difference_1.default)(a, b),
     (0, difference_1.default)(b, a)
@@ -56,6 +67,13 @@ var TString = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(TString.prototype, "slot", {
+        get: function () {
+            return (0, shapeMap_1.shapeSlot)(this.dict);
+        },
+        enumerable: false,
+        configurable: true
+    });
     TString.prototype.toString = function (count) {
         var language = this.language;
         var ttx = this.dict[language];
@@ -77,31 +95,38 @@ var TString = /** @class */ (function () {
         return ttx[plur] || "";
     };
     TString.prototype.toLang = function (langs) {
-        if (!Array.isArray(langs))
-            return this.toLang([langs]);
-        var _a = this, lang = _a.lang, dict = _a.dict;
-        for (var _i = 0, langs_1 = langs; _i < langs_1.length; _i++) {
-            var l = langs_1[_i];
-            if (!l)
-                continue;
-            if (l === lang)
-                return this;
-            if (l in dict)
-                return new TString(dict, l);
-        }
-        // Wildcard language matches anything. Used for e.g. proper nouns that
-        // are the same in any language.
-        if ("*" in dict) {
-            var ts = __assign({}, dict);
-            ts[langs[0]] = dict["*"];
-            return new TString(ts, langs[0]);
-        }
-        if (lang)
-            return this;
-        var fallback = Object.keys(dict)[0];
-        if (!fallback)
+        var _a;
+        var _this = this;
+        var _b = this, lang = _b.lang, dict = _b.dict;
+        var resolveKey = function () {
+            // Fast path - our preferred language is there
+            if (langs[0] in dict)
+                return langs[0];
+            var tags = Object.keys(dict);
+            var best = (0, bcp47_1.bestLocale)(tags, __spreadArray([], langs, true));
+            if (best)
+                return best;
+            if ("*" in dict)
+                return "*";
+            if (lang)
+                return lang;
+            return tags[0];
+        };
+        var lookupKey = function () {
+            var slot = _this.slot;
+            var key = slot.get(langs);
+            if (!key)
+                slot.set(langs, (key = resolveKey()));
+            return key;
+        };
+        var key = lookupKey();
+        if (!key)
             throw new Error("No translations available");
-        return new TString(dict, fallback);
+        if (key === "*")
+            return new TString(__assign(__assign({}, dict), (_a = {}, _a[langs[0]] = dict["*"], _a)), langs[0]);
+        if (key === lang)
+            return this;
+        return new TString(dict, key);
     };
     return TString;
 }());

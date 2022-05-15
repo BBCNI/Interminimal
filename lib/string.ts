@@ -1,6 +1,8 @@
 import { TFatString } from "./types";
 
 import difference from "lodash/difference";
+import { shapeSlot } from "./shapeMap";
+import { bestLocale } from "./bcp47";
 
 const diffs = (a: string[], b: string[]) => [
   difference(a, b),
@@ -39,6 +41,10 @@ export class TString {
     return this.dict;
   }
 
+  private get slot(): WeakMap<any, any> {
+    return shapeSlot(this.dict);
+  }
+
   toString(count?: number): string {
     const { language } = this;
     const ttx = this.dict[language];
@@ -63,27 +69,34 @@ export class TString {
     return ttx[plur] || "";
   }
 
-  toLang(langs: string | readonly string[]): TString {
-    if (!Array.isArray(langs)) return this.toLang([langs] as readonly string[]);
+  toLang(langs: readonly string[]): TString {
     const { lang, dict } = this;
-    for (const l of langs) {
-      if (!l) continue;
-      if (l === lang) return this;
-      if (l in dict) return new TString(dict, l);
-    }
+    const resolveKey = () => {
+      // Fast path - our preferred language is there
+      if (langs[0] in dict) return langs[0];
+      const tags = Object.keys(dict);
+      const best = bestLocale(tags, [...langs]);
+      if (best) return best;
+      if ("*" in dict) return "*";
+      if (lang) return lang;
+      return tags[0];
+    };
 
-    // Wildcard language matches anything. Used for e.g. proper nouns that
-    // are the same in any language.
-    if ("*" in dict) {
-      const ts = { ...dict };
-      ts[langs[0]] = dict["*"];
-      return new TString(ts, langs[0]);
-    }
+    const lookupKey = () => {
+      const { slot } = this;
+      let key = slot.get(langs);
+      if (!key) slot.set(langs, (key = resolveKey()));
+      return key;
+    };
 
-    if (lang) return this;
+    const key = lookupKey();
 
-    const fallback = Object.keys(dict)[0];
-    if (!fallback) throw new Error(`No translations available`);
-    return new TString(dict, fallback);
+    if (!key) throw new Error(`No translations available`);
+
+    if (key === "*")
+      return new TString({ ...dict, [langs[0]]: dict["*"] }, langs[0]);
+
+    if (key === lang) return this;
+    return new TString(dict, key);
   }
 }

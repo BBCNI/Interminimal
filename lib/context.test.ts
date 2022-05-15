@@ -62,7 +62,7 @@ describe("LangContext", () => {
 
   it("should resolve tags", () => {
     const ctx = new LangContext({ lang: "cy", defaultLang: "en", dictionary });
-    const ts = ctx.resolve(["site"]).toLang("cy");
+    const ts = ctx.resolve(["site"]).toLang(["cy"]);
     expect(ts.toString()).toBe("Interminimal");
     expect(ts.language).toBe("en");
     expect(() => ctx.resolve(["this", "that"])).toThrow(/must be/);
@@ -81,7 +81,7 @@ describe("LangContext", () => {
   it("should consult parent contexts", () => {
     const ctx = new LangContext({ lang: "cy", defaultLang: "en", dictionary });
     const next = ctx.derive({ lang: "fr" });
-    const ts = next.resolve(["heading"]).toLang("de");
+    const ts = next.resolve(["heading"]).toLang(["de"]);
     expect(ts.toString()).toBe("Lassen Sie uns übersetzen!");
   });
 
@@ -109,8 +109,10 @@ describe("LangContext", () => {
   it("should consult nested dictionaries", () => {
     const ctx = new LangContext({ lang: "fr", defaultLang: "en", dictionary });
     const maybe = ctx.derive({ dictionaryFromTag: "maybe" });
-    expect(ctx.resolve(["site"]).toLang("en").toString()).toBe("Interminimal");
-    expect(maybe.resolve(["site"]).toLang("en").toString()).toBe(
+    expect(ctx.resolve(["site"]).toLang(["en"]).toString()).toBe(
+      "Interminimal"
+    );
+    expect(maybe.resolve(["site"]).toLang(["en"]).toString()).toBe(
       "Something else"
     );
     expect(() => ctx.derive({ dictionaryFromTag: "site" })).toThrow(
