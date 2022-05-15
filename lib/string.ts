@@ -9,20 +9,6 @@ const diffs = (a: string[], b: string[]) => [
   difference(b, a)
 ];
 
-const wildCache = new WeakMap<TFatString, { [key: string]: TFatString }>();
-
-const wildSlot = (dict: TFatString) => {
-  let slot = wildCache.get(dict);
-  if (!slot) wildCache.set(dict, (slot = {}));
-  return slot;
-};
-
-// Cached wildcard expansion
-const wildExpand = (dict: TFatString, lang: string): TFatString => {
-  const slot = wildSlot(dict);
-  return (slot[lang] = slot[lang] || { ...dict, [lang]: dict["*"] });
-};
-
 export class TString {
   private readonly dict: TFatString;
   private readonly lang: string | undefined;
@@ -108,11 +94,10 @@ export class TString {
     };
 
     const key = lookupKey();
-
     if (!key) throw new Error(`No translations available`);
 
-    if (key === "*") return new TString(wildExpand(dict, langs[0]), langs[0]);
-
+    if (key === "*")
+      return new TString({ ...dict, [langs[0]]: dict["*"] }, langs[0]);
     if (key === lang) return this;
     return new TString(dict, key);
   }
