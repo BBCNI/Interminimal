@@ -25,6 +25,19 @@ var diffs = function (a, b) { return [
     difference(a, b),
     difference(b, a)
 ]; };
+var wildCache = new WeakMap();
+var wildSlot = function (dict) {
+    var slot = wildCache.get(dict);
+    if (!slot)
+        wildCache.set(dict, (slot = {}));
+    return slot;
+};
+// Cached wildcard expansion
+var wildExpand = function (dict, lang) {
+    var _a;
+    var slot = wildSlot(dict);
+    return (slot[lang] = slot[lang] || __assign(__assign({}, dict), (_a = {}, _a[lang] = dict["*"], _a)));
+};
 var TString = /** @class */ (function () {
     function TString(dict, lang) {
         if (lang && !(lang in dict))
@@ -89,13 +102,15 @@ var TString = /** @class */ (function () {
         return ttx[plur] || "";
     };
     TString.prototype.toLang = function (langs) {
-        var _a;
         var _this = this;
-        var _b = this, lang = _b.lang, dict = _b.dict;
+        var _a = this, lang = _a.lang, dict = _a.dict;
+        // Fast cases - no need to consult cache
+        var first = langs[0];
+        if (first === lang)
+            return this;
+        if (first in dict)
+            return new TString(dict, first);
         var resolveKey = function () {
-            // Fast path - our preferred language is there
-            if (langs[0] in dict)
-                return langs[0];
             var tags = Object.keys(dict);
             var best = bestLocale(tags, __spreadArray([], langs, true));
             if (best)
@@ -117,7 +132,7 @@ var TString = /** @class */ (function () {
         if (!key)
             throw new Error("No translations available");
         if (key === "*")
-            return new TString(__assign(__assign({}, dict), (_a = {}, _a[langs[0]] = dict["*"], _a)), langs[0]);
+            return new TString(wildExpand(dict, langs[0]), langs[0]);
         if (key === lang)
             return this;
         return new TString(dict, key);
