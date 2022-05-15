@@ -51,9 +51,11 @@ export async function getServerSideProps() {
         fr: 'Le mot pour 2 est "%2" et le mot pour 1 est "%1".'
       },
       nested: {
-        en: "Here's a %1[useful link] and here's some %2[italic text]",
-        fr: "Voici %2[du texte en italique] et un %1[lien utile]",
-        de: "Hier ist ein %1[nützlicher Link] und hier ein %2[kursiver Text]"
+        "en": "Here's a %1[useful link] and here's some %2[italic text]",
+        "en-GB":
+          "Would you care for a %1[useful link]? Or maybe some %2[italic text]?",
+        "fr": "Voici %2[du texte en italique] et un %1[lien utile]",
+        "de": "Hier ist ein %1[nützlicher Link] und hier ein %2[kursiver Text]"
       }
     }
   };
@@ -78,6 +80,7 @@ const dictionary: TDictionaryRoot = {
     "three": { en: "Three" },
     // Language names
     "en": { en: "English", fr: "Anglais" },
+    "en-GB": { "en-GB": "British" },
     "fr": { fr: "Français" },
     "de": { en: "German", fr: "Allemand", de: "Deutsch" },
     "cy": { en: "Welsh", cy: "Cymraeg" },
@@ -85,6 +88,10 @@ const dictionary: TDictionaryRoot = {
       en: "cat",
       de: "Katze",
       cy: "cath"
+    },
+    "colour": {
+      "en-GB": "colour",
+      "en": "color"
     },
     // Plurals
     "cats": {
@@ -207,7 +214,7 @@ const useLanguageState = (defaultLang: string): LanguageState => {
   return { lang, setLang };
 };
 
-const langs = ["en", "fr", "de", "cy"];
+const langs = ["en-GB", "en", "fr", "de", "cy"];
 
 const LanguagePicker: ComponentType<{
   label: TextPropType;
@@ -297,6 +304,7 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
           <T tag="one" />
           <T tag="two" />
         </Tp>
+        <Tp tag="colour" />
         <Tp text={nested}>
           <Link href="/" passHref={true}>
             <T as="a" tag="%1" />
