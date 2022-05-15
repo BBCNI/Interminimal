@@ -80,20 +80,18 @@ var LangContext = /** @class */ (function () {
         // Handle dictionaryFromTag
         var trDFT = function (_a) {
             var dictionaryFromTag = _a.dictionaryFromTag, rest = __rest(_a, ["dictionaryFromTag"]);
-            if (dictionaryFromTag) {
-                if (props.dictionary)
-                    throw new Error("dictionary and dictionaryFromTag both found");
-                return __assign({ dictionary: _this.resolveDictionary(dictionaryFromTag) }, rest);
-            }
-            return rest;
+            if (!dictionaryFromTag)
+                return rest;
+            if (props.dictionary)
+                throw new Error("dictionary and dictionaryFromTag both found");
+            return __assign({ dictionary: _this.resolveDictionary(dictionaryFromTag) }, rest);
         };
         var trDL = function (_a) {
             var defaultLang = _a.defaultLang, rest = __rest(_a, ["defaultLang"]);
-            if (defaultLang) {
-                var lang = rest.lang, other = __rest(rest, ["lang"]);
-                return __assign({ defaultLang: defaultLang, lang: castArray(lang || []).concat(defaultLang) }, other);
-            }
-            return rest;
+            if (!defaultLang)
+                return rest;
+            var lang = rest.lang, other = __rest(rest, ["lang"]);
+            return __assign({ defaultLang: defaultLang, lang: castArray(lang || []).concat(defaultLang) }, other);
         };
         var _a = this, dictionary = _a.dictionary, stackCache = _a.stackCache, tagCache = _a.tagCache, locale = _a.locale, rest = __rest(_a, ["dictionary", "stackCache", "tagCache", "locale"]);
         return new LangContext(__assign(__assign(__assign({}, rest), trDFT(trDL(props))), { parent: this }));
