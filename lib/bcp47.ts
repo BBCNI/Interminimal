@@ -20,11 +20,11 @@ const pred = (tag: string, lang: string): boolean => {
   return pred(tag, lang.slice(0, idx));
 };
 
-export function bestLocale(
+export const bestLocale = (
   tags: string[],
   langs: string[]
-): string | undefined {
+): string | undefined => {
   const canon = tags.slice(0).sort(cmpTag);
   for (const lang of langs.map(lc))
     for (const tag of canon) if (pred(lc(tag), lang)) return tag;
-}
+};

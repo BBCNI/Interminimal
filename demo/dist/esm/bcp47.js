@@ -21,7 +21,7 @@ var pred = function (tag, lang) {
         return pred(tag, lang.slice(0, idx - 2));
     return pred(tag, lang.slice(0, idx));
 };
-export function bestLocale(tags, langs) {
+export var bestLocale = function (tags, langs) {
     var canon = tags.slice(0).sort(cmpTag);
     for (var _i = 0, _a = langs.map(lc); _i < _a.length; _i++) {
         var lang = _a[_i];
@@ -31,4 +31,4 @@ export function bestLocale(tags, langs) {
                 return tag;
         }
     }
-}
+};
