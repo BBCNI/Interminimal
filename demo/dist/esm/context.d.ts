@@ -3,7 +3,6 @@ import { LangContextProps, TextPropType, StringPropType } from "./types";
 export declare class LangContext {
     readonly defaultLang: string;
     private readonly parent?;
-    private readonly root;
     private readonly ambient?;
     private readonly dictionary?;
     private readonly locale;

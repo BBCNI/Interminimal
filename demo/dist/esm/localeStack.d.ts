@@ -7,3 +7,4 @@ export declare class LocaleStack {
     resolve(langs: string[]): LocaleStack;
 }
 export declare const localeRoot: LocaleStack;
+export declare const canonicaliseLocales: (langs: string[]) => LocaleStack;

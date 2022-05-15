@@ -65,3 +65,6 @@ var LocaleStack = /** @class */ (function () {
 }());
 export { LocaleStack };
 export var localeRoot = new LocaleStack();
+export var canonicaliseLocales = function (langs) {
+    return localeRoot.resolve(langs);
+};

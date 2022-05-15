@@ -22,7 +22,7 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 import castArray from "lodash/castArray";
 import { TString } from "./string";
-import { localeRoot } from "./localeStack";
+import { localeRoot, canonicaliseLocales } from "./localeStack";
 var LangContext = /** @class */ (function () {
     function LangContext(props) {
         if (props === void 0) { props = {}; }
@@ -40,7 +40,6 @@ var LangContext = /** @class */ (function () {
             ? this.parent.locale
             : localeRoot.resolve([this.defaultLang]);
         this.locale = ldContext.resolve(langs);
-        this.root = this.parent ? this.parent.root : this;
     }
     Object.defineProperty(LangContext.prototype, "stack", {
         get: function () {
@@ -168,7 +167,7 @@ var LangContext = /** @class */ (function () {
         return this.locale.resolve(langs).stack;
     };
     LangContext.prototype.canonicaliseLocales = function (langs) {
-        return this.root.resolveLocales(langs);
+        return canonicaliseLocales(langs).stack;
     };
     LangContext.prototype.resolveMagicProps = function (props, lang) {
         var _this = this;

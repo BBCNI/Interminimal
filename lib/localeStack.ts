@@ -62,3 +62,6 @@ export class LocaleStack {
 }
 
 export const localeRoot = new LocaleStack();
+
+export const canonicaliseLocales = (langs: string[]) =>
+  localeRoot.resolve(langs);

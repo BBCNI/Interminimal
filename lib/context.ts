@@ -9,12 +9,11 @@ import {
   StringPropType
 } from "./types";
 
-import { localeRoot, LocaleStack } from "./localeStack";
+import { localeRoot, LocaleStack, canonicaliseLocales } from "./localeStack";
 
 export class LangContext {
   readonly defaultLang: string = "en";
   private readonly parent?: LangContext;
-  private readonly root: LangContext;
   private readonly ambient?: string;
   private readonly dictionary?: TDictionaryRoot;
   private readonly locale: LocaleStack = localeRoot;
@@ -37,7 +36,6 @@ export class LangContext {
       : localeRoot.resolve([this.defaultLang]);
 
     this.locale = ldContext.resolve(langs);
-    this.root = this.parent ? this.parent.root : this;
   }
 
   private get stack(): readonly string[] {
@@ -164,7 +162,7 @@ export class LangContext {
   }
 
   canonicaliseLocales(langs: string[]) {
-    return this.root.resolveLocales(langs);
+    return canonicaliseLocales(langs).stack;
   }
 
   resolveMagicProps<T>(props: T, lang?: string): T {
