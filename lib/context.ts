@@ -38,8 +38,6 @@ export class LangContext {
       ? this.parent.locale
       : localeRoot.resolve([this.defaultLang]);
 
-    // if (props.defaultLang) ldContext = ldContext.resolve([props.defaultLang]);
-
     this.locale = ldContext.resolve(langs);
     this.root = this.parent ? this.parent.root : this;
   }
