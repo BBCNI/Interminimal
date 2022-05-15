@@ -26,13 +26,19 @@ describe("LangContext", () => {
     expect(ctx.language).toBe("cy");
     expect(ctx.ambience).toBe("cy");
     const ctx2 = ctx.derive({ lang: "de", defaultLang: "fr" });
-    expect(ctx2.languages).toEqual(["de", "cy", "en"]);
+    expect(ctx2.languages).toEqual(["de", "fr", "cy", "en"]);
     expect(ctx2.language).toBe("de");
     expect(ctx2.ambience).toBe("de");
     const ctx3 = ctx2.derive({ lang: "en" });
-    expect(ctx3.languages).toEqual(["en", "de", "cy"]);
+    expect(ctx3.languages).toEqual(["en", "de", "fr", "cy"]);
     expect(ctx3.language).toBe("en");
     expect(ctx3.ambience).toBe("en");
+  });
+
+  it("should honor defaultLang", () => {
+    const ctx = new LangContext({ defaultLang: "en" });
+    const ctx2 = ctx.derive({ defaultLang: "fr" });
+    expect(ctx2.languages).toEqual(["fr", "en"]);
   });
 
   it("should allow ambience overload", () => {
