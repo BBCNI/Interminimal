@@ -122,10 +122,10 @@ var TString = /** @class */ (function () {
         var key = lookupKey();
         if (!key)
             throw new Error("No translations available");
-        if (key === "*")
-            return new TString(__assign(__assign({}, dict), (_a = {}, _a[langs[0]] = dict["*"], _a)), langs[0]);
         if (key === lang)
             return this;
+        if (key === "*")
+            return new TString(__assign(__assign({}, dict), (_a = {}, _a[langs[0]] = dict["*"], _a)), langs[0]);
         return new TString(dict, key);
     };
     return TString;

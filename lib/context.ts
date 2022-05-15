@@ -65,7 +65,7 @@ export class LangContext {
 
   derive(props: LangContextProps): LangContext {
     // Handle dictionaryFromTag
-    const txDFT = ({ dictionaryFromTag, ...rest }: LangContextProps) => {
+    const trDFT = ({ dictionaryFromTag, ...rest }: LangContextProps) => {
       if (dictionaryFromTag) {
         if (props.dictionary)
           throw new Error(`dictionary and dictionaryFromTag both found`);
@@ -77,7 +77,7 @@ export class LangContext {
       return rest;
     };
 
-    const txDL = ({ defaultLang, ...rest }: LangContextProps) => {
+    const drDL = ({ defaultLang, ...rest }: LangContextProps) => {
       if (defaultLang) {
         const { lang, ...other } = rest;
         return {
@@ -91,7 +91,7 @@ export class LangContext {
 
     const { dictionary, stackCache, tagCache, locale, ...rest } = this;
 
-    return new LangContext({ ...rest, ...txDFT(txDL(props)), parent: this });
+    return new LangContext({ ...rest, ...trDFT(drDL(props)), parent: this });
   }
 
   translate(text: TextPropType): TString {

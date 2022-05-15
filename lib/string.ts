@@ -99,9 +99,11 @@ export class TString {
     const key = lookupKey();
     if (!key) throw new Error(`No translations available`);
 
+    if (key === lang) return this;
+
     if (key === "*")
       return new TString({ ...dict, [langs[0]]: dict["*"] }, langs[0]);
-    if (key === lang) return this;
+
     return new TString(dict, key);
   }
 }

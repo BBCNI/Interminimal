@@ -78,7 +78,7 @@ var LangContext = /** @class */ (function () {
     LangContext.prototype.derive = function (props) {
         var _this = this;
         // Handle dictionaryFromTag
-        var txDFT = function (_a) {
+        var trDFT = function (_a) {
             var dictionaryFromTag = _a.dictionaryFromTag, rest = __rest(_a, ["dictionaryFromTag"]);
             if (dictionaryFromTag) {
                 if (props.dictionary)
@@ -87,7 +87,7 @@ var LangContext = /** @class */ (function () {
             }
             return rest;
         };
-        var txDL = function (_a) {
+        var drDL = function (_a) {
             var defaultLang = _a.defaultLang, rest = __rest(_a, ["defaultLang"]);
             if (defaultLang) {
                 var lang = rest.lang, other = __rest(rest, ["lang"]);
@@ -96,7 +96,7 @@ var LangContext = /** @class */ (function () {
             return rest;
         };
         var _a = this, dictionary = _a.dictionary, stackCache = _a.stackCache, tagCache = _a.tagCache, locale = _a.locale, rest = __rest(_a, ["dictionary", "stackCache", "tagCache", "locale"]);
-        return new LangContext(__assign(__assign(__assign({}, rest), txDFT(txDL(props))), { parent: this }));
+        return new LangContext(__assign(__assign(__assign({}, rest), trDFT(drDL(props))), { parent: this }));
     };
     LangContext.prototype.translate = function (text) {
         return this.resolve(text).toLang(this.stack);
