@@ -194,12 +194,16 @@ var TString = /** @class */ (function () {
             if (best)
                 return best === lang ? this : new TString(dict, best);
         }
+        // If there's a wildcard pretend that's what we were looking for.
         if ("*" in dict)
             return new TString(__assign(__assign({}, dict), (_a = {}, _a[first] = dict["*"], _a)), first);
+        // If we already have a language assume that's good enough.
         if (lang)
-            return new TString(dict, lang);
+            return this;
+        // Do we have _any_ languages?
         if (tags.length)
             return new TString(dict, tags[0]);
+        // Nope.
         throw new Error("No translations available");
     };
     return TString;
