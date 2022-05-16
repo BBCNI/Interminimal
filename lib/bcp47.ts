@@ -2,17 +2,22 @@ import { canonicaliseLocales } from "./localeStack";
 
 const lc = (str: string): string => str.toLowerCase();
 
-const cache = new WeakMap<readonly string[], readonly string[]>();
+const langCache: { [key: string]: readonly string[] } = {};
 
 const expandLang = (lang: string): readonly string[] => {
-  const idx = lang.lastIndexOf("-");
-  if (idx < 0) return [lang];
-  // foo-x-bar?
-  if (idx > 2 && lang.charAt(idx - 2) === "-")
-    return [lang].concat(expandLang(lang.slice(0, idx - 2)));
-  // foo-BAR
-  return [lang].concat(expandLang(lang.slice(0, idx)));
+  const xl = () => {
+    const idx = lang.lastIndexOf("-");
+    if (idx < 0) return [lang];
+    // foo-x-bar?
+    if (idx > 2 && lang.charAt(idx - 2) === "-")
+      return [lang].concat(expandLang(lang.slice(0, idx - 2)));
+    // foo-BAR
+    return [lang].concat(expandLang(lang.slice(0, idx)));
+  };
+  return (langCache[lang] = langCache[lang] || xl());
 };
+
+const cache = new WeakMap<readonly string[], readonly string[]>();
 
 // Cached expansion of locales:
 //  ["en-GB", "fr-CA"] -> ["en-GB", "en", "fr-CA", "fr"]
