@@ -153,7 +153,7 @@ const brand = { "*": "Hexten", "fr": "Hexadécimal dix" };
 
 ## Dictionaries
 
-Translation dictionaries have a `$$dict` key that contains an object that map tags to fat strings:
+Translation dictionaries have a `$$dict` key that contains an object that maps tags to fat strings:
 
 ```js
 const dictionary = {
