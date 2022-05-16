@@ -175,8 +175,8 @@ var LangContext = /** @class */ (function () {
     };
     /**
      * This is a convenience method which may be useful when wrapping components
-     * that don't play nicely. For example here's how we can set the page title
-     * using NextJS's `Head` component.
+     * that don't work well with _Interminimal_. For example here's how we can set
+     * the page title using NextJS's `Head` component.
      *
      * ```typescript
      * // Inject page title into a NextJS <Head> component. We have to do the

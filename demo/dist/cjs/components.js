@@ -53,7 +53,8 @@ var string_1 = require("./string");
 var TContext = (0, react_1.createContext)(new context_1.LangContext());
 /**
  * Hook that gets the currently active translation context. Here's an example
- * of a component that wraps the `Intl.DateTimeFormat` API.
+ * of a component that wraps the `Intl.DateTimeFormat` API using the translation
+ * context.
  *
  * ```typescript
  * const TDateFormat: ComponentType<{ date: Date }> = ({ date }) => {
@@ -267,6 +268,8 @@ function resolveTranslationProps(ctx, tag, text) {
  *   </T>
  * );
  * ```
+ *
+ * See [Using T](https://github.com/BBCNI/Interminimal#using-t) for more examples.
  *
  * @category Components
  */
