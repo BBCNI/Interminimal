@@ -183,7 +183,7 @@ export class TString {
 
     const tags = Object.keys(dict);
     if (tags.length > 1) {
-      const best = bestLocale(tags, [...langs]);
+      const best = bestLocale(tags, langs);
       if (best) return best === lang ? this : new TString(dict, best);
     }
 

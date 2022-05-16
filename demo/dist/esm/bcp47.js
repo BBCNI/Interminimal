@@ -1,16 +1,23 @@
+import { canonicaliseLocales } from "./localeStack";
 var lc = function (str) { return str.toLowerCase(); };
-var lookup = function (tags, lang) {
-    if (tags.has(lc(lang)))
-        return lang;
-    // any extensions?
+var cache = new WeakMap();
+var expandLang = function (lang) {
     var idx = lang.lastIndexOf("-");
     if (idx < 0)
-        return;
+        return [lang];
     // foo-x-bar?
     if (idx > 2 && lang.charAt(idx - 2) === "-")
-        return lookup(tags, lang.slice(0, idx - 2));
+        return [lang].concat(expandLang(lang.slice(0, idx - 2)));
     // foo-BAR
-    return lookup(tags, lang.slice(0, idx));
+    return [lang].concat(expandLang(lang.slice(0, idx)));
+};
+var expand = function (langs) {
+    var exp = cache.get(langs);
+    if (exp)
+        return exp;
+    var nexp = canonicaliseLocales(langs.flatMap(expandLang)).stack;
+    cache.set(langs, nexp);
+    return nexp;
 };
 /**
  * Given a set of BCP 47 language tags and a list of locales in
@@ -33,10 +40,5 @@ var lookup = function (tags, lang) {
  */
 export var bestLocale = function (tags, langs) {
     var ts = new Set(tags.map(lc));
-    for (var _i = 0, langs_1 = langs; _i < langs_1.length; _i++) {
-        var lang = langs_1[_i];
-        var m = lookup(ts, lang);
-        if (m)
-            return m;
-    }
+    return expand(langs).find(function (ln) { return ts.has(lc(ln)); });
 };

@@ -1,15 +1,26 @@
+import { canonicaliseLocales } from "./localeStack";
+
 const lc = (str: string): string => str.toLowerCase();
 
-const lookup = (tags: Set<string>, lang: string): string | undefined => {
-  if (tags.has(lc(lang))) return lang;
-  // any extensions?
+const cache = new WeakMap<readonly string[], readonly string[]>();
+
+const expandLang = (lang: string): readonly string[] => {
   const idx = lang.lastIndexOf("-");
-  if (idx < 0) return;
+  if (idx < 0) return [lang];
   // foo-x-bar?
   if (idx > 2 && lang.charAt(idx - 2) === "-")
-    return lookup(tags, lang.slice(0, idx - 2));
+    return [lang].concat(expandLang(lang.slice(0, idx - 2)));
   // foo-BAR
-  return lookup(tags, lang.slice(0, idx));
+  return [lang].concat(expandLang(lang.slice(0, idx)));
+};
+
+const expand = (langs: readonly string[]): readonly string[] => {
+  const exp = cache.get(langs);
+  if (exp) return exp;
+
+  const nexp = canonicaliseLocales(langs.flatMap(expandLang)).stack;
+  cache.set(langs, nexp);
+  return nexp;
 };
 
 /**
@@ -32,12 +43,9 @@ const lookup = (tags: Set<string>, lang: string): string | undefined => {
  * @returns a language tag or `undefined` if no match found
  */
 export const bestLocale = (
-  tags: string[],
-  langs: string[]
+  tags: readonly string[],
+  langs: readonly string[]
 ): string | undefined => {
   const ts = new Set(tags.map(lc));
-  for (const lang of langs) {
-    const m = lookup(ts, lang);
-    if (m) return m;
-  }
+  return expand(langs).find(ln => ts.has(lc(ln)));
 };

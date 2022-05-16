@@ -22,10 +22,7 @@ import {
   useTranslation,
   TDictionaryRoot,
   TFatString,
-  TString,
-  bestLocale,
-  LocaleStack,
-  localeRoot
+  TString
 } from "../dist/esm";
 
 import styles from "../styles/Home.module.css";
@@ -345,12 +342,7 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
     </div>
   );
 };
-const demo = () => {
-  const ls1 = localeRoot.resolve(["en", "fr"]);
-  const ls2 = ls1.resolve(["fr"]); // now ["fr", "en"]
-  const ls3 = localeRoot.resolve(["fr", "en"]); // also ["fr", "en"]
-  if (ls2 === ls3) console.log("Same thing!");
-};
+const demo = () => {};
 
 const Home: NextPage<PageProps> = props => {
   demo();

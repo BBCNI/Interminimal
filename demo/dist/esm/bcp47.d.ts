@@ -17,4 +17,4 @@
  * @param langs an array of locales to match
  * @returns a language tag or `undefined` if no match found
  */
-export declare const bestLocale: (tags: string[], langs: string[]) => string | undefined;
+export declare const bestLocale: (tags: readonly string[], langs: readonly string[]) => string | undefined;

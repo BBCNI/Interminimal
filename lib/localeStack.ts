@@ -31,7 +31,9 @@ export class LocaleStack {
 
   /**
    * Normally only called directly to create a new root node. Other
-   * nodes are created by calling `resolve` on existing nodes.
+   * nodes are created by calling `resolve` on existing nodes. In
+   * fact you probably don't want to call it at all - use [[`localeRoot`]]
+   * instead.
    *
    * @param stack the stack for this node
    * @param parent the parent for this node
@@ -63,7 +65,7 @@ export class LocaleStack {
   }
 
   /**
-   * Return the `LocalStack` node which is the result of prepending a
+   * Return the node that is the result of prepending a
    * (possibly empty) list of locales to this node.
    *
    * ```typescript
@@ -74,7 +76,7 @@ export class LocaleStack {
    * ```
    *
    * @param langs a list of langs to prepend to the stack
-   * @returns a `LocaleStack` with the prepended langs
+   * @returns a stack node with the prepended langs
    */
   resolve(langs: string[]): LocaleStack {
     if (!langs.length) return this; // we've arrived
@@ -92,7 +94,22 @@ export class LocaleStack {
   }
 }
 
+/**
+ * A global root node. Use this in preference to calling `new LocaleStack()`.
+ */
 export const localeRoot = new LocaleStack();
 
+/**
+ * Canonicalise a list of languages.
+ *
+ * ```typescript
+ * console.log(
+ *   canonicaliseLocales(["en", "fr", "en", "de", "de", "fr", "cy", "de"]).stack
+ * );
+ * // ["en", "fr", "de", "cy"]
+ * ```
+ * @param langs the list of languages to canonicalise
+ * @returns a node for the canonical language stack
+ */
 export const canonicaliseLocales = (langs: string[]) =>
   localeRoot.resolve(langs);

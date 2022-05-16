@@ -30,7 +30,9 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 var LocaleStack = /** @class */ (function () {
     /**
      * Normally only called directly to create a new root node. Other
-     * nodes are created by calling `resolve` on existing nodes.
+     * nodes are created by calling `resolve` on existing nodes. In
+     * fact you probably don't want to call it at all - use [[`localeRoot`]]
+     * instead.
      *
      * @param stack the stack for this node
      * @param parent the parent for this node
@@ -63,7 +65,7 @@ var LocaleStack = /** @class */ (function () {
         return this.parent.splice(lang, path.concat(this.stack[0]));
     };
     /**
-     * Return the `LocalStack` node which is the result of prepending a
+     * Return the node that is the result of prepending a
      * (possibly empty) list of locales to this node.
      *
      * ```typescript
@@ -74,7 +76,7 @@ var LocaleStack = /** @class */ (function () {
      * ```
      *
      * @param langs a list of langs to prepend to the stack
-     * @returns a `LocaleStack` with the prepended langs
+     * @returns a stack node with the prepended langs
      */
     LocaleStack.prototype.resolve = function (langs) {
         if (!langs.length)
@@ -91,7 +93,22 @@ var LocaleStack = /** @class */ (function () {
     return LocaleStack;
 }());
 export { LocaleStack };
+/**
+ * A global root node. Use this in preference to calling `new LocaleStack()`.
+ */
 export var localeRoot = new LocaleStack();
+/**
+ * Canonicalise a list of languages.
+ *
+ * ```typescript
+ * console.log(
+ *   canonicaliseLocales(["en", "fr", "en", "de", "de", "fr", "cy", "de"]).stack
+ * );
+ * // ["en", "fr", "de", "cy"]
+ * ```
+ * @param langs the list of languages to canonicalise
+ * @returns a node for the canonical language stack
+ */
 export var canonicaliseLocales = function (langs) {
     return localeRoot.resolve(langs);
 };

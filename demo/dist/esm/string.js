@@ -9,15 +9,6 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 import difference from "lodash/difference";
 import { bestLocale } from "./bcp47";
 var diffs = function (a, b) { return [
@@ -198,7 +189,7 @@ var TString = /** @class */ (function () {
             return new TString(dict, first);
         var tags = Object.keys(dict);
         if (tags.length > 1) {
-            var best = bestLocale(tags, __spreadArray([], langs, true));
+            var best = bestLocale(tags, langs);
             if (best)
                 return best === lang ? this : new TString(dict, best);
         }
