@@ -23,11 +23,19 @@ export type TDictionaryMeta = {
   [key: string]: string;
 };
 
+/**
+ * The root of a translation dictionary
+ */
 export type TDictionaryRoot = {
+  /** the translations */
   $$dict: TDictionaryType;
+  /** optional metadata - ignored by _Interminimal_ */
   $$meta?: TDictionaryMeta;
 };
 
+/**
+ * The type of a component - either a string like `"div"` or `"span"` or a React component.
+ */
 export type AsType =
   | string
   | FunctionComponent<{ lang?: string; ref?: Ref<ReactElement> }>
@@ -75,13 +83,41 @@ export type TranslateProps = LangContextProps & {
   as?: AsType;
 };
 
+/**
+ * Properties for the `<T>` component.
+ */
 export interface TProps {
+  /**
+   * Any children. When `tag` or `text` is also present any children are mapped to the
+   * corresponding placeholder
+   */
   children?: ReactNode;
+  /**
+   * A tag to look up in the current dictionary and perform template substitution on.
+   */
   tag?: string;
+  /**
+   * Text to translate. Can also refer to a dictionary tag if it's a single element array:
+   * `["tag"]`. The resolved text is processed with template substitution.
+   */
   text?: TextPropType;
+  /**
+   * Text to translate without any further template substitution. Use for e.g. literal
+   * translated text from an API.
+   */
   content?: TextPropType;
+  /**
+   * The number of the thing being described for cases where the translation provides
+   * pluralisation rules. Defaults to 1.
+   */
   count?: number;
+  /**
+   * The element to render as. May be a string (e.g. `"div", "section"`) or a React component.
+   */
   as?: AsType;
+  /**
+   * The remaining properties are passed to the rendered element.
+   */
   [key: string]: any;
 }
 

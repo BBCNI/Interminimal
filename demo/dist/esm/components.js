@@ -186,7 +186,7 @@ function resolveTranslationProps(ctx, tag, text) {
  * translate content looked up in the translation dictionary and fat strings
  * (or [[`TString`]]s).
  *
- * It can optionally perform template substitution on the translated text
+ * It can optionally perform template substitution on the translated text,
  * allowing child components to render portions of the translated text
  * with arbitrary wrappers.
  *
@@ -196,7 +196,48 @@ function resolveTranslationProps(ctx, tag, text) {
  * If the wrapped content can't be translated into the context's preferred
  * language it will have a `lang=` property specifying its actual language.
  *
+ * The simplest usage is to render translatable content without template
+ * substition:
  *
+ * ```typescript
+ * // Render multilingual content
+ * const hi = { en: "Hello", de: "Hallo", fr: "Bonjour" };
+ * return <T content={hi} />;
+ * // fr: <span>Bonjour</span>
+ * ```
+ *
+ * Template substitution allows you to build whole component trees from a
+ * translated string:
+ *
+ * ```typescript
+ * const info = {
+ *   en: "Here's a %1[useful link] and here's some %2[italic text]",
+ *   fr: "Voici %2[du texte en italique] et un %1[lien utile]",
+ *   de: "Hier ist ein %1[nützlicher Link] und hier ein %2[kursiver Text]"
+ * };
+ * return (
+ *   <T as="div" text={info}>
+ *     <T as="a" tag="%1" href="/" />
+ *     <T as="i" tag="%2" />
+ *   </T>
+ * );
+ * // fr:
+ * //   <div>
+ * //     Voici <i>du texte en italique</i> et un <a href="/">lien utile</a>
+ * //   </div>
+ * ```
+ *
+ * You can also look up and translate dictionary tags:
+ *
+ * ```typescript
+ * // Same as the previous example if `info` is in the dictionary
+ * return (
+ *   <T as="div" tag="info">
+ *     <T as="a" tag="%1" href="/" />
+ *     <T as="i" tag="%2" />
+ *   </T>
+ * );
+ * ```
  *
  * @category Components
  */
@@ -224,6 +265,26 @@ export var T = forwardRef(function (_a, ref) {
 T.displayName = "T";
 var boundMap = new Map();
 /**
+ * Create a new component that behaves like `<T>` but with a different default
+ * `as` element.
+ *
+ * ```typescript
+ * const Toption = tBind("option");
+ * // later
+ * return <Toption value="1" tag="one" />
+ * ```
+ *
+ * It's also possible to wrap React components.
+ *
+ * ```typescript
+ * const TImage = tBind(Image as FunctionComponent);
+ * ```
+ *
+ * The need for the cast is ugly. Not sure how to fix that. PRs welcome...
+ *
+ * The generated components are cached - so whenever you call `tBind("p")` you
+ * will get the same component.
+ *
  * @category Utilities
  */
 export var tBind = function (as) {
@@ -245,6 +306,12 @@ export var tBind = function (as) {
     return bound;
 };
 /**
+ * Make multiple bound versions of `<T>` at once.
+ *
+ * ```typescript
+ * const [Tli, Tdiv, Th2, Tp] = tBindMulti(["li", "div", "h2", "p"]);
+ * ```
+ *
  * @category Utilities
  */
 export var tBindMulti = function (as) { return as.map(tBind); };
