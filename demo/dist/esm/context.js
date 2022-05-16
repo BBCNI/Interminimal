@@ -28,8 +28,11 @@ var LangContext = /** @class */ (function () {
     function LangContext(props) {
         if (props === void 0) { props = {}; }
         this.defaultLang = "en";
+        /** @ignore */
         this.locale = localeRoot;
+        /** @ignore */
         this.stackCache = null;
+        /** @ignore */
         this.tagCache = {};
         var lang = props.lang, dictionary = props.dictionary, rest = __rest(props, ["lang", "dictionary"]);
         if (dictionary && !("$$dict" in dictionary))
@@ -43,6 +46,7 @@ var LangContext = /** @class */ (function () {
         this.locale = ldContext.resolve(langs);
     }
     Object.defineProperty(LangContext.prototype, "stack", {
+        /** @ignore */
         get: function () {
             return this.locale.stack;
         },
@@ -50,9 +54,33 @@ var LangContext = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(LangContext.prototype, "languages", {
-        // Version of the stack for APIs that don't like readonly string[].
-        // The array is still frozen so any attempts at modification will
-        // fail.
+        /**
+         * Get the language preference stack for this context. The `languages`
+         * array is always normalised - duplicates are removed.
+         *
+         * ```typescript
+         * const ctx = new LangContext({ lang: "cy", defaultLang: "en" });
+         * expect(ctx.languages).toEqual(["cy", "en"]);
+         *
+         * const ctx2 = ctx.derive({ lang: "de", defaultLang: "fr" });
+         * expect(ctx2.languages).toEqual(["de", "fr", "cy", "en"]);
+         *
+         * // "en" de-duplicated from languages
+         * const ctx3 = ctx2.derive({ lang: "en" });
+         * expect(ctx3.languages).toEqual(["en", "de", "fr", "cy"]);
+         *
+         * // Start from scratch with an explicit lang stack
+         * const ctx4 = new LangContext({ lang: ["en", "de", "fr", "cy"] });
+         *
+         * // All equivalent stacks are the same object
+         * expect(ctx4.languages).toBe(ctx3.languages);
+         * ```
+         *
+         * Equivalent language arrays are always the same object. This makes
+         * it possible to use `languages` in e.g. `React.useMemo()` to
+         * perform expensive operations only when the language stack changes.
+         *
+         */
         get: function () {
             return this.stack;
         },
@@ -122,6 +150,7 @@ var LangContext = /** @class */ (function () {
         }
         return this.castString(text);
     };
+    /** @ignore */
     LangContext.prototype.findTag = function (tag) {
         var _this = this;
         var tagCache = this.tagCache;
@@ -138,12 +167,14 @@ var LangContext = /** @class */ (function () {
         };
         return (tagCache[tag] = tagCache[tag] || rt());
     };
+    /** @ignore */
     LangContext.prototype.resolveTag = function (tag) {
         var it = this.findTag(tag);
         if ("$$dict" in it)
             throw new Error("".concat(tag, " is a dictionary"));
         return this.castString(it);
     };
+    /** @ignore */
     LangContext.prototype.resolveDictionary = function (tag) {
         var it = this.findTag(tag);
         if ("$$dict" in it)
@@ -167,7 +198,7 @@ var LangContext = /** @class */ (function () {
     LangContext.prototype.resolveLocales = function (langs) {
         return this.locale.resolve(langs).stack;
     };
-    LangContext.prototype.canonicaliseLocales = function (langs) {
+    LangContext.canonicaliseLocales = function (langs) {
         return canonicaliseLocales(langs).stack;
     };
     LangContext.prototype.resolveMagicProps = function (props, lang) {

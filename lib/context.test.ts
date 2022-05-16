@@ -33,6 +33,8 @@ describe("LangContext", () => {
     expect(ctx3.languages).toEqual(["en", "de", "fr", "cy"]);
     expect(ctx3.language).toBe("en");
     expect(ctx3.ambience).toBe("en");
+    const ctx4 = new LangContext({ lang: ["en", "de", "fr", "cy"] });
+    expect(ctx4.languages).toBe(ctx3.languages);
   });
 
   it("should honor defaultLang", () => {
@@ -176,9 +178,11 @@ describe("LangContext", () => {
     // Sanity check
     expect(frCtx.languages).toEqual(["fr", "en"]);
     // Check reference identity (toBe or not to be)
-    expect(ctx.canonicaliseLocales(["fr", "fr", "en", "fr"])).toBe(
+    expect(LangContext.canonicaliseLocales(["fr", "fr", "en", "fr"])).toBe(
       frCtx.languages
     );
-    expect(enCtx.canonicaliseLocales(["fr", "en", "fr"])).toBe(frCtx.languages);
+    expect(LangContext.canonicaliseLocales(["fr", "en", "fr"])).toBe(
+      frCtx.languages
+    );
   });
 });

@@ -14,12 +14,18 @@ import { localeRoot, LocaleStack, canonicaliseLocales } from "./localeStack";
 /** A language context. Each nested <Translate> gets a new one of these */
 export class LangContext {
   readonly defaultLang: string = "en";
+  /** @ignore */
   private readonly parent?: LangContext;
+  /** @ignore */
   private readonly ambient?: string;
+  /** @ignore */
   private readonly dictionary?: TDictionaryRoot;
+  /** @ignore */
   private readonly locale: LocaleStack = localeRoot;
 
+  /** @ignore */
   private stackCache: readonly string[] | null = null;
+  /** @ignore */
   private tagCache: { [key: string]: TFatString | TDictionaryRoot } = {};
 
   constructor(props: LangContextProps & { parent?: LangContext } = {}) {
@@ -39,13 +45,38 @@ export class LangContext {
     this.locale = ldContext.resolve(langs);
   }
 
+  /** @ignore */
   private get stack(): readonly string[] {
     return this.locale.stack;
   }
 
-  // Version of the stack for APIs that don't like readonly string[].
-  // The array is still frozen so any attempts at modification will
-  // fail.
+  /**
+   * Get the language preference stack for this context. The `languages`
+   * array is always normalised - duplicates are removed.
+   *
+   * ```typescript
+   * const ctx = new LangContext({ lang: "cy", defaultLang: "en" });
+   * expect(ctx.languages).toEqual(["cy", "en"]);
+   *
+   * const ctx2 = ctx.derive({ lang: "de", defaultLang: "fr" });
+   * expect(ctx2.languages).toEqual(["de", "fr", "cy", "en"]);
+   *
+   * // "en" de-duplicated from languages
+   * const ctx3 = ctx2.derive({ lang: "en" });
+   * expect(ctx3.languages).toEqual(["en", "de", "fr", "cy"]);
+   *
+   * // Start from scratch with an explicit lang stack
+   * const ctx4 = new LangContext({ lang: ["en", "de", "fr", "cy"] });
+   *
+   * // All equivalent stacks are the same object
+   * expect(ctx4.languages).toBe(ctx3.languages);
+   * ```
+   *
+   * Equivalent language arrays are always the same object. This makes
+   * it possible to use `languages` in e.g. `React.useMemo()` to
+   * perform expensive operations only when the language stack changes.
+   *
+   */
   get languages(): string[] {
     return this.stack as string[];
   }
@@ -119,6 +150,7 @@ export class LangContext {
     return this.castString(text);
   }
 
+  /** @ignore */
   private findTag(tag: string): TFatString | TDictionaryRoot {
     const { tagCache } = this;
 
@@ -135,12 +167,14 @@ export class LangContext {
     return (tagCache[tag] = tagCache[tag] || rt());
   }
 
+  /** @ignore */
   private resolveTag(tag: string): TString {
     const it = this.findTag(tag);
     if ("$$dict" in it) throw new Error(`${tag} is a dictionary`);
     return this.castString(it);
   }
 
+  /** @ignore */
   private resolveDictionary(tag: string): TDictionaryRoot {
     const it = this.findTag(tag);
     if ("$$dict" in it) return it as TDictionaryRoot;
@@ -162,7 +196,7 @@ export class LangContext {
     return this.locale.resolve(langs).stack;
   }
 
-  canonicaliseLocales(langs: string[]) {
+  static canonicaliseLocales(langs: string[]) {
     return canonicaliseLocales(langs).stack;
   }
 

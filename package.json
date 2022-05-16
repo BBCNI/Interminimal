@@ -12,7 +12,8 @@
     "prepack": "npm test && npm run build",
     "postversion": "npm publish",
     "postpublish": "git push origin --all && git push origin --tags",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "docs": "typedoc --watch --out docs lib/index.ts "
   },
   "repository": {
     "type": "git",
