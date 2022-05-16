@@ -575,6 +575,8 @@ A similar technique is likely to work with internationalisation APIs other than 
 
 `T` supports plurals and templating. Templating can nest to any depth. Templates can re-order child components.
 
+You can read more in the [API documentation](https://bbcni.github.io/Interminimal/modules.html).
+
 # CI Status
 
 [![CI Status](https://github.com/BBCNI/Interminimal/actions/workflows/node.js.yml/badge.svg)](https://github.com/BBCNI/Interminimal/actions/workflows/node.js.yml)
