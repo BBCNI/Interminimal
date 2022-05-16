@@ -30,7 +30,8 @@ const TContext = createContext(new LangContext());
 
 /**
  * Hook that gets the currently active translation context. Here's an example
- * of a component that wraps the `Intl.DateTimeFormat` API.
+ * of a component that wraps the `Intl.DateTimeFormat` API using the translation
+ * context.
  *
  * ```typescript
  * const TDateFormat: ComponentType<{ date: Date }> = ({ date }) => {
