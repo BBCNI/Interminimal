@@ -129,16 +129,6 @@ describe("LangContext", () => {
     );
   });
 
-  // it("should resolve <T> props", () => {
-  //   const ctx = new LangContext({ lang: "fr", defaultLang: "en", dictionary });
-  //   expect(() => ctx.resolveTranslationProps()).toThrow(/text or tag/i);
-  //   expect(() => ctx.resolveTranslationProps("foo", "bar")).toThrow(/both/i);
-  //   expect(ctx.resolveTranslationProps("site").toString()).toBe("Interminimal");
-  //   expect(
-  //     ctx.resolveTranslationProps(undefined, { en: "One", fr: "Un" }).toString()
-  //   ).toBe("Un");
-  // });
-
   it("should throw on unknown tags", () => {
     const ctx = new LangContext({ lang: "fr", defaultLang: "en", dictionary });
     expect(() => ctx.resolve(["doesNotExits"])).toThrow(/No translation/i);
@@ -179,9 +169,7 @@ describe("LangContext", () => {
     // Sanity check
     expect(frCtx.languages).toEqual(["fr", "en"]);
     // Check reference identity (toBe or not to be)
-    expect(canonicaliseLocales(["fr", "fr", "en", "fr"]).stack).toBe(
-      frCtx.languages
-    );
-    expect(canonicaliseLocales(["fr", "en", "fr"]).stack).toBe(frCtx.languages);
+    expect(canonicaliseLocales(["fr", "fr", "en", "fr"])).toBe(frCtx.languages);
+    expect(canonicaliseLocales(["fr", "en", "fr"])).toBe(frCtx.languages);
   });
 });

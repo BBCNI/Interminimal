@@ -17,7 +17,7 @@ var expand = function (langs) {
     var exp = cache.get(langs);
     if (exp)
         return exp;
-    var nexp = canonicaliseLocales(langs.flatMap(expandLang)).stack;
+    var nexp = canonicaliseLocales(langs.flatMap(expandLang));
     cache.set(langs, nexp);
     return nexp;
 };

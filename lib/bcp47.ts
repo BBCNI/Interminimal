@@ -20,7 +20,7 @@ const expand = (langs: readonly string[]): readonly string[] => {
   const exp = cache.get(langs);
   if (exp) return exp;
 
-  const nexp = canonicaliseLocales(langs.flatMap(expandLang)).stack;
+  const nexp = canonicaliseLocales(langs.flatMap(expandLang));
   cache.set(langs, nexp);
   return nexp;
 };

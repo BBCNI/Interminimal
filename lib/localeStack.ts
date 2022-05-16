@@ -1,3 +1,5 @@
+const canon = new WeakSet<readonly string[]>();
+
 /**
  * Map incremental locale preferences to canonical locale stack arrays.
  * This allows us to rely on reference identity between equivalent locale
@@ -6,11 +8,10 @@
  * For example:
  *
  * ```typescript
- * const root = new LocaleStack(); // root must be empty
- * const ls1 = root.resolve(["en-GB", "en"]);
+ * const ls1 = localeRoot.resolve(["en-GB", "en"]);
  * const ls2 = ls1.resolve(["cy"]); // ls2 is ["cy", "en-GB", "en"]
  * const ls3 = ls2.resolve(["en"]); // ls3 is ["en", "cy", "en-GB"]
- * const ls4 = root.resolve(["en", "cy", "en-GB"]) // ls4 is ["en", "cy", "en-GB"]
+ * const ls4 = localeRoot.resolve(["en", "cy", "en-GB"]) // ls4 is ["en", "cy", "en-GB"]
  * expect(ls4).toBe(ls3); // same thing!
  * ```
  *
@@ -43,6 +44,7 @@ export class LocaleStack {
     if (stack.length && !parent)
       throw new Error(`Root LocaleStack can't have a stack`);
     this.stack = Object.freeze(stack);
+    canon.add(this.stack);
     this.parent = parent;
   }
 
@@ -108,7 +110,7 @@ export const localeRoot = new LocaleStack();
  *
  * ```typescript
  * console.log(
- *   canonicaliseLocales(["en", "fr", "en", "de", "de", "fr", "cy", "de"]).stack
+ *   canonicaliseLocales(["en", "fr", "en", "de", "de", "fr", "cy", "de"])
  * );
  * // ["en", "fr", "de", "cy"]
  * ```
@@ -117,8 +119,10 @@ export const localeRoot = new LocaleStack();
  * be used as the key for a `Map` or `Set`.
  *
  * @param langs the list of languages to canonicalise
- * @returns a node for the canonical language stack
+ * @returns the canonical language stack
  * @category Locale
  */
-export const canonicaliseLocales = (langs: readonly string[]) =>
-  localeRoot.resolve(langs);
+export const canonicaliseLocales = (
+  langs: readonly string[]
+): readonly string[] =>
+  canon.has(langs) ? langs : localeRoot.resolve(langs).stack;
