@@ -2,26 +2,33 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.bestLocale = void 0;
 var localeStack_1 = require("./localeStack");
+var MaxLength = 35;
 var lc = function (str) { return str.toLowerCase(); };
-var cache = new WeakMap();
+var langCache = {};
 var expandLang = function (lang) {
-    var idx = lang.lastIndexOf("-");
-    if (idx < 0)
-        return [lang];
-    // foo-x-bar?
-    if (idx > 2 && lang.charAt(idx - 2) === "-")
-        return [lang].concat(expandLang(lang.slice(0, idx - 2)));
-    // foo-BAR
-    return [lang].concat(expandLang(lang.slice(0, idx)));
+    var xl = function () {
+        if (lang.length > MaxLength)
+            throw new Error("BCP 47 language tag too long");
+        var idx = lang.lastIndexOf("-");
+        if (idx < 0)
+            return [lang];
+        // foo-x-bar?
+        if (idx > 2 && lang.charAt(idx - 2) === "-")
+            return [lang].concat(expandLang(lang.slice(0, idx - 2)));
+        // foo-BAR
+        return [lang].concat(expandLang(lang.slice(0, idx)));
+    };
+    return (langCache[lang] = langCache[lang] || xl());
 };
+var expCache = new WeakMap();
 // Cached expansion of locales:
 //  ["en-GB", "fr-CA"] -> ["en-GB", "en", "fr-CA", "fr"]
 var expand = function (langs) {
-    var exp = cache.get(langs);
+    var exp = expCache.get(langs);
     if (exp)
         return exp;
-    var nexp = (0, localeStack_1.canonicaliseLocales)(langs.flatMap(expandLang)).stack;
-    cache.set(langs, nexp);
+    var nexp = (0, localeStack_1.canonicaliseLocales)(langs.flatMap(expandLang));
+    expCache.set(langs, nexp);
     return nexp;
 };
 /**
@@ -46,6 +53,6 @@ var expand = function (langs) {
  */
 var bestLocale = function (tags, langs) {
     var ts = new Set(tags.map(lc));
-    return expand(langs).find(function (ln) { return ts.has(lc(ln)); });
+    return expand((0, localeStack_1.canonicaliseLocales)(langs)).find(function (ln) { return ts.has(lc(ln)); });
 };
 exports.bestLocale = bestLocale;

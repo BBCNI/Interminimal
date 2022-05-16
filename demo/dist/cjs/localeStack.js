@@ -10,6 +10,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.canonicaliseLocales = exports.localeRoot = exports.LocaleStack = void 0;
+var canon = new WeakSet();
 /**
  * Map incremental locale preferences to canonical locale stack arrays.
  * This allows us to rely on reference identity between equivalent locale
@@ -18,11 +19,10 @@ exports.canonicaliseLocales = exports.localeRoot = exports.LocaleStack = void 0;
  * For example:
  *
  * ```typescript
- * const root = new LocaleStack(); // root must be empty
- * const ls1 = root.resolve(["en-GB", "en"]);
+ * const ls1 = localeRoot.resolve(["en-GB", "en"]);
  * const ls2 = ls1.resolve(["cy"]); // ls2 is ["cy", "en-GB", "en"]
  * const ls3 = ls2.resolve(["en"]); // ls3 is ["en", "cy", "en-GB"]
- * const ls4 = root.resolve(["en", "cy", "en-GB"]) // ls4 is ["en", "cy", "en-GB"]
+ * const ls4 = localeRoot.resolve(["en", "cy", "en-GB"]) // ls4 is ["en", "cy", "en-GB"]
  * expect(ls4).toBe(ls3); // same thing!
  * ```
  *
@@ -48,6 +48,7 @@ var LocaleStack = /** @class */ (function () {
         if (stack.length && !parent)
             throw new Error("Root LocaleStack can't have a stack");
         this.stack = Object.freeze(stack);
+        canon.add(this.stack);
         this.parent = parent;
     }
     // Return a node whose stack has lang moved to its head, removing
@@ -109,7 +110,7 @@ exports.localeRoot = new LocaleStack();
  *
  * ```typescript
  * console.log(
- *   canonicaliseLocales(["en", "fr", "en", "de", "de", "fr", "cy", "de"]).stack
+ *   canonicaliseLocales(["en", "fr", "en", "de", "de", "fr", "cy", "de"])
  * );
  * // ["en", "fr", "de", "cy"]
  * ```
@@ -118,10 +119,10 @@ exports.localeRoot = new LocaleStack();
  * be used as the key for a `Map` or `Set`.
  *
  * @param langs the list of languages to canonicalise
- * @returns a node for the canonical language stack
+ * @returns the canonical language stack
  * @category Locale
  */
 var canonicaliseLocales = function (langs) {
-    return exports.localeRoot.resolve(langs);
+    return canon.has(langs) ? langs : exports.localeRoot.resolve(langs).stack;
 };
 exports.canonicaliseLocales = canonicaliseLocales;

@@ -1,8 +1,11 @@
 import { canonicaliseLocales } from "./localeStack";
+var MaxLength = 35;
 var lc = function (str) { return str.toLowerCase(); };
 var langCache = {};
 var expandLang = function (lang) {
     var xl = function () {
+        if (lang.length > MaxLength)
+            throw new Error("BCP 47 language tag too long");
         var idx = lang.lastIndexOf("-");
         if (idx < 0)
             return [lang];
@@ -14,15 +17,15 @@ var expandLang = function (lang) {
     };
     return (langCache[lang] = langCache[lang] || xl());
 };
-var cache = new WeakMap();
+var expCache = new WeakMap();
 // Cached expansion of locales:
 //  ["en-GB", "fr-CA"] -> ["en-GB", "en", "fr-CA", "fr"]
 var expand = function (langs) {
-    var exp = cache.get(langs);
+    var exp = expCache.get(langs);
     if (exp)
         return exp;
     var nexp = canonicaliseLocales(langs.flatMap(expandLang));
-    cache.set(langs, nexp);
+    expCache.set(langs, nexp);
     return nexp;
 };
 /**

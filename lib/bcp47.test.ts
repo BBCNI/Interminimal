@@ -34,4 +34,10 @@ describe("bestLocale", () => {
     expect(bestLocale(["en"], langs)).toBe("en");
     expect(bestLocale(["fr"], langs)).toBe("fr");
   });
+
+  it("should reject overlong langs", () => {
+    expect(() =>
+      bestLocale(["en"], ["this-is-a-really-long-language-tag-which-is"])
+    ).toThrow(/too long/i);
+  });
 });

@@ -6,11 +6,10 @@
  * For example:
  *
  * ```typescript
- * const root = new LocaleStack(); // root must be empty
- * const ls1 = root.resolve(["en-GB", "en"]);
+ * const ls1 = localeRoot.resolve(["en-GB", "en"]);
  * const ls2 = ls1.resolve(["cy"]); // ls2 is ["cy", "en-GB", "en"]
  * const ls3 = ls2.resolve(["en"]); // ls3 is ["en", "cy", "en-GB"]
- * const ls4 = root.resolve(["en", "cy", "en-GB"]) // ls4 is ["en", "cy", "en-GB"]
+ * const ls4 = localeRoot.resolve(["en", "cy", "en-GB"]) // ls4 is ["en", "cy", "en-GB"]
  * expect(ls4).toBe(ls3); // same thing!
  * ```
  *
@@ -69,7 +68,7 @@ export declare const localeRoot: LocaleStack;
  *
  * ```typescript
  * console.log(
- *   canonicaliseLocales(["en", "fr", "en", "de", "de", "fr", "cy", "de"]).stack
+ *   canonicaliseLocales(["en", "fr", "en", "de", "de", "fr", "cy", "de"])
  * );
  * // ["en", "fr", "de", "cy"]
  * ```
@@ -78,7 +77,7 @@ export declare const localeRoot: LocaleStack;
  * be used as the key for a `Map` or `Set`.
  *
  * @param langs the list of languages to canonicalise
- * @returns a node for the canonical language stack
+ * @returns the canonical language stack
  * @category Locale
  */
-export declare const canonicaliseLocales: (langs: readonly string[]) => LocaleStack;
+export declare const canonicaliseLocales: (langs: readonly string[]) => readonly string[];

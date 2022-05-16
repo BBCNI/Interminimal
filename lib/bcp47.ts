@@ -1,11 +1,15 @@
 import { canonicaliseLocales } from "./localeStack";
 
+const MaxLength = 35;
+
 const lc = (str: string): string => str.toLowerCase();
 
 const langCache: { [key: string]: readonly string[] } = {};
 
 const expandLang = (lang: string): readonly string[] => {
   const xl = () => {
+    if (lang.length > MaxLength)
+      throw new Error(`BCP 47 language tag too long`);
     const idx = lang.lastIndexOf("-");
     if (idx < 0) return [lang];
     // foo-x-bar?
@@ -17,16 +21,16 @@ const expandLang = (lang: string): readonly string[] => {
   return (langCache[lang] = langCache[lang] || xl());
 };
 
-const cache = new WeakMap<readonly string[], readonly string[]>();
+const expCache = new WeakMap<readonly string[], readonly string[]>();
 
 // Cached expansion of locales:
 //  ["en-GB", "fr-CA"] -> ["en-GB", "en", "fr-CA", "fr"]
 const expand = (langs: readonly string[]): readonly string[] => {
-  const exp = cache.get(langs);
+  const exp = expCache.get(langs);
   if (exp) return exp;
 
   const nexp = canonicaliseLocales(langs.flatMap(expandLang));
-  cache.set(langs, nexp);
+  expCache.set(langs, nexp);
   return nexp;
 };
 
