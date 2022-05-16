@@ -10,15 +10,6 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -30,13 +21,69 @@ var diffs = function (a, b) { return [
     (0, difference_1.default)(a, b),
     (0, difference_1.default)(b, a)
 ]; };
+/**
+ * Wrap a fat string with methods to coerce it to a specific
+ * language and stringify it. TStrings are immutable; all
+ * methods that appear to modify a TString return a new one.
+ *
+ * ```typescript
+ * import { TString } from "interminimal";
+ *
+ * const catsDict = {
+ *   en: { one: "cat", other: "cats" },
+ *   de: { one: "Katze", other: "Katzen" },
+ *   cy: {
+ *     zero: "cathod",
+ *     one: "gath",
+ *     two: "gath",
+ *     few: "cath",
+ *     many: "chath",
+ *     other: "cath"
+ *   }
+ * };
+ *
+ * const counts = [0, 1, 1.5, 2, 3, 6, 42];
+ *
+ * // Count the cats in Welsh
+ * const cat = new TString(catsDict);
+ * const welshCat = cat.toLang(["cy", "en"]);
+ * for (const count of counts) {
+ *   console.log(`${count} ${welshCat.toString(count)}`);
+ * }
+ * // 0 cathod
+ * // 1 gath
+ * // 1.5 cath
+ * // 2 gath
+ * // 3 cath
+ * // 6 chath
+ * // 42 cath
+ * ```
+ * @category Classes
+ */
 var TString = /** @class */ (function () {
+    /**
+     * Create a new TString, optionally setting the language.
+     *
+     * ```typescript
+     * const ts = new TString({ en: "Hello", de: "Hallo" });
+     * console.log(ts.toLang(["de"]).toString()) // Hallo
+     * ```
+     *
+     * @param dict a fat string like `{ en: "Hello", de: "Hallo" }`
+     * @param lang an optional language; if provided must exist in `dict`
+     */
     function TString(dict, lang) {
         if (lang && !(lang in dict))
             throw new Error("".concat(lang, " not in dictionary"));
         this.dict = dict;
         this.lang = lang;
     }
+    /**
+     * Cast a TString or TFatString to a TString.
+     * @param obj either a fat string or an existing TString
+     * @param lang an optional language
+     * @returns a TString which may be `obj` if `obj` is already a TString
+     */
     TString.cast = function (obj, lang) {
         if (obj instanceof TString) {
             if (lang)
@@ -45,11 +92,28 @@ var TString = /** @class */ (function () {
         }
         return new this(obj, lang);
     };
+    /**
+     * Cast a string literal and language into a single-language TString.
+     *
+     * ```typescript
+     * const ts = TString.literal("Hello", "en");
+     * // Try to convert to "de", won't work - we'll get "en" instead
+     * console.log(ts.toLang["de"].language); // "en"
+     * ```
+     *
+     * @param str a regular string
+     * @param lang the language of the string
+     * @returns a new TString
+     */
     TString.literal = function (str, lang) {
         var _a;
         return new this((_a = {}, _a[lang] = str, _a), lang);
     };
     Object.defineProperty(TString.prototype, "language", {
+        /**
+         * Get the current language of this TString. Throws an error if this
+         * is a floating TString with no language selected.
+         */
         get: function () {
             var lang = this.lang;
             if (!lang)
@@ -60,12 +124,31 @@ var TString = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(TString.prototype, "dictionary", {
+        /**
+         * Get the dictionary of this TString.
+         */
         get: function () {
             return this.dict;
         },
         enumerable: false,
         configurable: true
     });
+    /**
+     * Render this TString as a string. When the TString contains plural
+     * forms an appropriate plural will be chosen based on `count`. The
+     * correct plural form is chosen using `Intl.PluralRules`.
+     *
+     * ```typescript
+     * // Plurals
+     * const ts = new TString({
+     *   en: { one: "cat", other: "cats" },
+     *   de: { one: "Katze", other: "Katzen" }
+     * });
+     * console.log(ts.toLang(["de"]).toString(10)); // "Katzen"
+     * ```
+     *
+     * @param count an optional count to select a plural form
+     */
     TString.prototype.toString = function (count) {
         var language = this.language;
         var ttx = this.dict[language];
@@ -86,6 +169,22 @@ var TString = /** @class */ (function () {
         // istanbul ignore next - we can only have a missing plural in prod.
         return ttx[plur] || "";
     };
+    /**
+     * Attempt to translate this TString into one of a list of languages.
+     *
+     * ```typescript
+     * const ts = new TString({
+     *   en: "color",
+     *   de: "Farbe"
+     * });
+     * // We'd like British English or French but we'll get "en"
+     * // (U.S. English) which is the best match for "en-GB"
+     * console.log(ts.toLang(["en-GB", "fr"]), toString()); // "color"
+     * ```
+     *
+     * @param langs an array of BCP47 language codes in descending preference order
+     * @returns a new TString with its `language` set to the best match
+     */
     TString.prototype.toLang = function (langs) {
         var _a;
         var _b = this, lang = _b.lang, dict = _b.dict;
@@ -97,7 +196,7 @@ var TString = /** @class */ (function () {
             return new TString(dict, first);
         var tags = Object.keys(dict);
         if (tags.length > 1) {
-            var best = (0, bcp47_1.bestLocale)(tags, __spreadArray([], langs, true));
+            var best = (0, bcp47_1.bestLocale)(tags, langs);
             if (best)
                 return best === lang ? this : new TString(dict, best);
         }

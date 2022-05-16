@@ -45,43 +45,103 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tBindMulti = exports.tBind = exports.T = exports.TFormat = exports.TText = exports.As = exports.Translate = exports.TranslateLocal = exports.useTranslation = void 0;
+exports.tBindMulti = exports.tBind = exports.T = exports.Translate = exports.TranslateLocal = exports.useTranslation = void 0;
 var react_1 = __importStar(require("react"));
 var template_1 = require("./template");
 var context_1 = require("./context");
 var string_1 = require("./string");
 var TContext = (0, react_1.createContext)(new context_1.LangContext());
+/**
+ * Hook that gets the currently active translation context. Here's an example
+ * of a component that wraps the `Intl.DateTimeFormat` API.
+ *
+ * ```typescript
+ * const TDateFormat: ComponentType<{ date: Date }> = ({ date }) => {
+ *   // Get the context
+ *   const ctx = useTranslation();
+ *   // Use context's languages stack to find a format for our locale
+ *   const dtf = new Intl.DateTimeFormat(ctx.languages);
+ *   // Find out which language was matched...
+ *   const { locale } = dtf.resolvedOptions();
+ *   const ts = TString.literal(dtf.format(date), locale);
+ *   return <T text={ts} />;
+ * };
+ * ```
+ *
+ * @returns the active translation context
+ * @category Hooks
+ */
 var useTranslation = function () { return (0, react_1.useContext)(TContext); };
 exports.useTranslation = useTranslation;
+/**
+ * Wrap components in a nested [[`LangContext`]]. Used to override settings in
+ * the context. For example we can add an additional dictionary.
+ *
+ * ```typescript
+ * const Miscount = ({ children }: { children: ReactNode }) => {
+ *   // pretend one is three
+ *   const dict = { $$dict: { one: { en: "three" } } };
+ *   return <TranslateLocal dictionary={dict}>{children}</TranslateLocal>;
+ * };
+ * ```
+ * @category Components
+ */
 var TranslateLocal = function (_a) {
     var children = _a.children, props = __rest(_a, ["children"]);
     var ctx = (0, exports.useTranslation)().derive(props);
     return react_1.default.createElement(TContext.Provider, { value: ctx }, children);
 };
 exports.TranslateLocal = TranslateLocal;
+/**
+ * Wrap components in a nested [[`LangContext`]] that establishes a new
+ * language stack. By default any children will be wrapped in a `div` with
+ * a `lang=` property that indicates the language of the wrapped content.
+ *
+ * Within this context any content which can't be translated into the requested
+ * languages will have it's own `lang=` property to reflect the fact that it
+ * is in a different language than expected.
+ *
+ * ```typescript
+ * // Renders as <div lang="cy">....</div>
+ * const Welsh: ComponentType<{ children: ReactNode }> = ({ children }) => (
+ *   <Translate lang="cy">{children}</Translate>
+ * );
+ *
+ * // Renders as <section lang="cy">....</section>
+ * const WelshSection: ComponentType<{ children: ReactNode }> = ({ children }) => (
+ *   <Translate as="section" lang="cy">
+ *     {children}
+ *   </Translate>
+ * );
+ * ```
+ *
+ * Unlike [[`TranslateLocal`]] `Translate` always wraps the translated
+ * content in an element with a `lang=` property.
+ *
+ * @category Components
+ */
 var Translate = function (_a) {
     var children = _a.children, _b = _a.as, as = _b === void 0 ? "div" : _b, props = __rest(_a, ["children", "as"]);
     var ctx = (0, exports.useTranslation)().derive(props);
-    return (react_1.default.createElement(exports.TText, { as: as, lang: ctx.language },
+    return (react_1.default.createElement(TText, { as: as, lang: ctx.language },
         react_1.default.createElement(TContext.Provider, { value: ctx }, children)));
 };
 exports.Translate = Translate;
-// Create a component with the specified tag
-exports.As = (0, react_1.forwardRef)(function (_a, ref) {
+var As = (0, react_1.forwardRef)(function (_a, ref) {
     var as = _a.as, children = _a.children, props = __rest(_a, ["as", "children"]);
     return (0, react_1.createElement)(as, __assign({ ref: ref }, props), children);
 });
-exports.As.displayName = "As";
-exports.TText = (0, react_1.forwardRef)(function (_a, ref) {
-    var children = _a.children, lang = _a.lang, _b = _a.as, as = _b === void 0 ? "span" : _b, props = __rest(_a, ["children", "lang", "as"]);
+As.displayName = "As";
+var TText = (0, react_1.forwardRef)(function (_a, ref) {
+    var children = _a.children, lang = _a.lang, as = _a.as, props = __rest(_a, ["children", "lang", "as"]);
     var ctx = (0, exports.useTranslation)();
     if (lang !== ctx.ambience)
         return (react_1.default.createElement(exports.TranslateLocal, { ambient: lang },
-            react_1.default.createElement(exports.As, __assign({ as: as, ref: ref }, props, { lang: lang }), children)));
-    return (react_1.default.createElement(exports.As, __assign({ as: as, ref: ref }, props), children));
+            react_1.default.createElement(As, __assign({ as: as, ref: ref }, props, { lang: lang }), children)));
+    return (react_1.default.createElement(As, __assign({ as: as, ref: ref }, props), children));
 });
-exports.TText.displayName = "TText";
-exports.TFormat = (0, react_1.forwardRef)(function (_a, ref) {
+TText.displayName = "TText";
+var TFormat = (0, react_1.forwardRef)(function (_a, ref) {
     var format = _a.format, lang = _a.lang, children = _a.children;
     var clone = function (elt, props) {
         if ((0, react_1.isValidElement)(elt))
@@ -130,11 +190,86 @@ exports.TFormat = (0, react_1.forwardRef)(function (_a, ref) {
         return react_1.default.createElement(exports.TranslateLocal, { dictionary: dict }, out);
     return react_1.default.createElement(react_1.Fragment, null, out);
 });
-exports.TFormat.displayName = "TFormat";
+TFormat.displayName = "TFormat";
 var noRef = function (ref) {
     if (ref)
         throw new Error("Can't pass ref");
 };
+function resolveTranslationProps(ctx, tag, text) {
+    var r = function () {
+        if (process.env.NODE_ENV !== "production")
+            if (tag && text)
+                throw new Error("Got both tag and text");
+        if (text)
+            return ctx.resolve(text);
+        if (tag)
+            return ctx.resolve([tag]);
+        // istanbul ignore next - can't happen
+        throw new Error("No text or tag");
+    };
+    return r().toLang(ctx.languages);
+}
+/**
+ * A wrapper for content that should be translated. It attempts to translate
+ * the content you give it according to the active [[`LangContext`]]. It can
+ * translate content looked up in the translation dictionary and fat strings
+ * (or [[`TString`]]s).
+ *
+ * It can optionally perform template substitution on the translated text,
+ * allowing child components to render portions of the translated text
+ * with arbitrary wrappers.
+ *
+ * By default translated text is wrapped in a `span`. Render a different
+ * element using the `as` property.
+ *
+ * If the wrapped content can't be translated into the context's preferred
+ * language it will have a `lang=` property specifying its actual language.
+ *
+ * The simplest usage is to render translatable content without template
+ * substition:
+ *
+ * ```typescript
+ * // Render multilingual content
+ * const hi = { en: "Hello", de: "Hallo", fr: "Bonjour" };
+ * return <T content={hi} />;
+ * // fr: <span>Bonjour</span>
+ * ```
+ *
+ * Template substitution allows you to build whole component trees from a
+ * translated string:
+ *
+ * ```typescript
+ * const info = {
+ *   en: "Here's a %1[useful link] and here's some %2[italic text]",
+ *   fr: "Voici %2[du texte en italique] et un %1[lien utile]",
+ *   de: "Hier ist ein %1[nützlicher Link] und hier ein %2[kursiver Text]"
+ * };
+ * return (
+ *   <T as="div" text={info}>
+ *     <T as="a" tag="%1" href="/" />
+ *     <T as="i" tag="%2" />
+ *   </T>
+ * );
+ * // fr:
+ * //   <div>
+ * //     Voici <i>du texte en italique</i> et un <a href="/">lien utile</a>
+ * //   </div>
+ * ```
+ *
+ * You can also look up and translate dictionary tags:
+ *
+ * ```typescript
+ * // Same as the previous example if `info` is in the dictionary
+ * return (
+ *   <T as="div" tag="info">
+ *     <T as="a" tag="%1" href="/" />
+ *     <T as="i" tag="%2" />
+ *   </T>
+ * );
+ * ```
+ *
+ * @category Components
+ */
 exports.T = (0, react_1.forwardRef)(function (_a, ref) {
     var children = _a.children, tag = _a.tag, text = _a.text, content = _a.content, count = _a.count, _b = _a.as, as = _b === void 0 ? "span" : _b, props = __rest(_a, ["children", "tag", "text", "content", "count", "as"]);
     var ctx = (0, exports.useTranslation)();
@@ -145,19 +280,42 @@ exports.T = (0, react_1.forwardRef)(function (_a, ref) {
             noRef(ref);
         }
         var ts = ctx.translate(content);
-        return (react_1.default.createElement(exports.TText, __assign({ as: as, lang: ts.language }, ctx.resolveMagicProps(props, ts.language)), ts.toString(count)));
+        return (react_1.default.createElement(TText, __assign({ as: as, lang: ts.language }, ctx.resolveMagicProps(props, ts.language)), ts.toString(count)));
     }
     if (tag || text) {
-        var ts = ctx.resolveTranslationProps(tag, text);
-        return (react_1.default.createElement(exports.TText, __assign({ as: as, lang: ts.language }, ctx.resolveMagicProps(props, ts.language)),
-            react_1.default.createElement(exports.TFormat, { ref: ref, lang: ts.language, format: ctx.render(ts, count) }, children)));
+        var ts = resolveTranslationProps(ctx, tag, text);
+        return (react_1.default.createElement(TText, __assign({ as: as, lang: ts.language }, ctx.resolveMagicProps(props, ts.language)),
+            react_1.default.createElement(TFormat, { ref: ref, lang: ts.language, format: ctx.render(ts, count) }, children)));
     }
     if (process.env.NODE_ENV !== "production")
         noRef(ref);
-    return (react_1.default.createElement(exports.TText, __assign({ as: as, lang: ctx.defaultLang }, ctx.resolveMagicProps(props)), children));
+    return (react_1.default.createElement(TText, __assign({ as: as, lang: ctx.defaultLang }, ctx.resolveMagicProps(props)), children));
 });
 exports.T.displayName = "T";
 var boundMap = new Map();
+/**
+ * Create a new component that behaves like `<T>` but with a different default
+ * `as` element.
+ *
+ * ```typescript
+ * const Toption = tBind("option");
+ * // later
+ * return <Toption value="1" tag="one" />
+ * ```
+ *
+ * It's also possible to wrap React components.
+ *
+ * ```typescript
+ * const TImage = tBind(Image as FunctionComponent);
+ * ```
+ *
+ * The need for the cast is ugly. Not sure how to fix that. PRs welcome...
+ *
+ * The generated components are cached - so whenever you call `tBind("p")` you
+ * will get the same component.
+ *
+ * @category Utilities
+ */
 var tBind = function (as) {
     var bind = function (as) {
         var bound = (0, react_1.forwardRef)(function (_a, ref) {
@@ -177,5 +335,14 @@ var tBind = function (as) {
     return bound;
 };
 exports.tBind = tBind;
+/**
+ * Make multiple bound versions of `<T>` at once.
+ *
+ * ```typescript
+ * const [Tli, Tdiv, Th2, Tp] = tBindMulti(["li", "div", "h2", "p"]);
+ * ```
+ *
+ * @category Utilities
+ */
 var tBindMulti = function (as) { return as.map(exports.tBind); };
 exports.tBindMulti = tBindMulti;
