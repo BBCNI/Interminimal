@@ -51,7 +51,7 @@ function MyApp() {
 
 # API documentation
 
-If you're developing your own components that work with _Interminimal_ you might like to check out the [API documentation](https://bbcni.github.io/Interminimal/).
+If you're developing your own components that work with _Interminimal_ you might like to check out the [API documentation](https://bbcni.github.io/Interminimal/modules.html).
 
 # Let's Translate!
 
