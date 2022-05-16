@@ -307,6 +307,8 @@ function resolveTranslationProps(
  * );
  * ```
  *
+ * See [Using T](https://github.com/BBCNI/Interminimal#using-t) for more examples.
+ *
  * @category Components
  */
 export const T: ComponentType<TProps> = forwardRef<ReactElement, TProps>(

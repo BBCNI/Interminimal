@@ -240,6 +240,8 @@ function resolveTranslationProps(ctx, tag, text) {
  * );
  * ```
  *
+ * See [Using T](https://github.com/BBCNI/Interminimal#using-t) for more examples.
+ *
  * @category Components
  */
 export var T = forwardRef(function (_a, ref) {

@@ -125,6 +125,8 @@ export declare const Translate: ComponentType<TranslateProps>;
  * );
  * ```
  *
+ * See [Using T](https://github.com/BBCNI/Interminimal#using-t) for more examples.
+ *
  * @category Components
  */
 export declare const T: ComponentType<TProps>;
