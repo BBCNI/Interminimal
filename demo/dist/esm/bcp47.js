@@ -11,6 +11,8 @@ var expandLang = function (lang) {
     // foo-BAR
     return [lang].concat(expandLang(lang.slice(0, idx)));
 };
+// Cached expansion of locales:
+//  ["en-GB", "fr-CA"] -> ["en-GB", "en", "fr-CA", "fr"]
 var expand = function (langs) {
     var exp = cache.get(langs);
     if (exp)

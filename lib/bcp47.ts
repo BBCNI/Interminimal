@@ -14,6 +14,8 @@ const expandLang = (lang: string): readonly string[] => {
   return [lang].concat(expandLang(lang.slice(0, idx)));
 };
 
+// Cached expansion of locales:
+//  ["en-GB", "fr-CA"] -> ["en-GB", "en", "fr-CA", "fr"]
 const expand = (langs: readonly string[]): readonly string[] => {
   const exp = cache.get(langs);
   if (exp) return exp;
