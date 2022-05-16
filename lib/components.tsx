@@ -307,7 +307,7 @@ function resolveTranslationProps(
  * );
  * ```
  *
- * See [Using T](https://github.com/BBCNI/Interminimal#using-t) for more examples.
+ * See [Using T](https://bbcni.github.io/Interminimal/index.html#using-t) for more examples.
  *
  * @category Components
  */
