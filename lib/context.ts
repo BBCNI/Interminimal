@@ -9,10 +9,19 @@ import {
   StringPropType
 } from "./types";
 
-import { localeRoot, LocaleStack, canonicaliseLocales } from "./localeStack";
+import { localeRoot, LocaleStack } from "./localeStack";
 
-/** A language context. Each nested <Translate> gets a new one of these */
+/**
+ * A language context. All translation takes place inside a context and contexts
+ * nest to allow their configuration to be modified. Normally you'll get a context
+ * using the [[`useTranslation`]] hook.
+ *
+ * @category Classes
+ */
 export class LangContext {
+  /**
+   * The default language for this context. Used for any non-translated content.
+   */
   readonly defaultLang: string = "en";
   /** @ignore */
   private readonly parent?: LangContext;
@@ -28,6 +37,13 @@ export class LangContext {
   /** @ignore */
   private tagCache: { [key: string]: TFatString | TDictionaryRoot } = {};
 
+  /**
+   * Create a new LangContext. Normally you won't need to do this; the root
+   * context is initialised by _Interminimal_ and child contexts are created
+   * using [[`derive`]].
+   *
+   * @param props initial properties for this context
+   */
   constructor(props: LangContextProps & { parent?: LangContext } = {}) {
     const { lang, dictionary, ...rest } = props;
     if (dictionary && !("$$dict" in dictionary))
@@ -81,14 +97,33 @@ export class LangContext {
     return this.stack as string[];
   }
 
+  /**
+   * The current language. This is the same as the first element of the [[`languages`]] array.
+   */
   get language(): string {
     return this.stack[0];
   }
 
+  /**
+   * The ambient language. This is defined in contexts which can't match the desired language
+   * so that a `lang=` attribute can be added to nested elements
+   */
   get ambience(): string {
     return this.ambient || this.language;
   }
 
+  /**
+   * Create a new context nested below this one overriding any properties as desired.
+   *
+   * ```typescript
+   * const root = new LangContext({ lang: ["en-GB"], defaultLang: "en" });
+   * const welsh = root.derive({ lang: "cy" });
+   * console.log(welsh.languages); // ['cy', 'en-GB', 'en']
+   * ```
+   *
+   * @param props properties to override
+   * @returns a nested context
+   */
   derive(props: LangContextProps): LangContext {
     // Handle dictionaryFromTag
     const trDFT = ({ dictionaryFromTag, ...rest }: LangContextProps) => {
@@ -116,10 +151,42 @@ export class LangContext {
     return new LangContext({ ...rest, ...trDFT(trDL(props)), parent: this });
   }
 
+  /**
+   * Resolve a `[tag]`, string, TString, fat string and translate it according
+   * to this context's languages.
+   *
+   * @param text the thing to translate
+   * @returns a TString with the best language match selected
+   */
   translate(text: TextPropType): TString {
     return this.resolve(text).toLang(this.stack);
   }
 
+  /**
+   * This is a convenience method which may be useful when wrapping components
+   * that don't play nicely. For example here's how we can set the page title
+   * using NextJS's `Head` component.
+   *
+   * ```typescript
+   * // Inject page title into a NextJS <Head> component. We have to do the
+   * // translation explicitly because we can't nest a T inside a Head
+   * // Use this component *outside* of any other <Head></Head>
+   * const TTitle: ComponentType<TTitleProps> = ({ text, ...rest }) => {
+   *   // Translate text and props
+   *   const { str, props } = useTranslation().translateTextAndProps(text, rest);
+   *   return (
+   *     <Head>
+   *       <title {...props}>{str}</title>
+   *     </Head>
+   *   );
+   * };
+   * ```
+   *
+   * @param text the text to translate
+   * @param props a React style props object
+   * @param count how many of a thing we have for pluralisation
+   * @returns an object `{ str, props }` containing the translated text and properties.
+   */
   // Convenience method: given a TString (or [tag]) and a props object, translate the
   // string into the current language and update the props' lang attribute as
   // appropriate
@@ -135,12 +202,32 @@ export class LangContext {
     return { str, props };
   }
 
+  /**
+   * Turn something stringy into a TString. A plain string turns into a TString
+   * with its language set to [[`defaultLang`]].
+   *
+   * @param text a string, TString or fat string
+   * @returns a TString that represents `text`
+   */
   castString(text: StringPropType): TString {
     if (typeof text === "string")
       return TString.literal(text, this.defaultLang);
     return TString.cast(text);
   }
 
+  /**
+   * Resolve a text property which can be
+   *
+   * * a single element array containing the name of a tag
+   * * an existing TString or TFatString
+   * * a plain string
+   *
+   * Tags are resolved against the dictionary chain. Plain strings
+   * are converted into a TString with the context's [[`defaultLang`]].
+   *
+   * @param text `[tag]`, a TString or a plain JS string
+   * @returns a `TString` containing the translation
+   */
   resolve(text: TextPropType): TString {
     if (Array.isArray(text)) {
       if (text.length !== 1)
@@ -181,25 +268,30 @@ export class LangContext {
     throw new Error(`${tag} is not a dictionary`);
   }
 
-  resolveTranslationProps(tag?: string, text?: TextPropType): TString {
-    const r = () => {
-      if (process.env.NODE_ENV !== "production")
-        if (tag && text) throw new Error(`Got both tag and text`);
-      if (text) return this.resolve(text);
-      if (tag) return this.resolveTag(tag);
-      throw new Error(`No text or tag`);
-    };
-    return r().toLang(this.stack);
-  }
-
+  /**
+   * Get a new language stack that prepends languages to the context's stack.
+   *
+   * ```typescript
+   * const ctx = new LangContext({lang:"en"});
+   * console.log(ctx.resolveLocales(["cy"])); // ["cy", "en"]
+   * ```
+   *
+   * @param langs languages to prepend to context's stack
+   * @returns a language array that prepends `langs` to the context's stack
+   */
   resolveLocales(langs: string[]) {
     return this.locale.resolve(langs).stack;
   }
 
-  static canonicaliseLocales(langs: string[]) {
-    return canonicaliseLocales(langs).stack;
-  }
-
+  /**
+   * Translate a React style props object by replacing any `t-foo` properties with
+   * `foo` containing translated text. The value of any `t-*` properties should be
+   * capable of being resolved by [[`resolve`]].
+   *
+   * @param props a properties object to translate
+   * @param lang an additional language to add to the context's stack
+   * @returns a new props object with `t-*` entries translated
+   */
   resolveMagicProps<T>(props: T, lang?: string): T {
     const mapMagic = (k: string) => {
       const m = k.match(/^t-(.+)$/);
@@ -217,6 +309,15 @@ export class LangContext {
     return Object.fromEntries(pairs);
   }
 
+  /**
+   * Convert a [[`TString`]] to a string expanding any `%{tag}` expansions. Expansions
+   * are recursively looked up in the dictionary chain. Any `%` that isn't part of
+   * a tag expansion should be escaped as `%%`
+   *
+   * @param ts the string to render
+   * @param count the number of things in case of pluralisation
+   * @returns a string with any `%{tag}` references resolved.
+   */
   render(ts: TString, count?: number): string {
     const stack = this.resolveLocales([ts.language]);
     return ts

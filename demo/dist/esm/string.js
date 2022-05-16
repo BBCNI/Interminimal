@@ -52,6 +52,7 @@ var diffs = function (a, b) { return [
  * // 6 chath
  * // 42 cath
  * ```
+ * @category Classes
  */
 var TString = /** @class */ (function () {
     /**

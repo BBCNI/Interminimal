@@ -17,6 +17,7 @@
  * Reference identity means we can index into cache Maps based on locale stacks
  * and trust that any given sequence of locales, however arrived at, will resolve
  * to the same LocaleStack.
+ * @category Classes
  */
 export declare class LocaleStack {
     /** @ignore */
@@ -54,10 +55,13 @@ export declare class LocaleStack {
      * @param langs a list of langs to prepend to the stack
      * @returns a stack node with the prepended langs
      */
-    resolve(langs: string[]): LocaleStack;
+    resolve(langs: readonly string[]): LocaleStack;
 }
 /**
- * A global root node. Use this in preference to calling `new LocaleStack()`.
+ * A global root node for the locale normalisation stack. Use this in preference
+ * to calling `new LocaleStack()`.
+ *
+ * @category Locale
  */
 export declare const localeRoot: LocaleStack;
 /**
@@ -69,7 +73,12 @@ export declare const localeRoot: LocaleStack;
  * );
  * // ["en", "fr", "de", "cy"]
  * ```
+ *
+ * Equivalent language lists canonicalise to the same array object and can therefore
+ * be used as the key for a `Map` or `Set`.
+ *
  * @param langs the list of languages to canonicalise
  * @returns a node for the canonical language stack
+ * @category Locale
  */
-export declare const canonicaliseLocales: (langs: string[]) => LocaleStack;
+export declare const canonicaliseLocales: (langs: readonly string[]) => LocaleStack;

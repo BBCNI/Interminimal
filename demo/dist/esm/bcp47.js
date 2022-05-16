@@ -36,9 +36,10 @@ var expand = function (langs) {
  * console.log(bestLocale(tags, ["de", "de-AT"])); // undefined
  * ```
  *
- * @param tags an array of available language tags
+ * @param tags an array of available language tags - order unimportant
  * @param langs an array of locales to match
  * @returns a language tag or `undefined` if no match found
+ * @category Locale
  */
 export var bestLocale = function (tags, langs) {
     var ts = new Set(tags.map(lc));

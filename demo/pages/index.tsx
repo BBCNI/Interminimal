@@ -148,6 +148,17 @@ const DateFormat: ComponentType<
   return <T text={ts} />;
 };
 
+const TDateFormat: ComponentType<{ date: Date }> = ({ date }) => {
+  // Get the context
+  const ctx = useTranslation();
+  // Use context's languages stack to find a format for our locale
+  const dtf = new Intl.DateTimeFormat(ctx.languages);
+  // Find out which language was matched...
+  const { locale } = dtf.resolvedOptions();
+  const ts = TString.literal(dtf.format(date), locale);
+  return <T text={ts} />;
+};
+
 const TList: ComponentType<{
   children: ReactNode;
   type?: "conjunction" | "disjunction";
@@ -342,10 +353,8 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
     </div>
   );
 };
-const demo = () => {};
 
 const Home: NextPage<PageProps> = props => {
-  demo();
   return (
     <Translate dictionary={dictionary}>
       <div className={styles.container}>

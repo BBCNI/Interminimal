@@ -33,37 +33,47 @@ export type AsType =
   | FunctionComponent<{ lang?: string; ref?: Ref<ReactElement> }>
   | ComponentClass<{ lang?: string; ref?: Ref<ReactElement> }, any>;
 
+/**
+ * Properties that can be passed to [[`LangContext.constructor`]] and [[`LangContext.derive`]]
+ */
 export interface LangContextProps {
+  /**
+   * The default language for the context. Untranslated text will be assumed to be in this
+   * language. Setting `defaultLang` also places the default in the language stack before
+   * any languages in `lang`
+   */
   readonly defaultLang?: string;
+  /**
+   * A dictionary to resolve translations. Dictionaries are consulted in order walking up the
+   * context parent chain.
+   */
   readonly dictionary?: TDictionaryRoot;
+  /**
+   * Use a tagged section of a current dictionary as the new dictionary.
+   */
   readonly dictionaryFromTag?: string;
+  /**
+   * A language or list of languages that are preferred for this context. Any languages provided
+   * here are prepended to the parent's language stack.
+   */
   readonly lang?: string | string[];
-  readonly ls?: any; // tmp
+  /**
+   * Set the ambient language - which is used to create a context which can't match the desired
+   * language. The ambience is used to add `lang` attributes to elements that aren't in the
+   * expected language.
+   */
   readonly ambient?: string;
 }
 
 export type StringPropType = TFatString | TString | string;
 export type TextPropType = TFatString | TString | string | string[];
 
-export interface AsProps {
-  as: AsType;
-  children?: ReactNode;
-  [key: string]: any;
-}
+export type TranslateLocalProps = LangContextProps & { children: ReactNode };
 
-export interface TTextProps {
+export type TranslateProps = LangContextProps & {
   children: ReactNode;
-  lang: string;
   as?: AsType;
-  [key: string]: any;
-}
-
-export interface TFormatProps {
-  format: string;
-  lang: string;
-  children: ReactNode;
-  ref?: Ref<ReactElement>;
-}
+};
 
 export interface TProps {
   children?: ReactNode;

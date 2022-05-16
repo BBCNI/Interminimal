@@ -1,7 +1,16 @@
 import { TString } from "./string";
 import { LangContextProps, TextPropType, StringPropType } from "./types";
-/** A language context. Each nested <Translate> gets a new one of these */
+/**
+ * A language context. All translation takes place inside a context and contexts
+ * nest to allow their configuration to be modified. Normally you'll get a context
+ * using the [[`useTranslation`]] hook.
+ *
+ * @category Classes
+ */
 export declare class LangContext {
+    /**
+     * The default language for this context. Used for any non-translated content.
+     */
     readonly defaultLang: string;
     /** @ignore */
     private readonly parent?;
@@ -15,6 +24,13 @@ export declare class LangContext {
     private stackCache;
     /** @ignore */
     private tagCache;
+    /**
+     * Create a new LangContext. Normally you won't need to do this; the root
+     * context is initialised by _Interminimal_ and child contexts are created
+     * using [[`derive`]].
+     *
+     * @param props initial properties for this context
+     */
     constructor(props?: LangContextProps & {
         parent?: LangContext;
     });
@@ -48,10 +64,61 @@ export declare class LangContext {
      *
      */
     get languages(): string[];
+    /**
+     * The current language. This is the same as the first element of the [[`languages`]] array.
+     */
     get language(): string;
+    /**
+     * The ambient language. This is defined in contexts which can't match the desired language
+     * so that a `lang=` attribute can be added to nested elements
+     */
     get ambience(): string;
+    /**
+     * Create a new context nested below this one overriding any properties as desired.
+     *
+     * ```typescript
+     * const root = new LangContext({ lang: ["en-GB"], defaultLang: "en" });
+     * const welsh = root.derive({ lang: "cy" });
+     * console.log(welsh.languages); // ['cy', 'en-GB', 'en']
+     * ```
+     *
+     * @param props properties to override
+     * @returns a nested context
+     */
     derive(props: LangContextProps): LangContext;
+    /**
+     * Resolve a `[tag]`, string, TString, fat string and translate it according
+     * to this context's languages.
+     *
+     * @param text the thing to translate
+     * @returns a TString with the best language match selected
+     */
     translate(text: TextPropType): TString;
+    /**
+     * This is a convenience method which may be useful when wrapping components
+     * that don't play nicely. For example here's how we can set the page title
+     * using NextJS's `Head` component.
+     *
+     * ```typescript
+     * // Inject page title into a NextJS <Head> component. We have to do the
+     * // translation explicitly because we can't nest a T inside a Head
+     * // Use this component *outside* of any other <Head></Head>
+     * const TTitle: ComponentType<TTitleProps> = ({ text, ...rest }) => {
+     *   // Translate text and props
+     *   const { str, props } = useTranslation().translateTextAndProps(text, rest);
+     *   return (
+     *     <Head>
+     *       <title {...props}>{str}</title>
+     *     </Head>
+     *   );
+     * };
+     * ```
+     *
+     * @param text the text to translate
+     * @param props a React style props object
+     * @param count how many of a thing we have for pluralisation
+     * @returns an object `{ str, props }` containing the translated text and properties.
+     */
     translateTextAndProps(text: TextPropType, { lang, ...props }?: {
         lang?: string;
         [key: string]: any;
@@ -59,7 +126,27 @@ export declare class LangContext {
         str: string;
         props: {};
     };
+    /**
+     * Turn something stringy into a TString. A plain string turns into a TString
+     * with its language set to [[`defaultLang`]].
+     *
+     * @param text a string, TString or fat string
+     * @returns a TString that represents `text`
+     */
     castString(text: StringPropType): TString;
+    /**
+     * Resolve a text property which can be
+     *
+     * * a single element array containing the name of a tag
+     * * an existing TString or TFatString
+     * * a plain string
+     *
+     * Tags are resolved against the dictionary chain. Plain strings
+     * are converted into a TString with the context's [[`defaultLang`]].
+     *
+     * @param text `[tag]`, a TString or a plain JS string
+     * @returns a `TString` containing the translation
+     */
     resolve(text: TextPropType): TString;
     /** @ignore */
     private findTag;
@@ -67,9 +154,36 @@ export declare class LangContext {
     private resolveTag;
     /** @ignore */
     private resolveDictionary;
-    resolveTranslationProps(tag?: string, text?: TextPropType): TString;
+    /**
+     * Get a new language stack that prepends languages to the context's stack.
+     *
+     * ```typescript
+     * const ctx = new LangContext({lang:"en"});
+     * console.log(ctx.resolveLocales(["cy"])); // ["cy", "en"]
+     * ```
+     *
+     * @param langs languages to prepend to context's stack
+     * @returns a language array that prepends `langs` to the context's stack
+     */
     resolveLocales(langs: string[]): readonly string[];
-    static canonicaliseLocales(langs: string[]): readonly string[];
+    /**
+     * Translate a React style props object by replacing any `t-foo` properties with
+     * `foo` containing translated text. The value of any `t-*` properties should be
+     * capable of being resolved by [[`resolve`]].
+     *
+     * @param props a properties object to translate
+     * @param lang an additional language to add to the context's stack
+     * @returns a new props object with `t-*` entries translated
+     */
     resolveMagicProps<T>(props: T, lang?: string): T;
+    /**
+     * Convert a [[`TString`]] to a string expanding any `%{tag}` expansions. Expansions
+     * are recursively looked up in the dictionary chain. Any `%` that isn't part of
+     * a tag expansion should be escaped as `%%`
+     *
+     * @param ts the string to render
+     * @param count the number of things in case of pluralisation
+     * @returns a string with any `%{tag}` references resolved.
+     */
     render(ts: TString, count?: number): string;
 }

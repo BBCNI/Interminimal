@@ -27,4 +27,11 @@ describe("bestLocale", () => {
       }
     ]);
   });
+
+  // This mainly exists to cause coverage of the cached code path
+  it("should cache expansions", () => {
+    const langs = ["en", "fr"];
+    expect(bestLocale(["en"], langs)).toBe("en");
+    expect(bestLocale(["fr"], langs)).toBe("fr");
+  });
 });

@@ -45,6 +45,7 @@ const diffs = (a: string[], b: string[]) => [
  * // 6 chath
  * // 42 cath
  * ```
+ * @category Classes
  */
 export class TString {
   /** @ignore */

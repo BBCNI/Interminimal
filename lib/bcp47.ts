@@ -40,9 +40,10 @@ const expand = (langs: readonly string[]): readonly string[] => {
  * console.log(bestLocale(tags, ["de", "de-AT"])); // undefined
  * ```
  *
- * @param tags an array of available language tags
+ * @param tags an array of available language tags - order unimportant
  * @param langs an array of locales to match
  * @returns a language tag or `undefined` if no match found
+ * @category Locale
  */
 export const bestLocale = (
   tags: readonly string[],

@@ -29,16 +29,6 @@ exports[`Interminimal Components should bind T to a tag 1`] = `
 </div>
 `;
 
-exports[`Interminimal Components should create a span with TText 1`] = `
-<div>
-  <span
-    lang="fr"
-  >
-    Hello
-  </span>
-</div>
-`;
-
 exports[`Interminimal Components should pass refs via Format 1`] = `
 <div>
   <span>
@@ -69,10 +59,6 @@ exports[`Interminimal Components should pass template fragments down 1`] = `
   </span>
 </div>
 `;
-
-exports[`Interminimal Components should render <As> 1`] = `<div />`;
-
-exports[`Interminimal Components should render <As> 2`] = `<h1 />`;
 
 exports[`Interminimal Components should render <Translate> 1`] = `
 <div

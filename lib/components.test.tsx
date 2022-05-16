@@ -1,7 +1,7 @@
 import React, { ComponentType, FunctionComponent, ReactNode, Ref } from "react";
 import R from "react-test-renderer";
 
-import { As, Translate, T, TText, tBind, tBindMulti } from "./components";
+import { Translate, T, tBind, tBindMulti } from "./components";
 
 import { TDictionaryRoot } from "./types";
 
@@ -45,11 +45,6 @@ afterEach(() => {
 });
 
 describe("Interminimal Components", () => {
-  it("should render <As>", () => {
-    expect(R.create(<As as="div" />).toJSON()).toMatchSnapshot();
-    expect(R.create(<As as="h1" />).toJSON()).toMatchSnapshot();
-  });
-
   it("should render <Translate>", () => {
     expect(
       R.create(
@@ -186,16 +181,6 @@ describe("Interminimal Components", () => {
     expect(ref.current).toBe("foo");
   });
 
-  it("should create a span with TText", () => {
-    expect(
-      R.create(
-        <Translate lang="en">
-          <TText lang="fr">Hello</TText>
-        </Translate>
-      ).toJSON()
-    ).toMatchSnapshot();
-  });
-
   ////////////////////
   // Negative cases //
   ////////////////////
@@ -235,6 +220,16 @@ describe("Interminimal Components", () => {
         </Translate>
       )
     ).toThrow(/already/i);
+  });
+
+  it("should fail if tag + text provided", () => {
+    expect(() =>
+      R.create(
+        <Translate lang="en">
+          <T tag="foo" text="bar" />
+        </Translate>
+      )
+    ).toThrow(/both/);
   });
 
   it("should fail if tag + content provided", () => {

@@ -14,13 +14,12 @@ import React, {
 } from "react";
 
 import {
-  LangContextProps,
   AsType,
   TProps,
   TDictionaryRoot,
-  AsProps,
-  TTextProps,
-  TFormatProps
+  TextPropType,
+  TranslateLocalProps,
+  TranslateProps
 } from "./types";
 
 import { parseTemplate } from "./template";
@@ -29,18 +28,82 @@ import { TString } from "./string";
 
 const TContext = createContext(new LangContext());
 
+/**
+ * Hook that gets the currently active translation context. Here's an example
+ * of a component that wraps the `Intl.DateTimeFormat` API.
+ *
+ * ```typescript
+ * const TDateFormat: ComponentType<{ date: Date }> = ({ date }) => {
+ *   // Get the context
+ *   const ctx = useTranslation();
+ *   // Use context's languages stack to find a format for our locale
+ *   const dtf = new Intl.DateTimeFormat(ctx.languages);
+ *   // Find out which language was matched...
+ *   const { locale } = dtf.resolvedOptions();
+ *   const ts = TString.literal(dtf.format(date), locale);
+ *   return <T text={ts} />;
+ * };
+ * ```
+ *
+ * @returns the active translation context
+ * @category Hooks
+ */
 export const useTranslation = (): LangContext => useContext(TContext);
 
-export const TranslateLocal: ComponentType<
-  LangContextProps & { children: ReactNode }
-> = ({ children, ...props }) => {
+/**
+ * Wrap components in a nested [[`LangContext`]]. Used to override settings in
+ * the context. For example we can add an additional dictionary.
+ *
+ * ```typescript
+ * const Miscount = ({ children }: { children: ReactNode }) => {
+ *   // pretend one is three
+ *   const dict = { $$dict: { one: { en: "three" } } };
+ *   return <TranslateLocal dictionary={dict}>{children}</TranslateLocal>;
+ * };
+ * ```
+ * @category Components
+ */
+export const TranslateLocal: ComponentType<TranslateLocalProps> = ({
+  children,
+  ...props
+}): ReactElement => {
   const ctx = useTranslation().derive(props);
   return <TContext.Provider value={ctx}>{children}</TContext.Provider>;
 };
 
-export const Translate: ComponentType<
-  LangContextProps & { children: ReactNode; as?: AsType }
-> = ({ children, as = "div", ...props }) => {
+/**
+ * Wrap components in a nested [[`LangContext`]] that establishes a new
+ * language stack. By default any children will be wrapped in a `div` with
+ * a `lang=` property that indicates the language of the wrapped content.
+ *
+ * Within this context any content which can't be translated into the requested
+ * languages will have it's own `lang=` property to reflect the fact that it
+ * is in a different language than expected.
+ *
+ * ```typescript
+ * // Renders as <div lang="cy">....</div>
+ * const Welsh: ComponentType<{ children: ReactNode }> = ({ children }) => (
+ *   <Translate lang="cy">{children}</Translate>
+ * );
+ *
+ * // Renders as <section lang="cy">....</section>
+ * const WelshSection: ComponentType<{ children: ReactNode }> = ({ children }) => (
+ *   <Translate as="section" lang="cy">
+ *     {children}
+ *   </Translate>
+ * );
+ * ```
+ *
+ * Unlike [[`TranslateLocal`]] `Translate` always wraps the translated
+ * content in an element with a `lang=` property.
+ *
+ * @category Components
+ */
+export const Translate: ComponentType<TranslateProps> = ({
+  children,
+  as = "div",
+  ...props
+}): ReactElement => {
   const ctx = useTranslation().derive(props);
   return (
     <TText as={as} lang={ctx.language}>
@@ -49,41 +112,59 @@ export const Translate: ComponentType<
   );
 };
 
-// Create a component with the specified tag
-export const As: ComponentType<AsProps> = forwardRef<ReactElement, AsProps>(
+interface AsProps {
+  as: AsType;
+  children?: ReactNode;
+  [key: string]: any;
+}
+
+const As: ComponentType<AsProps> = forwardRef<ReactElement, AsProps>(
   ({ as, children, ...props }, ref) =>
     createElement(as, { ref, ...props }, children)
 );
 
 As.displayName = "As";
 
-export const TText: ComponentType<TTextProps> = forwardRef<
-  ReactElement,
-  TTextProps
->(({ children, lang, as = "span", ...props }, ref) => {
-  const ctx = useTranslation();
+interface TTextProps {
+  children: ReactNode;
+  lang: string;
+  as: AsType;
+  [key: string]: any;
+}
 
-  if (lang !== ctx.ambience)
+const TText: ComponentType<TTextProps> = forwardRef<ReactElement, TTextProps>(
+  ({ children, lang, as, ...props }, ref): ReactElement => {
+    const ctx = useTranslation();
+
+    if (lang !== ctx.ambience)
+      return (
+        <TranslateLocal ambient={lang}>
+          <As as={as} ref={ref} {...props} lang={lang}>
+            {children}
+          </As>
+        </TranslateLocal>
+      );
     return (
-      <TranslateLocal ambient={lang}>
-        <As as={as} ref={ref} {...props} lang={lang}>
-          {children}
-        </As>
-      </TranslateLocal>
+      <As as={as} ref={ref} {...props}>
+        {children}
+      </As>
     );
-  return (
-    <As as={as} ref={ref} {...props}>
-      {children}
-    </As>
-  );
-});
+  }
+);
 
 TText.displayName = "TText";
 
-export const TFormat: ComponentType<TFormatProps> = forwardRef<
+interface TFormatProps {
+  format: string;
+  lang: string;
+  children: ReactNode;
+  ref?: Ref<ReactElement>;
+}
+
+const TFormat: ComponentType<TFormatProps> = forwardRef<
   ReactElement,
   TFormatProps
->(({ format, lang, children }, ref) => {
+>(({ format, lang, children }, ref): ReactElement => {
   const clone = (elt: ReactNode, props?: any): ReactNode => {
     if (isValidElement(elt)) return cloneElement(elt, props);
     if (process.env.NODE_ENV !== "production")
@@ -150,8 +231,47 @@ const noRef = (ref: Ref<ReactElement>) => {
   if (ref) throw new Error(`Can't pass ref`);
 };
 
+function resolveTranslationProps(
+  ctx: LangContext,
+  tag?: string,
+  text?: TextPropType
+): TString {
+  const r = () => {
+    if (process.env.NODE_ENV !== "production")
+      if (tag && text) throw new Error(`Got both tag and text`);
+    if (text) return ctx.resolve(text);
+    if (tag) return ctx.resolve([tag]);
+    // istanbul ignore next - can't happen
+    throw new Error(`No text or tag`);
+  };
+  return r().toLang(ctx.languages);
+}
+
+/**
+ * A wrapper for content that should be translated. It attempts to translate
+ * the content you give it according to the active [[`LangContext`]]. It can
+ * translate content looked up in the translation dictionary and fat strings
+ * (or [[`TString`]]s).
+ *
+ * It can optionally perform template substitution on the translated text
+ * allowing child components to render portions of the translated text
+ * with arbitrary wrappers.
+ *
+ * By default translated text is wrapped in a `span`. Render a different
+ * element using the `as` property.
+ *
+ * If the wrapped content can't be translated into the context's preferred
+ * language it will have a `lang=` property specifying its actual language.
+ *
+ *
+ *
+ * @category Components
+ */
 export const T: ComponentType<TProps> = forwardRef<ReactElement, TProps>(
-  ({ children, tag, text, content, count, as = "span", ...props }, ref) => {
+  (
+    { children, tag, text, content, count, as = "span", ...props },
+    ref
+  ): ReactElement => {
     const ctx = useTranslation();
 
     if (content) {
@@ -174,7 +294,7 @@ export const T: ComponentType<TProps> = forwardRef<ReactElement, TProps>(
     }
 
     if (tag || text) {
-      const ts = ctx.resolveTranslationProps(tag, text);
+      const ts = resolveTranslationProps(ctx, tag, text);
 
       return (
         <TText
@@ -203,6 +323,9 @@ T.displayName = "T";
 
 const boundMap = new Map();
 
+/**
+ * @category Utilities
+ */
 export const tBind = (as: AsType): ComponentType<TProps> => {
   const bind = (as: AsType): ComponentType<TProps> => {
     const bound: ComponentType<TProps> = forwardRef(
@@ -225,4 +348,7 @@ export const tBind = (as: AsType): ComponentType<TProps> => {
   return bound;
 };
 
+/**
+ * @category Utilities
+ */
 export const tBindMulti = (as: AsType[]) => as.map(tBind);

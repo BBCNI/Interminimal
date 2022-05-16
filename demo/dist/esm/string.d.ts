@@ -36,6 +36,7 @@ import { TFatString } from "./types";
  * // 6 chath
  * // 42 cath
  * ```
+ * @category Classes
  */
 export declare class TString {
     /** @ignore */

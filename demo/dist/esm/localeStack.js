@@ -26,6 +26,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
  * Reference identity means we can index into cache Maps based on locale stacks
  * and trust that any given sequence of locales, however arrived at, will resolve
  * to the same LocaleStack.
+ * @category Classes
  */
 var LocaleStack = /** @class */ (function () {
     /**
@@ -94,7 +95,10 @@ var LocaleStack = /** @class */ (function () {
 }());
 export { LocaleStack };
 /**
- * A global root node. Use this in preference to calling `new LocaleStack()`.
+ * A global root node for the locale normalisation stack. Use this in preference
+ * to calling `new LocaleStack()`.
+ *
+ * @category Locale
  */
 export var localeRoot = new LocaleStack();
 /**
@@ -106,8 +110,13 @@ export var localeRoot = new LocaleStack();
  * );
  * // ["en", "fr", "de", "cy"]
  * ```
+ *
+ * Equivalent language lists canonicalise to the same array object and can therefore
+ * be used as the key for a `Map` or `Set`.
+ *
  * @param langs the list of languages to canonicalise
  * @returns a node for the canonical language stack
+ * @category Locale
  */
 export var canonicaliseLocales = function (langs) {
     return localeRoot.resolve(langs);
