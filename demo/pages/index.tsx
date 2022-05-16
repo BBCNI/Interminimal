@@ -343,7 +343,37 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
   );
 };
 
+const demo = () => {
+  const catsDict = {
+    en: { one: "cat", other: "cats" },
+    de: { one: "Katze", other: "Katzen" },
+    cy: {
+      zero: "cathod",
+      one: "gath",
+      two: "gath",
+      few: "cath",
+      many: "chath",
+      other: "cath"
+    }
+  };
+
+  const cat = new TString(catsDict);
+  const counts = [0, 1, 1.5, 2, 3, 6, 42];
+  const welshCat = cat.toLang(["cy", "en"]);
+  for (const count of counts) {
+    console.log(`${count} ${welshCat.toString(count)}`);
+  }
+  // 0 cathod
+  // 1 gath
+  // 1.5 cath
+  // 2 gath
+  // 3 cath
+  // 6 chath
+  // 42 cath
+};
+
 const Home: NextPage<PageProps> = props => {
+  demo();
   return (
     <Translate dictionary={dictionary}>
       <div className={styles.container}>

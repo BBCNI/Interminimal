@@ -1,5 +1,6 @@
 import { TString } from "./string";
 import { LangContextProps, TextPropType, StringPropType } from "./types";
+/** A language context. Each nested <Translate> gets a new one of these */
 export declare class LangContext {
     readonly defaultLang: string;
     private readonly parent?;

@@ -25,7 +25,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TString = void 0;
 var difference_1 = __importDefault(require("lodash/difference"));
-var shapeMap_1 = require("./shapeMap");
 var bcp47_1 = require("./bcp47");
 var diffs = function (a, b) { return [
     (0, difference_1.default)(a, b),
@@ -67,13 +66,6 @@ var TString = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(TString.prototype, "slot", {
-        get: function () {
-            return (0, shapeMap_1.shapeSlot)(this.dict);
-        },
-        enumerable: false,
-        configurable: true
-    });
     TString.prototype.toString = function (count) {
         var language = this.language;
         var ttx = this.dict[language];
@@ -96,43 +88,26 @@ var TString = /** @class */ (function () {
     };
     TString.prototype.toLang = function (langs) {
         var _a;
-        var _this = this;
         var _b = this, lang = _b.lang, dict = _b.dict;
-        // Fast cases - no need to consult cache
         var first = langs[0];
+        // fast cases
         if (first === lang)
             return this;
         if (first in dict)
             return new TString(dict, first);
-        var resolveKey = function () {
-            var tags = Object.keys(dict);
-            if (tags.length > 1) {
-                var best = (0, bcp47_1.bestLocale)(tags, __spreadArray([], langs, true));
-                if (best)
-                    return best;
-            }
-            if ("*" in dict)
-                return "*";
-            if (lang)
-                return lang;
-            return tags[0];
-        };
-        var lookupKey = function () {
-            var slot = _this.slot;
-            var key = slot.get(langs);
-            // TODO attempt canonicalisation of langs?
-            if (!key)
-                slot.set(langs, (key = resolveKey()));
-            return key;
-        };
-        var key = lookupKey();
-        if (!key)
-            throw new Error("No translations available");
-        if (key === lang)
-            return this;
-        if (key === "*")
-            return new TString(__assign(__assign({}, dict), (_a = {}, _a[langs[0]] = dict["*"], _a)), langs[0]);
-        return new TString(dict, key);
+        var tags = Object.keys(dict);
+        if (tags.length > 1) {
+            var best = (0, bcp47_1.bestLocale)(tags, __spreadArray([], langs, true));
+            if (best)
+                return best === lang ? this : new TString(dict, best);
+        }
+        if ("*" in dict)
+            return new TString(__assign(__assign({}, dict), (_a = {}, _a[first] = dict["*"], _a)), first);
+        if (lang)
+            return new TString(dict, lang);
+        if (tags.length)
+            return new TString(dict, tags[0]);
+        throw new Error("No translations available");
     };
     return TString;
 }());

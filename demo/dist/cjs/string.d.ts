@@ -7,7 +7,6 @@ export declare class TString {
     static literal(str: string, lang: string): TString;
     get language(): string;
     get dictionary(): TFatString;
-    private get slot();
     toString(count?: number): string;
     toLang(langs: readonly string[]): TString;
 }

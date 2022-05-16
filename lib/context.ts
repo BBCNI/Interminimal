@@ -11,6 +11,7 @@ import {
 
 import { localeRoot, LocaleStack, canonicaliseLocales } from "./localeStack";
 
+/** A language context. Each nested <Translate> gets a new one of these */
 export class LangContext {
   readonly defaultLang: string = "en";
   private readonly parent?: LangContext;

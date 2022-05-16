@@ -23,6 +23,7 @@ var __rest = (this && this.__rest) || function (s, e) {
 import castArray from "lodash/castArray";
 import { TString } from "./string";
 import { localeRoot, canonicaliseLocales } from "./localeStack";
+/** A language context. Each nested <Translate> gets a new one of these */
 var LangContext = /** @class */ (function () {
     function LangContext(props) {
         if (props === void 0) { props = {}; }

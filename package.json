@@ -74,6 +74,7 @@
     "react-test-renderer": "^18.1.0",
     "ts-jest": "^28.0.2",
     "ts-node": "^10.7.0",
+    "typedoc": "^0.22.15",
     "typescript": "4.6.4"
   },
   "main": "./demo/dist/cjs/index.js",
