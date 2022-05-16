@@ -39,7 +39,7 @@ var TString = /** @class */ (function () {
         this.lang = lang;
     }
     TString.cast = function (obj, lang) {
-        if (obj instanceof this) {
+        if (obj instanceof TString) {
             if (lang)
                 return obj.toLang([lang]);
             return obj;
@@ -98,14 +98,19 @@ var TString = /** @class */ (function () {
         var _a;
         var _this = this;
         var _b = this, lang = _b.lang, dict = _b.dict;
+        // Fast cases - no need to consult cache
+        var first = langs[0];
+        if (first === lang)
+            return this;
+        if (first in dict)
+            return new TString(dict, first);
         var resolveKey = function () {
-            // Fast path - our preferred language is there
-            if (langs[0] in dict)
-                return langs[0];
             var tags = Object.keys(dict);
-            var best = (0, bcp47_1.bestLocale)(tags, __spreadArray([], langs, true));
-            if (best)
-                return best;
+            if (tags.length > 1) {
+                var best = (0, bcp47_1.bestLocale)(tags, __spreadArray([], langs, true));
+                if (best)
+                    return best;
+            }
             if ("*" in dict)
                 return "*";
             if (lang)
@@ -115,6 +120,7 @@ var TString = /** @class */ (function () {
         var lookupKey = function () {
             var slot = _this.slot;
             var key = slot.get(langs);
+            // TODO attempt canonicalisation of langs?
             if (!key)
                 slot.set(langs, (key = resolveKey()));
             return key;
@@ -122,10 +128,10 @@ var TString = /** @class */ (function () {
         var key = lookupKey();
         if (!key)
             throw new Error("No translations available");
-        if (key === "*")
-            return new TString(__assign(__assign({}, dict), (_a = {}, _a[langs[0]] = dict["*"], _a)), langs[0]);
         if (key === lang)
             return this;
+        if (key === "*")
+            return new TString(__assign(__assign({}, dict), (_a = {}, _a[langs[0]] = dict["*"], _a)), langs[0]);
         return new TString(dict, key);
     };
     return TString;

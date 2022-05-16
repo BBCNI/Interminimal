@@ -29,13 +29,11 @@ exports.LangContext = void 0;
 var castArray_1 = __importDefault(require("lodash/castArray"));
 var string_1 = require("./string");
 var localeStack_1 = require("./localeStack");
-var localeRoot = new localeStack_1.LocaleStack();
 var LangContext = /** @class */ (function () {
     function LangContext(props) {
         if (props === void 0) { props = {}; }
         this.defaultLang = "en";
-        this.lang = [];
-        this.locale = localeRoot;
+        this.locale = localeStack_1.localeRoot;
         this.stackCache = null;
         this.tagCache = {};
         var lang = props.lang, dictionary = props.dictionary, rest = __rest(props, ["lang", "dictionary"]);
@@ -43,12 +41,11 @@ var LangContext = /** @class */ (function () {
             throw new Error("Invalid dictionary (missing $$dict key)");
         // Upgrade lang to array if necessary.
         var langs = (0, castArray_1.default)(lang).filter(Boolean);
-        Object.assign(this, __assign(__assign({}, rest), { lang: langs, dictionary: dictionary }));
+        Object.assign(this, __assign(__assign({}, rest), { dictionary: dictionary }));
         var ldContext = this.parent
             ? this.parent.locale
-            : localeRoot.resolve([this.defaultLang]);
+            : localeStack_1.localeRoot.resolve([this.defaultLang]);
         this.locale = ldContext.resolve(langs);
-        this.root = this.parent ? this.parent.root : this;
     }
     Object.defineProperty(LangContext.prototype, "stack", {
         get: function () {
@@ -84,17 +81,23 @@ var LangContext = /** @class */ (function () {
     LangContext.prototype.derive = function (props) {
         var _this = this;
         // Handle dictionaryFromTag
-        var transformProps = function (_a) {
+        var trDFT = function (_a) {
             var dictionaryFromTag = _a.dictionaryFromTag, rest = __rest(_a, ["dictionaryFromTag"]);
-            if (dictionaryFromTag) {
-                if (props.dictionary)
-                    throw new Error("dictionary and dictionaryFromTag both found");
-                return __assign({ dictionary: _this.resolveDictionary(dictionaryFromTag) }, rest);
-            }
-            return rest;
+            if (!dictionaryFromTag)
+                return rest;
+            if (props.dictionary)
+                throw new Error("dictionary and dictionaryFromTag both found");
+            return __assign({ dictionary: _this.resolveDictionary(dictionaryFromTag) }, rest);
         };
-        var _a = this, dictionary = _a.dictionary, stackCache = _a.stackCache, tagCache = _a.tagCache, lang = _a.lang, ls = _a.locale, rest = __rest(_a, ["dictionary", "stackCache", "tagCache", "lang", "locale"]);
-        return new LangContext(__assign(__assign(__assign({}, rest), transformProps(props)), { parent: this }));
+        var trDL = function (_a) {
+            var defaultLang = _a.defaultLang, rest = __rest(_a, ["defaultLang"]);
+            if (!defaultLang)
+                return rest;
+            var lang = rest.lang, other = __rest(rest, ["lang"]);
+            return __assign({ defaultLang: defaultLang, lang: (0, castArray_1.default)(lang || []).concat(defaultLang) }, other);
+        };
+        var _a = this, dictionary = _a.dictionary, stackCache = _a.stackCache, tagCache = _a.tagCache, locale = _a.locale, rest = __rest(_a, ["dictionary", "stackCache", "tagCache", "locale"]);
+        return new LangContext(__assign(__assign(__assign({}, rest), trDFT(trDL(props))), { parent: this }));
     };
     LangContext.prototype.translate = function (text) {
         return this.resolve(text).toLang(this.stack);
@@ -170,7 +173,7 @@ var LangContext = /** @class */ (function () {
         return this.locale.resolve(langs).stack;
     };
     LangContext.prototype.canonicaliseLocales = function (langs) {
-        return this.root.resolveLocales(langs);
+        return (0, localeStack_1.canonicaliseLocales)(langs).stack;
     };
     LangContext.prototype.resolveMagicProps = function (props, lang) {
         var _this = this;

@@ -6,3 +6,5 @@ export declare class LocaleStack {
     private splice;
     resolve(langs: string[]): LocaleStack;
 }
+export declare const localeRoot: LocaleStack;
+export declare const canonicaliseLocales: (langs: string[]) => LocaleStack;

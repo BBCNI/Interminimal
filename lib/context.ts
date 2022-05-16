@@ -31,7 +31,7 @@ export class LangContext {
 
     Object.assign(this, { ...rest, dictionary });
 
-    let ldContext = this.parent
+    const ldContext = this.parent
       ? this.parent.locale
       : localeRoot.resolve([this.defaultLang]);
 

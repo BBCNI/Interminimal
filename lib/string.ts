@@ -1,7 +1,6 @@
 import { TFatString } from "./types";
 
 import difference from "lodash/difference";
-import { shapeSlot } from "./shapeMap";
 import { bestLocale } from "./bcp47";
 
 const diffs = (a: string[], b: string[]) => [
@@ -41,10 +40,6 @@ export class TString {
     return this.dict;
   }
 
-  private get slot(): WeakMap<readonly string[], string> {
-    return shapeSlot<TFatString, readonly string[], string>(this.dict);
-  }
-
   toString(count?: number): string {
     const { language } = this;
     const ttx = this.dict[language];
@@ -72,39 +67,21 @@ export class TString {
   toLang(langs: readonly string[]): TString {
     const { lang, dict } = this;
 
-    // Fast cases - no need to consult cache
     const first = langs[0];
+    // fast cases
     if (first === lang) return this;
     if (first in dict) return new TString(dict, first);
 
-    const resolveKey = () => {
-      const tags = Object.keys(dict);
-      // console.log(`langs: [${langs.join(", ")}], tags: [${tags.join(", ")}]`);
-      if (tags.length > 1) {
-        // Only do expensive lookup if we have no choice.
-        const best = bestLocale(tags, [...langs]);
-        if (best) return best;
-      }
-      if ("*" in dict) return "*";
-      if (lang) return lang;
-      return tags[0];
-    };
+    const tags = Object.keys(dict);
+    if (tags.length > 1) {
+      const best = bestLocale(tags, [...langs]);
+      if (best) return best === lang ? this : new TString(dict, best);
+    }
 
-    const lookupKey = () => {
-      const { slot } = this;
-      let key = slot.get(langs);
-      if (!key) slot.set(langs, (key = resolveKey()));
-      return key;
-    };
+    if ("*" in dict) return new TString({ ...dict, [first]: dict["*"] }, first);
 
-    const key = lookupKey();
-    if (!key) throw new Error(`No translations available`);
-
-    if (key === lang) return this;
-
-    if (key === "*")
-      return new TString({ ...dict, [langs[0]]: dict["*"] }, langs[0]);
-
-    return new TString(dict, key);
+    if (lang) return new TString(dict, lang);
+    if (tags.length) return new TString(dict, tags[0]);
+    throw new Error(`No translations available`);
   }
 }
