@@ -50,5 +50,5 @@ export const bestLocale = (
   langs: readonly string[]
 ): string | undefined => {
   const ts = new Set(tags.map(lc));
-  return expand(langs).find(ln => ts.has(lc(ln)));
+  return expand(canonicaliseLocales(langs)).find(ln => ts.has(lc(ln)));
 };

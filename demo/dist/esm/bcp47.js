@@ -43,5 +43,5 @@ var expand = function (langs) {
  */
 export var bestLocale = function (tags, langs) {
     var ts = new Set(tags.map(lc));
-    return expand(langs).find(function (ln) { return ts.has(lc(ln)); });
+    return expand(canonicaliseLocales(langs)).find(function (ln) { return ts.has(lc(ln)); });
 };
