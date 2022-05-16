@@ -34,7 +34,7 @@
   "bugs": {
     "url": "https://github.com/BBCNI/Interminimal/issues"
   },
-  "homepage": "https://github.com/BBCNI/Interminimal#readme",
+  "homepage": "https://bbcni.github.io/Interminimal",
   "prettier": {
     "tabWidth": 2,
     "useTabs": false,
