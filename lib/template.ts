@@ -77,7 +77,7 @@ const parse = (format: string) => {
 
 const cache: { [key: string]: TemplateToken[] } = {};
 
-export const parseTemplate = (format: string) =>
+export const parseTemplate = (format: string): TemplateToken[] =>
   /%/.test(format)
     ? (cache[format] = cache[format] || parse(format))
     : [format];

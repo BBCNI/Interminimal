@@ -16,6 +16,7 @@ import { LocaleStack } from "./types";
  * @returns a stack node with the prepended langs
  * @category Locale
  */
+export declare const resolve: (stack: LocaleStack, langs: LocaleStack) => LocaleStack;
 export declare const resolveLocales: (stack: LocaleStack, langs: LocaleStack) => LocaleStack;
 /**
  * A global empty locale stack which equals [].

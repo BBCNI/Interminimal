@@ -45,7 +45,7 @@ var node = function (stack, parent) {
  * @returns a stack node with the prepended langs
  * @category Locale
  */
-export var resolveLocales = function (stack, langs) {
+export var resolve = function (stack, langs) {
     if (!langs.length)
         return stack;
     var tail = __spreadArray([], langs, true);
@@ -54,14 +54,15 @@ export var resolveLocales = function (stack, langs) {
     var tryNext = slot[lang] && slot[lang].deref();
     // Cache hit
     if (tryNext)
-        return resolveLocales(tryNext, tail);
+        return resolve(tryNext, tail);
     // Cache miss
     var newNext = stack.includes(lang)
         ? splice(stack, lang, [])
         : node([lang].concat(stack), stack);
     slot[lang] = new WeakRef(newNext);
-    return resolveLocales(newNext, tail);
+    return resolve(newNext, tail);
 };
+export var resolveLocales = function (stack, langs) { return resolve(canonicaliseLocales(stack), langs); };
 /**
  * A global empty locale stack which equals [].
  *
@@ -86,5 +87,5 @@ export var localeRoot = node([]);
  * @category Locale
  */
 export var canonicaliseLocales = function (stack) {
-    return parentCache.has(stack) ? stack : resolveLocales(localeRoot, stack);
+    return parentCache.has(stack) ? stack : resolve(localeRoot, stack);
 };
