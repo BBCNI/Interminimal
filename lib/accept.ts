@@ -10,7 +10,7 @@ const parsePriority = (term: string): [number, string] => {
       const q = Number(ma[1]);
       if (q >= 0 && q <= 1) return [q, locale];
     }
-    return [0, locale];
+    return [0, ""];
   }
   return [1, term];
 };
