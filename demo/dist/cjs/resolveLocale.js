@@ -46,6 +46,7 @@ var node = function (stack, parent) {
  * @param stack
  * @param langs a list of langs to prepend to the stack
  * @returns a stack node with the prepended langs
+ * @category Locale
  */
 var resolveLocales = function (stack, langs) {
     if (!langs.length)
