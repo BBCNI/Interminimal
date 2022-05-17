@@ -1,6 +1,5 @@
 import "./weakRef";
-declare type StackArray = readonly string[];
-export declare const resolveLocales: (stack: StackArray, langs: StackArray) => StackArray;
-export declare const localeRoot: StackArray;
-export declare const canonicaliseLocales: (stack: StackArray) => StackArray;
-export {};
+import { LocaleStack } from "./types";
+export declare const resolveLocales: (stack: LocaleStack, langs: LocaleStack) => LocaleStack;
+export declare const localeRoot: LocaleStack;
+export declare const canonicaliseLocales: (stack: LocaleStack) => LocaleStack;

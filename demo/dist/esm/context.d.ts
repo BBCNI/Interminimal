@@ -161,7 +161,7 @@ export declare class LangContext {
      * @param langs languages to prepend to context's stack
      * @returns a language array that prepends `langs` to the context's stack
      */
-    resolveLocales(langs: string[]): readonly string[];
+    resolveLocales(langs: string[]): import("./types").LocaleStack;
     /**
      * Translate a React style props object by replacing any `t-foo` properties with
      * `foo` containing translated text. The value of any `t-*` properties should be

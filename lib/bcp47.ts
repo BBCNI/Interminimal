@@ -1,26 +1,7 @@
 import { canonicaliseLocales } from "./resolveLocale";
-
-const MaxLength = 35;
+import { searchOrder } from "./searchOrder";
 
 const lc = (str: string): string => str.toLowerCase();
-
-const langCache: { [key: string]: readonly string[] } = {};
-
-// TODO: still definitely vulnerable to combination stuffing
-const expandLang = (lang: string): readonly string[] => {
-  const xl = () => {
-    if (lang.length > MaxLength)
-      throw new Error(`BCP 47 language tag too long`);
-    const idx = lang.lastIndexOf("-");
-    if (idx < 0) return [lang];
-    // foo-x-bar?
-    if (idx > 2 && lang.charAt(idx - 2) === "-")
-      return [lang].concat(expandLang(lang.slice(0, idx - 2)));
-    // foo-BAR
-    return [lang].concat(expandLang(lang.slice(0, idx)));
-  };
-  return (langCache[lang] = langCache[lang] || xl());
-};
 
 const expCache = new WeakMap<readonly string[], readonly string[]>();
 
@@ -30,7 +11,7 @@ const expand = (langs: readonly string[]): readonly string[] => {
   const exp = expCache.get(langs);
   if (exp) return exp;
 
-  const nexp = canonicaliseLocales(langs.flatMap(expandLang));
+  const nexp = searchOrder(langs);
   expCache.set(langs, nexp);
   return nexp;
 };

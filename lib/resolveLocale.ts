@@ -1,22 +1,23 @@
 import "./weakRef"; // Polyfill WeakRef for Opera
 
-type StackArray = readonly string[];
-type NextCache = { [key: string]: WeakRef<StackArray> };
+import { LocaleStack } from "./types";
 
-const parentCache = new WeakMap<StackArray, StackArray | undefined>();
-const nextCache = new WeakMap<StackArray, NextCache>();
+type NextCache = { [key: string]: WeakRef<LocaleStack> };
 
-const nextSlot = (stack: StackArray): NextCache => {
+const parentCache = new WeakMap<LocaleStack, LocaleStack | undefined>();
+const nextCache = new WeakMap<LocaleStack, NextCache>();
+
+const nextSlot = (stack: LocaleStack): NextCache => {
   let n = nextCache.get(stack);
   if (!n) nextCache.set(stack, (n = {}));
   return n;
 };
 
 const splice = (
-  stack: StackArray,
+  stack: LocaleStack,
   lang: string,
-  path: StackArray
-): StackArray => {
+  path: LocaleStack
+): LocaleStack => {
   const parent = parentCache.get(stack);
   // istanbul ignore next - can't happen
   if (!parent) throw new Error(`No parent!`);
@@ -24,15 +25,15 @@ const splice = (
   return splice(parent, lang, path.concat(stack[0]));
 };
 
-const node = (stack: StackArray, parent?: StackArray): StackArray => {
+const node = (stack: LocaleStack, parent?: LocaleStack): LocaleStack => {
   parentCache.set(stack, parent);
   return Object.freeze(stack);
 };
 
 export const resolveLocales = (
-  stack: StackArray,
-  langs: StackArray
-): StackArray => {
+  stack: LocaleStack,
+  langs: LocaleStack
+): LocaleStack => {
   if (!langs.length) return stack;
   const tail = [...langs];
   const lang = tail.pop() as string;
@@ -47,11 +48,11 @@ export const resolveLocales = (
     ? splice(stack, lang, [])
     : node([lang].concat(stack), stack);
 
-  slot[lang] = new WeakRef<StackArray>(newNext);
+  slot[lang] = new WeakRef<LocaleStack>(newNext);
   return resolveLocales(newNext, tail);
 };
 
 export const localeRoot = node([]);
 
-export const canonicaliseLocales = (stack: StackArray) =>
+export const canonicaliseLocales = (stack: LocaleStack) =>
   parentCache.has(stack) ? stack : resolveLocales(localeRoot, stack);
