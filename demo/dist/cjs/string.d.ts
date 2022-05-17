@@ -1,4 +1,4 @@
-import { TFatString } from "./types";
+import { LocaleStack, TFatString } from "./types";
 /**
  * Wrap a fat string with methods to coerce it to a specific
  * language and stringify it. TStrings are immutable; all
@@ -118,5 +118,5 @@ export declare class TString {
      * @param langs an array of BCP47 language codes in descending preference order
      * @returns a new TString with its `language` set to the best match
      */
-    toLang(langs: readonly string[]): TString;
+    toLang(langs: LocaleStack): TString;
 }

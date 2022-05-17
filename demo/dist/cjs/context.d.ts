@@ -1,5 +1,5 @@
 import { TString } from "./string";
-import { LangContextProps, TextPropType, StringPropType } from "./types";
+import { LangContextProps, TextPropType, StringPropType, LocaleStack } from "./types";
 /**
  * A language context. All translation takes place inside a context and contexts
  * nest to allow their configuration to be modified. Normally you'll get a context
@@ -171,7 +171,7 @@ export declare class LangContext {
      * @param langs languages to prepend to context's stack
      * @returns a language array that prepends `langs` to the context's stack
      */
-    resolveLocales(langs: string[]): import("./types").LocaleStack;
+    resolveLocales(langs: string[]): LocaleStack;
     /**
      * Translate a React style props object by replacing any `t-foo` properties with
      * `foo` containing translated text. The value of any `t-*` properties should be

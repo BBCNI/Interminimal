@@ -32,6 +32,21 @@ var node = function (stack, parent) {
     parentCache.set(stack, parent);
     return Object.freeze(stack);
 };
+/**
+ * Return the stack that is the result of prepending a
+ * (possibly empty) list of locales to a locale stack
+ *
+ * ```typescript
+ * const ls1 = resolveLocales(localeRoot, ["en", "fr"]);
+ * const ls2 = resolveLocales(ls1, ["fr"]); // now ["fr", "en"]
+ * const ls3 = resolveLocales(localeRoot, ["fr", "en"]); // also ["fr", "en"]
+ * if (ls2 === ls3) console.log("Same thing!");
+ * ```
+ *
+ * @param stack
+ * @param langs a list of langs to prepend to the stack
+ * @returns a stack node with the prepended langs
+ */
 var resolveLocales = function (stack, langs) {
     if (!langs.length)
         return stack;
@@ -50,7 +65,29 @@ var resolveLocales = function (stack, langs) {
     return (0, exports.resolveLocales)(newNext, tail);
 };
 exports.resolveLocales = resolveLocales;
+/**
+ * A global empty locale stack which equals [].
+ *
+ * @category Locale
+ */
 exports.localeRoot = node([]);
+/**
+ * Canonicalise a list of languages.
+ *
+ * ```typescript
+ * console.log(
+ *   canonicaliseLocales(["en", "fr", "en", "de", "de", "fr", "cy", "de"])
+ * );
+ * // ["en", "fr", "de", "cy"]
+ * ```
+ *
+ * Equivalent language lists canonicalise to the same array object and can therefore
+ * be used as the key for a `Map` or `Set`.
+ *
+ * @param stack the list of languages to canonicalise
+ * @returns the canonical language stack
+ * @category Locale
+ */
 var canonicaliseLocales = function (stack) {
     return parentCache.has(stack) ? stack : (0, exports.resolveLocales)(exports.localeRoot, stack);
 };

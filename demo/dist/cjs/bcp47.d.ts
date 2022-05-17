@@ -1,3 +1,4 @@
+import { LocaleStack } from "./types";
 /**
  * Given a set of BCP 47 language tags and a list of locales in
  * descending preference order find the tag that best satisfies
@@ -18,4 +19,4 @@
  * @returns a language tag or `undefined` if no match found
  * @category Locale
  */
-export declare const bestLocale: (tags: readonly string[], langs: readonly string[]) => string | undefined;
+export declare const bestLocale: (tags: LocaleStack, langs: LocaleStack) => string | undefined;
