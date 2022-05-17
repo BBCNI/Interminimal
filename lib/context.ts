@@ -6,7 +6,8 @@ import {
   TextPropType,
   TFatString,
   TDictionaryRoot,
-  StringPropType
+  StringPropType,
+  LocaleStack
 } from "./types";
 
 import { localeRoot, resolveLocales } from "./resolveLocale";
@@ -24,7 +25,7 @@ export class LangContext {
    */
   readonly defaultLang: string = "en";
   /** @ignore */
-  private readonly stack: readonly string[] = localeRoot;
+  private readonly stack: LocaleStack = localeRoot;
   /** @ignore */
   private readonly parent?: LangContext;
   /** @ignore */

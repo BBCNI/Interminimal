@@ -1,4 +1,4 @@
-import { TFatString } from "./types";
+import { LocaleStack, TFatString } from "./types";
 
 import difference from "lodash/difference";
 import { bestLocale } from "./bcp47";
@@ -174,7 +174,7 @@ export class TString {
    * @param langs an array of BCP47 language codes in descending preference order
    * @returns a new TString with its `language` set to the best match
    */
-  toLang(langs: readonly string[]): TString {
+  toLang(langs: LocaleStack): TString {
     const { lang, dict } = this;
 
     const first = langs[0];

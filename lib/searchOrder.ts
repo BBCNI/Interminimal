@@ -1,4 +1,5 @@
 import { canonicaliseLocales } from "./resolveLocale";
+import { LocaleStack } from "./types";
 
 interface LangNode {
   readonly lang: string;
@@ -7,7 +8,7 @@ interface LangNode {
 
 const MaxLength = 35;
 
-const expandLang = (lang: string): readonly string[] => {
+const expandLang = (lang: string): LocaleStack => {
   if (lang.length > MaxLength) throw new Error(`BCP 47 language tag too long`);
   const idx = lang.lastIndexOf("-");
   if (idx < 0) return [lang];
@@ -16,7 +17,7 @@ const expandLang = (lang: string): readonly string[] => {
   return expandLang(lang.slice(0, idx)).concat(lang);
 };
 
-const makeNode = (path: readonly string[]): LangNode => {
+const makeNode = (path: LocaleStack): LangNode => {
   // istanbul ignore next - can't happen
   if (path.length === 0) throw new Error(`Empty thing`);
   const [lang, ...tail] = path;
@@ -40,15 +41,15 @@ const groupTree = (tree: readonly LangNode[]): readonly LangNode[] => {
 
 // Render node in depth first postfix order so more specific
 // tags come first
-const renderNode = (node: LangNode): readonly string[] => [
+const renderNode = (node: LangNode): LocaleStack => [
   ...renderTree(node.children),
   node.lang
 ];
 
-const renderTree = (tree: readonly LangNode[]): readonly string[] =>
+const renderTree = (tree: readonly LangNode[]): LocaleStack =>
   tree.flatMap(renderNode);
 
-export const searchOrder = (langs: readonly string[]): readonly string[] =>
+export const searchOrder = (langs: LocaleStack): LocaleStack =>
   canonicaliseLocales(
     renderTree(groupTree(langs.map(expandLang).map(makeNode)))
   );

@@ -1,1 +1,2 @@
-export declare const searchOrder: (langs: readonly string[]) => readonly string[];
+import { LocaleStack } from "./types";
+export declare const searchOrder: (langs: LocaleStack) => LocaleStack;

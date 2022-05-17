@@ -1,4 +1,5 @@
 import { canonicaliseLocales } from "./resolveLocale";
+import { LocaleStack } from "./types";
 
 const parsePriority = (term: string): [number, string] => {
   const mt = term.match(/(\S*?)\s*;\s*(.*)/);
@@ -17,7 +18,7 @@ const parsePriority = (term: string): [number, string] => {
 const cmp = (a: string | number, b: string | number) =>
   a < b ? -1 : a > b ? 1 : 0;
 
-export const parseAcceptLanguage = (accept: string): readonly string[] =>
+export const parseAcceptLanguage = (accept: string): LocaleStack =>
   canonicaliseLocales(
     accept
       .split(/\s*,\s*/)

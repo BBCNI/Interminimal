@@ -1,13 +1,14 @@
 import { canonicaliseLocales } from "./resolveLocale";
 import { searchOrder } from "./searchOrder";
+import { LocaleStack } from "./types";
 
 const lc = (str: string): string => str.toLowerCase();
 
-const expCache = new WeakMap<readonly string[], readonly string[]>();
+const expCache = new WeakMap<LocaleStack, LocaleStack>();
 
 // Cached expansion of locales:
 //  ["en-GB", "fr-CA"] -> ["en-GB", "en", "fr-CA", "fr"]
-const expand = (langs: readonly string[]): readonly string[] => {
+const expand = (langs: LocaleStack): LocaleStack => {
   const tryExp = expCache.get(langs);
   if (tryExp) return tryExp;
 
@@ -37,8 +38,8 @@ const expand = (langs: readonly string[]): readonly string[] => {
  * @category Locale
  */
 export const bestLocale = (
-  tags: readonly string[],
-  langs: readonly string[]
+  tags: LocaleStack,
+  langs: LocaleStack
 ): string | undefined => {
   const ts = new Set(tags.map(lc));
   return expand(canonicaliseLocales(langs)).find(ln => ts.has(lc(ln)));
