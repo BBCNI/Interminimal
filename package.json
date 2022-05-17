@@ -1,6 +1,6 @@
 {
   "name": "interminimal",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Simple React translations",
   "type": "module",
   "scripts": {
