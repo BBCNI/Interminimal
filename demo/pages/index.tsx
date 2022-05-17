@@ -24,6 +24,7 @@ import {
   TFatString,
   TString
 } from "../dist/esm";
+import { parseAcceptLanguage } from "../dist/esm/accept";
 
 import styles from "../styles/Home.module.css";
 
@@ -36,7 +37,11 @@ interface PageProps {
 
 // Mock service data
 export const getServerSideProps: GetServerSideProps = async context => {
-  console.log(context.req.headers);
+  const accept = context.req.headers["accept-language"];
+  if (accept) {
+    const langs = parseAcceptLanguage(accept);
+    console.log({ langs });
+  }
   return {
     props: {
       greeting: { en: "Hello", fr: "Bonjour", de: "Hallo" },

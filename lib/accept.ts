@@ -17,9 +17,9 @@ const parsePriority = (term: string): [number, string] => {
 const cmp = (a: string | number, b: string | number) =>
   a < b ? -1 : a > b ? 1 : 0;
 
-export const parseAcceptLanguage = (langs: string): readonly string[] =>
+export const parseAcceptLanguage = (accept: string): readonly string[] =>
   canonicaliseLocales(
-    langs
+    accept
       .split(/\s*,\s*/)
       .map(parsePriority)
       .filter(t => t[0] > 0)

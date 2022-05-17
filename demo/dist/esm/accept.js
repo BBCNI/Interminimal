@@ -16,8 +16,8 @@ var parsePriority = function (term) {
 var cmp = function (a, b) {
     return a < b ? -1 : a > b ? 1 : 0;
 };
-export var parseAcceptLanguage = function (langs) {
-    return canonicaliseLocales(langs
+export var parseAcceptLanguage = function (accept) {
+    return canonicaliseLocales(accept
         .split(/\s*,\s*/)
         .map(parsePriority)
         .filter(function (t) { return t[0] > 0; })

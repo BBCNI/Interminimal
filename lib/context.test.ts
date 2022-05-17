@@ -71,10 +71,10 @@ describe("LangContext", () => {
 
   it("should resolve tags", () => {
     const ctx = new LangContext({ lang: "cy", defaultLang: "en", dictionary });
-    const ts = ctx.frob(["site"]).toLang(["cy"]);
+    const ts = ctx.resolve(["site"]).toLang(["cy"]);
     expect(ts.toString()).toBe("Interminimal");
     expect(ts.language).toBe("en");
-    expect(() => ctx.frob(["this", "that"])).toThrow(/must be/);
+    expect(() => ctx.resolve(["this", "that"])).toThrow(/must be/);
   });
 
   it("should fail when dictionary tag doesn't refer to a dictionary", () => {
@@ -84,13 +84,13 @@ describe("LangContext", () => {
 
   it("should fail when tags refer to dictionaries", () => {
     const ctx = new LangContext({ lang: "cy", defaultLang: "en", dictionary });
-    expect(() => ctx.frob(["maybe"])).toThrow(/is a/i);
+    expect(() => ctx.resolve(["maybe"])).toThrow(/is a/i);
   });
 
   it("should consult parent contexts", () => {
     const ctx = new LangContext({ lang: "cy", defaultLang: "en", dictionary });
     const next = ctx.derive({ lang: "fr" });
-    const ts = next.frob(["heading"]).toLang(["de"]);
+    const ts = next.resolve(["heading"]).toLang(["de"]);
     expect(ts.toString()).toBe("Lassen Sie uns übersetzen!");
   });
 
@@ -118,8 +118,10 @@ describe("LangContext", () => {
   it("should consult nested dictionaries", () => {
     const ctx = new LangContext({ lang: "fr", defaultLang: "en", dictionary });
     const maybe = ctx.derive({ dictionaryFromTag: "maybe" });
-    expect(ctx.frob(["site"]).toLang(["en"]).toString()).toBe("Interminimal");
-    expect(maybe.frob(["site"]).toLang(["en"]).toString()).toBe(
+    expect(ctx.resolve(["site"]).toLang(["en"]).toString()).toBe(
+      "Interminimal"
+    );
+    expect(maybe.resolve(["site"]).toLang(["en"]).toString()).toBe(
       "Something else"
     );
     expect(() => ctx.derive({ dictionaryFromTag: "site" })).toThrow(
@@ -129,7 +131,7 @@ describe("LangContext", () => {
 
   it("should throw on unknown tags", () => {
     const ctx = new LangContext({ lang: "fr", defaultLang: "en", dictionary });
-    expect(() => ctx.frob(["doesNotExits"])).toThrow(/No translation/i);
+    expect(() => ctx.resolve(["doesNotExits"])).toThrow(/No translation/i);
   });
 
   it("should translate text and props in another language", () => {

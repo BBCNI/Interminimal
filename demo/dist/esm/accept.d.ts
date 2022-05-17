@@ -1,1 +1,1 @@
-export declare const parseAcceptLanguage: (langs: string) => readonly string[];
+export declare const parseAcceptLanguage: (accept: string) => readonly string[];

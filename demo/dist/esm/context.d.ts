@@ -13,13 +13,13 @@ export declare class LangContext {
      */
     readonly defaultLang: string;
     /** @ignore */
+    private readonly stack;
+    /** @ignore */
     private readonly parent?;
     /** @ignore */
     private readonly ambient?;
     /** @ignore */
     private readonly dictionary?;
-    /** @ignore */
-    private readonly locale;
     /** @ignore */
     private tagCache;
     /**
@@ -32,8 +32,6 @@ export declare class LangContext {
     constructor(props?: LangContextProps & {
         parent?: LangContext;
     });
-    /** @ignore */
-    private get stack();
     /**
      * Get the language preference stack for this context. The `languages`
      * array is always normalised - duplicates are removed.
@@ -145,7 +143,7 @@ export declare class LangContext {
      * @param text `[tag]`, a TString or a plain JS string
      * @returns a `TString` containing the translation
      */
-    frob(text: TextPropType): TString;
+    resolve(text: TextPropType): TString;
     /** @ignore */
     private findTag;
     /** @ignore */

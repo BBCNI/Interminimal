@@ -173,9 +173,9 @@ function resolveTranslationProps(ctx, tag, text) {
             if (tag && text)
                 throw new Error("Got both tag and text");
         if (text)
-            return ctx.frob(text);
+            return ctx.resolve(text);
         if (tag)
-            return ctx.frob([tag]);
+            return ctx.resolve([tag]);
         // istanbul ignore next - can't happen
         throw new Error("No text or tag");
     };
