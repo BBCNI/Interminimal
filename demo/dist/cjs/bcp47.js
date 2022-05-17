@@ -1,35 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.bestLocale = void 0;
-var localeStack_1 = require("./localeStack");
-var MaxLength = 35;
+var resolveLocale_1 = require("./resolveLocale");
+var searchOrder_1 = require("./searchOrder");
 var lc = function (str) { return str.toLowerCase(); };
-var langCache = {};
-var expandLang = function (lang) {
-    var xl = function () {
-        if (lang.length > MaxLength)
-            throw new Error("BCP 47 language tag too long");
-        var idx = lang.lastIndexOf("-");
-        if (idx < 0)
-            return [lang];
-        // foo-x-bar?
-        if (idx > 2 && lang.charAt(idx - 2) === "-")
-            return [lang].concat(expandLang(lang.slice(0, idx - 2)));
-        // foo-BAR
-        return [lang].concat(expandLang(lang.slice(0, idx)));
-    };
-    return (langCache[lang] = langCache[lang] || xl());
-};
 var expCache = new WeakMap();
 // Cached expansion of locales:
 //  ["en-GB", "fr-CA"] -> ["en-GB", "en", "fr-CA", "fr"]
 var expand = function (langs) {
-    var exp = expCache.get(langs);
-    if (exp)
-        return exp;
-    var nexp = (0, localeStack_1.canonicaliseLocales)(langs.flatMap(expandLang));
-    expCache.set(langs, nexp);
-    return nexp;
+    var tryExp = expCache.get(langs);
+    if (tryExp)
+        return tryExp;
+    var newExp = (0, searchOrder_1.searchOrder)(langs);
+    expCache.set(langs, newExp);
+    return newExp;
 };
 /**
  * Given a set of BCP 47 language tags and a list of locales in
@@ -53,6 +37,6 @@ var expand = function (langs) {
  */
 var bestLocale = function (tags, langs) {
     var ts = new Set(tags.map(lc));
-    return expand((0, localeStack_1.canonicaliseLocales)(langs)).find(function (ln) { return ts.has(lc(ln)); });
+    return expand((0, resolveLocale_1.canonicaliseLocales)(langs)).find(function (ln) { return ts.has(lc(ln)); });
 };
 exports.bestLocale = bestLocale;

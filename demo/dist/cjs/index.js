@@ -19,4 +19,4 @@ __exportStar(require("./components"), exports);
 __exportStar(require("./string"), exports);
 __exportStar(require("./context"), exports);
 __exportStar(require("./bcp47"), exports);
-__exportStar(require("./localeStack"), exports);
+__exportStar(require("./resolveLocale"), exports);

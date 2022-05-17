@@ -118,4 +118,5 @@ export interface TemplatePlaceholder {
     text?: string;
 }
 export declare type TemplateToken = string | TemplatePlaceholder;
+export declare type LocaleStack = readonly string[];
 export {};

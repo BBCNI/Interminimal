@@ -13,15 +13,13 @@ export declare class LangContext {
      */
     readonly defaultLang: string;
     /** @ignore */
+    private readonly stack;
+    /** @ignore */
     private readonly parent?;
     /** @ignore */
     private readonly ambient?;
     /** @ignore */
     private readonly dictionary?;
-    /** @ignore */
-    private readonly locale;
-    /** @ignore */
-    private stackCache;
     /** @ignore */
     private tagCache;
     /**
@@ -34,8 +32,6 @@ export declare class LangContext {
     constructor(props?: LangContextProps & {
         parent?: LangContext;
     });
-    /** @ignore */
-    private get stack();
     /**
      * Get the language preference stack for this context. The `languages`
      * array is always normalised - duplicates are removed.
@@ -149,6 +145,16 @@ export declare class LangContext {
      */
     resolve(text: TextPropType): TString;
     /** @ignore */
+    private lookupTag;
+    /**
+     * Check whether this context can resolve a particular tag. Use it to guard
+     * translation tags which might be missing.
+     *
+     * @param tag the dictionary tag to check
+     * @returns true if `tag` can be resolved
+     */
+    hasTag(tag: string): boolean;
+    /** @ignore */
     private findTag;
     /** @ignore */
     private resolveTag;
@@ -165,7 +171,7 @@ export declare class LangContext {
      * @param langs languages to prepend to context's stack
      * @returns a language array that prepends `langs` to the context's stack
      */
-    resolveLocales(langs: string[]): readonly string[];
+    resolveLocales(langs: string[]): import("./types").LocaleStack;
     /**
      * Translate a React style props object by replacing any `t-foo` properties with
      * `foo` containing translated text. The value of any `t-*` properties should be

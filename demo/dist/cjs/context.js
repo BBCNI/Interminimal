@@ -28,7 +28,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LangContext = void 0;
 var castArray_1 = __importDefault(require("lodash/castArray"));
 var string_1 = require("./string");
-var localeStack_1 = require("./localeStack");
+var resolveLocale_1 = require("./resolveLocale");
 /**
  * A language context. All translation takes place inside a context and contexts
  * nest to allow their configuration to be modified. Normally you'll get a context
@@ -51,9 +51,7 @@ var LangContext = /** @class */ (function () {
          */
         this.defaultLang = "en";
         /** @ignore */
-        this.locale = localeStack_1.localeRoot;
-        /** @ignore */
-        this.stackCache = null;
+        this.stack = resolveLocale_1.localeRoot;
         /** @ignore */
         this.tagCache = {};
         var lang = props.lang, dictionary = props.dictionary, rest = __rest(props, ["lang", "dictionary"]);
@@ -63,18 +61,10 @@ var LangContext = /** @class */ (function () {
         var langs = (0, castArray_1.default)(lang).filter(Boolean);
         Object.assign(this, __assign(__assign({}, rest), { dictionary: dictionary }));
         var ldContext = this.parent
-            ? this.parent.locale
-            : localeStack_1.localeRoot.resolve([this.defaultLang]);
-        this.locale = ldContext.resolve(langs);
+            ? this.parent.stack
+            : (0, resolveLocale_1.resolveLocales)(resolveLocale_1.localeRoot, [this.defaultLang]);
+        this.stack = (0, resolveLocale_1.resolveLocales)(ldContext, langs);
     }
-    Object.defineProperty(LangContext.prototype, "stack", {
-        /** @ignore */
-        get: function () {
-            return this.locale.stack;
-        },
-        enumerable: false,
-        configurable: true
-    });
     Object.defineProperty(LangContext.prototype, "languages", {
         /**
          * Get the language preference stack for this context. The `languages`
@@ -160,7 +150,7 @@ var LangContext = /** @class */ (function () {
             var lang = rest.lang, other = __rest(rest, ["lang"]);
             return __assign({ defaultLang: defaultLang, lang: (0, castArray_1.default)(lang || []).concat(defaultLang) }, other);
         };
-        var _a = this, dictionary = _a.dictionary, stackCache = _a.stackCache, tagCache = _a.tagCache, locale = _a.locale, rest = __rest(_a, ["dictionary", "stackCache", "tagCache", "locale"]);
+        var _a = this, dictionary = _a.dictionary, tagCache = _a.tagCache, locale = _a.stack, rest = __rest(_a, ["dictionary", "tagCache", "stack"]);
         return new LangContext(__assign(__assign(__assign({}, rest), trDFT(trDL(props))), { parent: this }));
     };
     /**
@@ -244,7 +234,7 @@ var LangContext = /** @class */ (function () {
         return this.castString(text);
     };
     /** @ignore */
-    LangContext.prototype.findTag = function (tag) {
+    LangContext.prototype.lookupTag = function (tag) {
         var _this = this;
         var tagCache = this.tagCache;
         var rt = function () {
@@ -255,10 +245,27 @@ var LangContext = /** @class */ (function () {
                     return $$dict[tag];
             }
             if (parent)
-                return parent.findTag(tag);
-            throw new Error("No translation for ".concat(tag));
+                return parent.lookupTag(tag);
+            return;
         };
         return (tagCache[tag] = tagCache[tag] || rt());
+    };
+    /**
+     * Check whether this context can resolve a particular tag. Use it to guard
+     * translation tags which might be missing.
+     *
+     * @param tag the dictionary tag to check
+     * @returns true if `tag` can be resolved
+     */
+    LangContext.prototype.hasTag = function (tag) {
+        return !!this.lookupTag(tag);
+    };
+    /** @ignore */
+    LangContext.prototype.findTag = function (tag) {
+        var hit = this.lookupTag(tag);
+        if (hit)
+            return hit;
+        throw new Error("No translation for ".concat(tag));
     };
     /** @ignore */
     LangContext.prototype.resolveTag = function (tag) {
@@ -286,7 +293,7 @@ var LangContext = /** @class */ (function () {
      * @returns a language array that prepends `langs` to the context's stack
      */
     LangContext.prototype.resolveLocales = function (langs) {
-        return this.locale.resolve(langs).stack;
+        return (0, resolveLocale_1.resolveLocales)(this.stack, langs);
     };
     /**
      * Translate a React style props object by replacing any `t-foo` properties with
@@ -304,7 +311,7 @@ var LangContext = /** @class */ (function () {
             if (m)
                 return m[1];
         };
-        var search = lang ? this.resolveLocales([lang]) : this.locale.stack;
+        var search = lang ? this.resolveLocales([lang]) : this.stack;
         var pairs = Object.entries(props).map(function (_a) {
             var k = _a[0], v = _a[1];
             var nk = mapMagic(k);
