@@ -44,6 +44,7 @@ const node = (stack: LocaleStack, parent?: LocaleStack): LocaleStack => {
  * @param stack
  * @param langs a list of langs to prepend to the stack
  * @returns a stack node with the prepended langs
+ * @category Locale
  */
 export const resolveLocales = (
   stack: LocaleStack,

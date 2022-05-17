@@ -14,6 +14,7 @@ import { LocaleStack } from "./types";
  * @param stack
  * @param langs a list of langs to prepend to the stack
  * @returns a stack node with the prepended langs
+ * @category Locale
  */
 export declare const resolveLocales: (stack: LocaleStack, langs: LocaleStack) => LocaleStack;
 /**
