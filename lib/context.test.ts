@@ -77,6 +77,12 @@ describe("LangContext", () => {
     expect(() => ctx.resolve(["this", "that"])).toThrow(/must be/);
   });
 
+  it("should be check whether a tag exists", () => {
+    const ctx = new LangContext({ lang: "cy", defaultLang: "en", dictionary });
+    expect(ctx.hasTag("site")).toBeTruthy();
+    expect(ctx.hasTag("not there")).toBeFalsy();
+  });
+
   it("should fail when dictionary tag doesn't refer to a dictionary", () => {
     const ctx = new LangContext({ lang: "cy", defaultLang: "en", dictionary });
     expect(() => ctx.derive({ dictionaryFromTag: "site" })).toThrow(/is not/i);

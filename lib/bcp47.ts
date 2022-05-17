@@ -8,12 +8,12 @@ const expCache = new WeakMap<readonly string[], readonly string[]>();
 // Cached expansion of locales:
 //  ["en-GB", "fr-CA"] -> ["en-GB", "en", "fr-CA", "fr"]
 const expand = (langs: readonly string[]): readonly string[] => {
-  const exp = expCache.get(langs);
-  if (exp) return exp;
+  const tryExp = expCache.get(langs);
+  if (tryExp) return tryExp;
 
-  const nexp = searchOrder(langs);
-  expCache.set(langs, nexp);
-  return nexp;
+  const newExp = searchOrder(langs);
+  expCache.set(langs, newExp);
+  return newExp;
 };
 
 /**

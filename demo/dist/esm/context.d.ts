@@ -145,6 +145,16 @@ export declare class LangContext {
      */
     resolve(text: TextPropType): TString;
     /** @ignore */
+    private lookupTag;
+    /**
+     * Check whether this context can resolve a particular tag. Use it to guard
+     * translation tags which might be missing.
+     *
+     * @param tag the dictionary tag to check
+     * @returns true if `tag` can be resolved
+     */
+    hasTag(tag: string): boolean;
+    /** @ignore */
     private findTag;
     /** @ignore */
     private resolveTag;

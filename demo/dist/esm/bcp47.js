@@ -5,12 +5,12 @@ var expCache = new WeakMap();
 // Cached expansion of locales:
 //  ["en-GB", "fr-CA"] -> ["en-GB", "en", "fr-CA", "fr"]
 var expand = function (langs) {
-    var exp = expCache.get(langs);
-    if (exp)
-        return exp;
-    var nexp = searchOrder(langs);
-    expCache.set(langs, nexp);
-    return nexp;
+    var tryExp = expCache.get(langs);
+    if (tryExp)
+        return tryExp;
+    var newExp = searchOrder(langs);
+    expCache.set(langs, newExp);
+    return newExp;
 };
 /**
  * Given a set of BCP 47 language tags and a list of locales in

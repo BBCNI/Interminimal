@@ -228,7 +228,7 @@ var LangContext = /** @class */ (function () {
         return this.castString(text);
     };
     /** @ignore */
-    LangContext.prototype.findTag = function (tag) {
+    LangContext.prototype.lookupTag = function (tag) {
         var _this = this;
         var tagCache = this.tagCache;
         var rt = function () {
@@ -239,10 +239,27 @@ var LangContext = /** @class */ (function () {
                     return $$dict[tag];
             }
             if (parent)
-                return parent.findTag(tag);
-            throw new Error("No translation for ".concat(tag));
+                return parent.lookupTag(tag);
+            return;
         };
         return (tagCache[tag] = tagCache[tag] || rt());
+    };
+    /**
+     * Check whether this context can resolve a particular tag. Use it to guard
+     * translation tags which might be missing.
+     *
+     * @param tag the dictionary tag to check
+     * @returns true if `tag` can be resolved
+     */
+    LangContext.prototype.hasTag = function (tag) {
+        return !!this.lookupTag(tag);
+    };
+    /** @ignore */
+    LangContext.prototype.findTag = function (tag) {
+        var hit = this.lookupTag(tag);
+        if (hit)
+            return hit;
+        throw new Error("No translation for ".concat(tag));
     };
     /** @ignore */
     LangContext.prototype.resolveTag = function (tag) {

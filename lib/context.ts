@@ -231,7 +231,7 @@ export class LangContext {
   }
 
   /** @ignore */
-  private findTag(tag: string): TFatString | TDictionaryRoot {
+  private lookupTag(tag: string): TFatString | TDictionaryRoot | undefined {
     const { tagCache } = this;
 
     const rt = () => {
@@ -240,11 +240,29 @@ export class LangContext {
         const { $$dict } = dictionary;
         if ($$dict && tag in $$dict) return $$dict[tag];
       }
-      if (parent) return parent.findTag(tag);
-      throw new Error(`No translation for ${tag}`);
+      if (parent) return parent.lookupTag(tag);
+      return;
     };
 
     return (tagCache[tag] = tagCache[tag] || rt());
+  }
+
+  /**
+   * Check whether this context can resolve a particular tag. Use it to guard
+   * translation tags which might be missing.
+   *
+   * @param tag the dictionary tag to check
+   * @returns true if `tag` can be resolved
+   */
+  hasTag(tag: string): boolean {
+    return !!this.lookupTag(tag);
+  }
+
+  /** @ignore */
+  private findTag(tag: string): TFatString | TDictionaryRoot {
+    const hit = this.lookupTag(tag);
+    if (hit) return hit;
+    throw new Error(`No translation for ${tag}`);
   }
 
   /** @ignore */

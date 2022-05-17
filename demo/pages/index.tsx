@@ -33,17 +33,16 @@ interface PageProps {
   message: TFatString;
   info: TFatString;
   nested: TFatString;
+  langs: string[];
 }
 
 // Mock service data
 export const getServerSideProps: GetServerSideProps = async context => {
   const accept = context.req.headers["accept-language"];
-  if (accept) {
-    const langs = parseAcceptLanguage(accept);
-    console.log({ langs });
-  }
+  const langs = accept ? parseAcceptLanguage(accept) : [];
   return {
     props: {
+      langs,
       greeting: { en: "Hello", fr: "Bonjour", de: "Hallo" },
       message: {
         en: "Let's translate text!",
@@ -260,9 +259,13 @@ const Stack: ComponentType = () => {
   const ctx = useTranslation();
   return (
     <TList>
-      {ctx.languages.map(lang => (
-        <T key={lang} tag={lang} />
-      ))}
+      {ctx.languages.map(lang =>
+        ctx.hasTag(lang) ? (
+          <T key={lang} tag={lang} />
+        ) : (
+          <T key={lang} text={lang} />
+        )
+      )}
     </TList>
   );
 };
@@ -362,7 +365,7 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
 
 const Home: NextPage<PageProps> = props => {
   return (
-    <Translate dictionary={dictionary}>
+    <Translate lang={props.langs} dictionary={dictionary}>
       <div className={styles.container}>
         <Head>
           {/* <title>Interminimal</title> */}
