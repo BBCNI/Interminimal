@@ -11,6 +11,22 @@ describe("searchOrder", () => {
       {
         langs: ["en-GB", "en-US", "fr-CA", "en-AU", "fr"],
         want: ["en-GB", "en-US", "en", "fr-CA", "fr", "en-AU"]
+      },
+      {
+        langs: ["en-GB", "en-US-x-foo", "en-US-x-bar"],
+        want: ["en-GB", "en-US-x-foo", "en-US-x-bar", "en-US", "en"]
+      },
+      {
+        langs: ["en-GB", "en-US-x-foo", "fr-CA", "en-US-x-bar"],
+        want: [
+          "en-GB",
+          "en-US-x-foo",
+          "en-US",
+          "en",
+          "fr-CA",
+          "fr",
+          "en-US-x-bar"
+        ]
       }
     ];
     for (const { langs, want } of cases)
