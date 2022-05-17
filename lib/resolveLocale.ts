@@ -3,7 +3,7 @@ import "./weakRef"; // Polyfill WeakRef for Opera
 type StackArray = readonly string[];
 type NextCache = { [key: string]: WeakRef<StackArray> };
 
-const parentCache = new WeakMap<StackArray, StackArray>();
+const parentCache = new WeakMap<StackArray, StackArray | undefined>();
 const nextCache = new WeakMap<StackArray, NextCache>();
 
 const nextSlot = (stack: StackArray): NextCache => {
@@ -25,7 +25,7 @@ const splice = (
 };
 
 const node = (stack: StackArray, parent?: StackArray): StackArray => {
-  if (parent) parentCache.set(stack, parent);
+  parentCache.set(stack, parent);
   return Object.freeze(stack);
 };
 

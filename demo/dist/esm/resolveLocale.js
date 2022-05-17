@@ -26,8 +26,7 @@ var splice = function (stack, lang, path) {
     return splice(parent, lang, path.concat(stack[0]));
 };
 var node = function (stack, parent) {
-    if (parent)
-        parentCache.set(stack, parent);
+    parentCache.set(stack, parent);
     return Object.freeze(stack);
 };
 export var resolveLocales = function (stack, langs) {
