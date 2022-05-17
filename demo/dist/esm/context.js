@@ -54,10 +54,10 @@ var LangContext = /** @class */ (function () {
         // Upgrade lang to array if necessary.
         var langs = castArray(lang).filter(Boolean);
         Object.assign(this, __assign(__assign({}, rest), { dictionary: dictionary }));
-        var ldContext = this.parent
+        var lastStack = this.parent
             ? this.parent.stack
             : resolveLocales(localeRoot, [this.defaultLang]);
-        this.stack = resolveLocales(ldContext, langs);
+        this.stack = resolveLocales(lastStack, langs);
     }
     Object.defineProperty(LangContext.prototype, "languages", {
         /**

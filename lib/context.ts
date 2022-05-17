@@ -53,11 +53,11 @@ export class LangContext {
 
     Object.assign(this, { ...rest, dictionary });
 
-    const ldContext = this.parent
+    const lastStack = this.parent
       ? this.parent.stack
       : resolveLocales(localeRoot, [this.defaultLang]);
 
-    this.stack = resolveLocales(ldContext, langs);
+    this.stack = resolveLocales(lastStack, langs);
   }
 
   /**
