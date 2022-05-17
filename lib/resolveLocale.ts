@@ -46,7 +46,7 @@ const node = (stack: LocaleStack, parent?: LocaleStack): LocaleStack => {
  * @returns a stack node with the prepended langs
  * @category Locale
  */
-export const resolveLocales = (
+export const resolve = (
   stack: LocaleStack,
   langs: LocaleStack
 ): LocaleStack => {
@@ -57,7 +57,7 @@ export const resolveLocales = (
 
   const tryNext = slot[lang] && slot[lang].deref();
   // Cache hit
-  if (tryNext) return resolveLocales(tryNext, tail);
+  if (tryNext) return resolve(tryNext, tail);
 
   // Cache miss
   const newNext = stack.includes(lang)
@@ -65,8 +65,13 @@ export const resolveLocales = (
     : node([lang].concat(stack), stack);
 
   slot[lang] = new WeakRef<LocaleStack>(newNext);
-  return resolveLocales(newNext, tail);
+  return resolve(newNext, tail);
 };
+
+export const resolveLocales = (
+  stack: LocaleStack,
+  langs: LocaleStack
+): LocaleStack => resolve(canonicaliseLocales(stack), langs);
 
 /**
  * A global empty locale stack which equals [].
@@ -95,4 +100,4 @@ export const localeRoot = node([]);
  */
 
 export const canonicaliseLocales = (stack: LocaleStack) =>
-  parentCache.has(stack) ? stack : resolveLocales(localeRoot, stack);
+  parentCache.has(stack) ? stack : resolve(localeRoot, stack);
