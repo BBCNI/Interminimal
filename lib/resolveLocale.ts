@@ -30,26 +30,7 @@ const node = (stack: LocaleStack, parent?: LocaleStack): LocaleStack => {
   return Object.freeze(stack);
 };
 
-/**
- * Return the stack that is the result of prepending a
- * (possibly empty) list of locales to a locale stack
- *
- * ```typescript
- * const ls1 = resolveLocales(localeRoot, ["en", "fr"]);
- * const ls2 = resolveLocales(ls1, ["fr"]); // now ["fr", "en"]
- * const ls3 = resolveLocales(localeRoot, ["fr", "en"]); // also ["fr", "en"]
- * if (ls2 === ls3) console.log("Same thing!");
- * ```
- *
- * @param stack
- * @param langs a list of langs to prepend to the stack
- * @returns a stack node with the prepended langs
- * @category Locale
- */
-export const resolve = (
-  stack: LocaleStack,
-  langs: LocaleStack
-): LocaleStack => {
+const resolve = (stack: LocaleStack, langs: LocaleStack): LocaleStack => {
   if (!langs.length) return stack;
   const tail = [...langs];
   const lang = tail.pop() as string;
@@ -68,6 +49,22 @@ export const resolve = (
   return resolve(newNext, tail);
 };
 
+/**
+ * Return the stack that is the result of prepending a
+ * (possibly empty) list of locales to a locale stack
+ *
+ * ```typescript
+ * const ls1 = resolveLocales(localeRoot, ["en", "fr"]);
+ * const ls2 = resolveLocales(ls1, ["fr"]); // now ["fr", "en"]
+ * const ls3 = resolveLocales(localeRoot, ["fr", "en"]); // also ["fr", "en"]
+ * if (ls2 === ls3) console.log("Same thing!");
+ * ```
+ *
+ * @param stack
+ * @param langs a list of langs to prepend to the stack
+ * @returns a stack node with the prepended langs
+ * @category Locale
+ */
 export const resolveLocales = (
   stack: LocaleStack,
   langs: LocaleStack

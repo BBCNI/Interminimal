@@ -29,23 +29,7 @@ var node = function (stack, parent) {
     parentCache.set(stack, parent);
     return Object.freeze(stack);
 };
-/**
- * Return the stack that is the result of prepending a
- * (possibly empty) list of locales to a locale stack
- *
- * ```typescript
- * const ls1 = resolveLocales(localeRoot, ["en", "fr"]);
- * const ls2 = resolveLocales(ls1, ["fr"]); // now ["fr", "en"]
- * const ls3 = resolveLocales(localeRoot, ["fr", "en"]); // also ["fr", "en"]
- * if (ls2 === ls3) console.log("Same thing!");
- * ```
- *
- * @param stack
- * @param langs a list of langs to prepend to the stack
- * @returns a stack node with the prepended langs
- * @category Locale
- */
-export var resolve = function (stack, langs) {
+var resolve = function (stack, langs) {
     if (!langs.length)
         return stack;
     var tail = __spreadArray([], langs, true);
@@ -62,6 +46,22 @@ export var resolve = function (stack, langs) {
     slot[lang] = new WeakRef(newNext);
     return resolve(newNext, tail);
 };
+/**
+ * Return the stack that is the result of prepending a
+ * (possibly empty) list of locales to a locale stack
+ *
+ * ```typescript
+ * const ls1 = resolveLocales(localeRoot, ["en", "fr"]);
+ * const ls2 = resolveLocales(ls1, ["fr"]); // now ["fr", "en"]
+ * const ls3 = resolveLocales(localeRoot, ["fr", "en"]); // also ["fr", "en"]
+ * if (ls2 === ls3) console.log("Same thing!");
+ * ```
+ *
+ * @param stack
+ * @param langs a list of langs to prepend to the stack
+ * @returns a stack node with the prepended langs
+ * @category Locale
+ */
 export var resolveLocales = function (stack, langs) { return resolve(canonicaliseLocales(stack), langs); };
 /**
  * A global empty locale stack which equals [].

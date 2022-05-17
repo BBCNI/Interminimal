@@ -32,6 +32,23 @@ var node = function (stack, parent) {
     parentCache.set(stack, parent);
     return Object.freeze(stack);
 };
+var resolve = function (stack, langs) {
+    if (!langs.length)
+        return stack;
+    var tail = __spreadArray([], langs, true);
+    var lang = tail.pop();
+    var slot = nextSlot(stack);
+    var tryNext = slot[lang] && slot[lang].deref();
+    // Cache hit
+    if (tryNext)
+        return resolve(tryNext, tail);
+    // Cache miss
+    var newNext = stack.includes(lang)
+        ? splice(stack, lang, [])
+        : node([lang].concat(stack), stack);
+    slot[lang] = new WeakRef(newNext);
+    return resolve(newNext, tail);
+};
 /**
  * Return the stack that is the result of prepending a
  * (possibly empty) list of locales to a locale stack
@@ -48,23 +65,7 @@ var node = function (stack, parent) {
  * @returns a stack node with the prepended langs
  * @category Locale
  */
-var resolveLocales = function (stack, langs) {
-    if (!langs.length)
-        return stack;
-    var tail = __spreadArray([], langs, true);
-    var lang = tail.pop();
-    var slot = nextSlot(stack);
-    var tryNext = slot[lang] && slot[lang].deref();
-    // Cache hit
-    if (tryNext)
-        return (0, exports.resolveLocales)(tryNext, tail);
-    // Cache miss
-    var newNext = stack.includes(lang)
-        ? splice(stack, lang, [])
-        : node([lang].concat(stack), stack);
-    slot[lang] = new WeakRef(newNext);
-    return (0, exports.resolveLocales)(newNext, tail);
-};
+var resolveLocales = function (stack, langs) { return resolve((0, exports.canonicaliseLocales)(stack), langs); };
 exports.resolveLocales = resolveLocales;
 /**
  * A global empty locale stack which equals [].
@@ -90,6 +91,6 @@ exports.localeRoot = node([]);
  * @category Locale
  */
 var canonicaliseLocales = function (stack) {
-    return parentCache.has(stack) ? stack : (0, exports.resolveLocales)(exports.localeRoot, stack);
+    return parentCache.has(stack) ? stack : resolve(exports.localeRoot, stack);
 };
 exports.canonicaliseLocales = canonicaliseLocales;
