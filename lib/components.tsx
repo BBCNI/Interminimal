@@ -240,8 +240,8 @@ function resolveTranslationProps(
   const r = () => {
     if (process.env.NODE_ENV !== "production")
       if (tag && text) throw new Error(`Got both tag and text`);
-    if (text) return ctx.resolve(text);
-    if (tag) return ctx.resolve([tag]);
+    if (text) return ctx.frob(text);
+    if (tag) return ctx.frob([tag]);
     // istanbul ignore next - can't happen
     throw new Error(`No text or tag`);
   };

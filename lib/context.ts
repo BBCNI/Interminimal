@@ -9,7 +9,7 @@ import {
   StringPropType
 } from "./types";
 
-import { localeRoot, LocaleStack } from "./localeStack";
+import { localeRoot, resolveLocales } from "./resolveLocale";
 
 /**
  * A language context. All translation takes place inside a context and contexts
@@ -30,10 +30,8 @@ export class LangContext {
   /** @ignore */
   private readonly dictionary?: TDictionaryRoot;
   /** @ignore */
-  private readonly locale: LocaleStack = localeRoot;
+  private readonly locale: readonly string[] = localeRoot;
 
-  /** @ignore */
-  private stackCache: readonly string[] | null = null;
   /** @ignore */
   private tagCache: { [key: string]: TFatString | TDictionaryRoot } = {};
 
@@ -56,14 +54,14 @@ export class LangContext {
 
     const ldContext = this.parent
       ? this.parent.locale
-      : localeRoot.resolve([this.defaultLang]);
+      : resolveLocales(localeRoot, [this.defaultLang]);
 
-    this.locale = ldContext.resolve(langs);
+    this.locale = resolveLocales(ldContext, langs);
   }
 
   /** @ignore */
   private get stack(): readonly string[] {
-    return this.locale.stack;
+    return this.locale;
   }
 
   /**
@@ -146,7 +144,7 @@ export class LangContext {
       };
     };
 
-    const { dictionary, stackCache, tagCache, locale, ...rest } = this;
+    const { dictionary, tagCache, locale, ...rest } = this;
 
     return new LangContext({ ...rest, ...trDFT(trDL(props)), parent: this });
   }
@@ -159,7 +157,7 @@ export class LangContext {
    * @returns a TString with the best language match selected
    */
   translate(text: TextPropType): TString {
-    return this.resolve(text).toLang(this.stack);
+    return this.frob(text).toLang(this.stack);
   }
 
   /**
@@ -228,7 +226,7 @@ export class LangContext {
    * @param text `[tag]`, a TString or a plain JS string
    * @returns a `TString` containing the translation
    */
-  resolve(text: TextPropType): TString {
+  frob(text: TextPropType): TString {
     if (Array.isArray(text)) {
       if (text.length !== 1)
         throw new Error(`A tag must be an array of length 1`);
@@ -280,7 +278,7 @@ export class LangContext {
    * @returns a language array that prepends `langs` to the context's stack
    */
   resolveLocales(langs: string[]) {
-    return this.locale.resolve(langs).stack;
+    return resolveLocales(this.locale, langs);
   }
 
   /**
@@ -298,11 +296,11 @@ export class LangContext {
       if (m) return m[1];
     };
 
-    const search = lang ? this.resolveLocales([lang]) : this.locale.stack;
+    const search = lang ? this.resolveLocales([lang]) : this.locale;
 
     const pairs = Object.entries(props).map(([k, v]) => {
       const nk = mapMagic(k);
-      if (nk) return [nk, this.render(this.resolve(v).toLang(search))];
+      if (nk) return [nk, this.render(this.frob(v).toLang(search))];
       return [k, v];
     });
 

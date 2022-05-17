@@ -1,4 +1,4 @@
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
@@ -35,7 +35,8 @@ interface PageProps {
 }
 
 // Mock service data
-export async function getServerSideProps() {
+export const getServerSideProps: GetServerSideProps = async context => {
+  console.log(context.req.headers);
   return {
     props: {
       greeting: { en: "Hello", fr: "Bonjour", de: "Hallo" },
@@ -59,7 +60,7 @@ export async function getServerSideProps() {
       }
     }
   };
-}
+};
 
 // Translation dictionary
 const dictionary: TDictionaryRoot = {

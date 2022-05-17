@@ -1,7 +1,8 @@
-import { canonicaliseLocales } from "./localeStack";
+import { canonicaliseLocales } from "./resolveLocale";
 var MaxLength = 35;
 var lc = function (str) { return str.toLowerCase(); };
 var langCache = {};
+// TODO: still definitely vulnerable to combination stuffing
 var expandLang = function (lang) {
     var xl = function () {
         if (lang.length > MaxLength)

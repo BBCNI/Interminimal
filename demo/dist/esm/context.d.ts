@@ -21,8 +21,6 @@ export declare class LangContext {
     /** @ignore */
     private readonly locale;
     /** @ignore */
-    private stackCache;
-    /** @ignore */
     private tagCache;
     /**
      * Create a new LangContext. Normally you won't need to do this; the root
@@ -147,7 +145,7 @@ export declare class LangContext {
      * @param text `[tag]`, a TString or a plain JS string
      * @returns a `TString` containing the translation
      */
-    resolve(text: TextPropType): TString;
+    frob(text: TextPropType): TString;
     /** @ignore */
     private findTag;
     /** @ignore */

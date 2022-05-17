@@ -3,4 +3,4 @@ export * from "./components";
 export * from "./string";
 export * from "./context";
 export * from "./bcp47";
-export * from "./localeStack";
+export * from "./resolveLocale";

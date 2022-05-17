@@ -22,7 +22,7 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 import castArray from "lodash/castArray";
 import { TString } from "./string";
-import { localeRoot } from "./localeStack";
+import { localeRoot, resolveLocales } from "./resolveLocale";
 /**
  * A language context. All translation takes place inside a context and contexts
  * nest to allow their configuration to be modified. Normally you'll get a context
@@ -47,8 +47,6 @@ var LangContext = /** @class */ (function () {
         /** @ignore */
         this.locale = localeRoot;
         /** @ignore */
-        this.stackCache = null;
-        /** @ignore */
         this.tagCache = {};
         var lang = props.lang, dictionary = props.dictionary, rest = __rest(props, ["lang", "dictionary"]);
         if (dictionary && !("$$dict" in dictionary))
@@ -58,13 +56,13 @@ var LangContext = /** @class */ (function () {
         Object.assign(this, __assign(__assign({}, rest), { dictionary: dictionary }));
         var ldContext = this.parent
             ? this.parent.locale
-            : localeRoot.resolve([this.defaultLang]);
-        this.locale = ldContext.resolve(langs);
+            : resolveLocales(localeRoot, [this.defaultLang]);
+        this.locale = resolveLocales(ldContext, langs);
     }
     Object.defineProperty(LangContext.prototype, "stack", {
         /** @ignore */
         get: function () {
-            return this.locale.stack;
+            return this.locale;
         },
         enumerable: false,
         configurable: true
@@ -154,7 +152,7 @@ var LangContext = /** @class */ (function () {
             var lang = rest.lang, other = __rest(rest, ["lang"]);
             return __assign({ defaultLang: defaultLang, lang: castArray(lang || []).concat(defaultLang) }, other);
         };
-        var _a = this, dictionary = _a.dictionary, stackCache = _a.stackCache, tagCache = _a.tagCache, locale = _a.locale, rest = __rest(_a, ["dictionary", "stackCache", "tagCache", "locale"]);
+        var _a = this, dictionary = _a.dictionary, tagCache = _a.tagCache, locale = _a.locale, rest = __rest(_a, ["dictionary", "tagCache", "locale"]);
         return new LangContext(__assign(__assign(__assign({}, rest), trDFT(trDL(props))), { parent: this }));
     };
     /**
@@ -165,7 +163,7 @@ var LangContext = /** @class */ (function () {
      * @returns a TString with the best language match selected
      */
     LangContext.prototype.translate = function (text) {
-        return this.resolve(text).toLang(this.stack);
+        return this.frob(text).toLang(this.stack);
     };
     /**
      * This is a convenience method which may be useful when wrapping components
@@ -229,7 +227,7 @@ var LangContext = /** @class */ (function () {
      * @param text `[tag]`, a TString or a plain JS string
      * @returns a `TString` containing the translation
      */
-    LangContext.prototype.resolve = function (text) {
+    LangContext.prototype.frob = function (text) {
         if (Array.isArray(text)) {
             if (text.length !== 1)
                 throw new Error("A tag must be an array of length 1");
@@ -280,7 +278,7 @@ var LangContext = /** @class */ (function () {
      * @returns a language array that prepends `langs` to the context's stack
      */
     LangContext.prototype.resolveLocales = function (langs) {
-        return this.locale.resolve(langs).stack;
+        return resolveLocales(this.locale, langs);
     };
     /**
      * Translate a React style props object by replacing any `t-foo` properties with
@@ -298,12 +296,12 @@ var LangContext = /** @class */ (function () {
             if (m)
                 return m[1];
         };
-        var search = lang ? this.resolveLocales([lang]) : this.locale.stack;
+        var search = lang ? this.resolveLocales([lang]) : this.locale;
         var pairs = Object.entries(props).map(function (_a) {
             var k = _a[0], v = _a[1];
             var nk = mapMagic(k);
             if (nk)
-                return [nk, _this.render(_this.resolve(v).toLang(search))];
+                return [nk, _this.render(_this.frob(v).toLang(search))];
             return [k, v];
         });
         return Object.fromEntries(pairs);

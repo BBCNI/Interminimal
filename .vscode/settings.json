@@ -9,5 +9,6 @@
     "package.json": "package-lock.json, yarn.lock",
     "*": "${basename}.*.${extname}"
   },
-  "explorer.fileNesting.expand": false
+  "explorer.fileNesting.expand": false,
+  "js/ts.implicitProjectConfig.target": "ESNext"
 }

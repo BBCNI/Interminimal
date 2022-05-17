@@ -1,4 +1,4 @@
-import { canonicaliseLocales } from "./localeStack";
+import { canonicaliseLocales } from "./resolveLocale";
 
 const MaxLength = 35;
 
@@ -6,6 +6,7 @@ const lc = (str: string): string => str.toLowerCase();
 
 const langCache: { [key: string]: readonly string[] } = {};
 
+// TODO: still definitely vulnerable to combination stuffing
 const expandLang = (lang: string): readonly string[] => {
   const xl = () => {
     if (lang.length > MaxLength)

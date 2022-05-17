@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "module": "esnext",
-    "lib": ["es2017", "es7", "es6", "dom"],
+    "lib": ["ESNext"],
     "declaration": true,
     "outDir": "demo/dist/esm",
     "strict": true,
@@ -13,8 +13,9 @@
     "noUnusedParameters": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true
   },
-  "include": ["lib/**/*.ts", "lib/**/*.tsx"],
+  "include": ["lib/**/*.ts", "lib/**/*.tsx", "lib/**/*.js"],
   "exclude": ["node_modules", "demo", "dist", "**/*.test.*", "**/*.config.*"]
 }
