@@ -1,0 +1,40 @@
+.container {
+  padding: 0 3rem;
+}
+
+.main {
+  padding: 1rem 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.stack {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: #444;
+}
+
+.stack h2 {
+  font-size: 1.1em;
+  padding: 0;
+  margin: 0;
+  padding-bottom: 0.5rem;
+}
+
+.stack ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.stack li {
+  display: inline;
+  padding-right: 1em;
+}
+
+.calculator {
+  padding-top: 3rem;
+}

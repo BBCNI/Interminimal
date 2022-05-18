@@ -25,8 +25,8 @@ import {
   TFatString,
   TString
 } from "../dist/esm";
-import { parseAcceptLanguage } from "../dist/esm/accept";
 
+import { Links } from "../lib/links";
 import styles from "../styles/Home.module.css";
 
 interface PageProps {
@@ -68,7 +68,6 @@ const dictionary: TDictionaryRoot = {
   $$dict: {
     "site": {
       "*": "Interminimal",
-      "en": "Interminimal",
       "fr": "Chose internationale"
     },
     // Numbers
@@ -365,7 +364,7 @@ const Block: ComponentType<
   );
 };
 
-const Home: NextPage<PageProps> = props => {
+const HomePage: NextPage<PageProps> = props => {
   const state1 = useLanguageStates("de", "en", "fr");
   const state2 = useLanguageStates("en", "de", "fr");
   const state3 = useLanguageStates("fr", "de", "en-GB");
@@ -381,29 +380,8 @@ const Home: NextPage<PageProps> = props => {
         <TTitle text={["site"]} />
 
         <main className={styles.main}>
-          <h1 className={styles.title}>Interminimal</h1>
-          <ul className={styles.links}>
-            <li>
-              <Link href="https://github.com/BBCNI/Interminimal">
-                <a>GitHub</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="https://www.npmjs.com/package/interminimal">
-                <a>NPM</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="https://bbcni.github.io/Interminimal/">
-                <a>API Documentation</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="https://github.com/BBCNI/Interminimal/blob/main/demo/pages/index.tsx">
-                <a>Demo Source</a>
-              </Link>
-            </li>
-          </ul>
+          <h1 className={styles.title}>Interminimal Demo</h1>
+          <Links />
 
           <div className={styles.blocks}>
             <Block {...props} state={state1} lang="de" />
@@ -416,4 +394,4 @@ const Home: NextPage<PageProps> = props => {
   );
 };
 
-export default Home;
+export default HomePage;

@@ -5,3 +5,4 @@ export * from "./context";
 export * from "./bcp47";
 export * from "./resolveLocale";
 export * from "./accept";
+export * from "./searchOrder";
