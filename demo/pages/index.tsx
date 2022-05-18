@@ -367,8 +367,8 @@ const Block: ComponentType<
 
 const Home: NextPage<PageProps> = props => {
   const state1 = useLanguageStates("de", "en", "fr");
-  const state2 = useLanguageStates("en", "en", "en");
-  const state3 = useLanguageStates("fr", "en", "en");
+  const state2 = useLanguageStates("en", "de", "fr");
+  const state3 = useLanguageStates("fr", "de", "en-GB");
 
   return (
     <Translate dictionary={dictionary}>
