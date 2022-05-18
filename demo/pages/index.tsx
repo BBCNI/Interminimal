@@ -259,20 +259,17 @@ const LanguagePicker: ComponentType<{
 const Stack: ComponentType = () => {
   const ctx = useTranslation();
   return (
-    <Fragment>
-      <p>
-        <TList>
-          {ctx.languages.map(lang =>
-            ctx.hasTag(lang) ? (
-              <T key={lang} tag={lang} />
-            ) : (
-              <T key={lang} text={lang} />
-            )
-          )}
-        </TList>
-      </p>
-      <p className={styles.code}>{JSON.stringify(ctx.languages, null, 2)}</p>
-    </Fragment>
+    <p>
+      <TList>
+        {ctx.languages.map(lang =>
+          ctx.hasTag(lang) ? (
+            <T key={lang} tag={lang} />
+          ) : (
+            <T key={lang} text={lang} />
+          )
+        )}
+      </TList>
+    </p>
   );
 };
 
@@ -370,8 +367,13 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
 };
 
 const Home: NextPage<PageProps> = props => {
+  const [accept, setAccept] = useState(false);
+
+  const toggleAccept = () => setAccept(!accept);
+  const extraProps = accept ? { lang: props.langs } : {};
+
   return (
-    <Translate lang={props.langs} dictionary={dictionary}>
+    <Translate {...extraProps} dictionary={dictionary}>
       <div className={styles.container}>
         <Head>
           {/* <title>Interminimal</title> */}
@@ -383,7 +385,12 @@ const Home: NextPage<PageProps> = props => {
 
         <main className={styles.main}>
           <h1 className={styles.title}>Interminimal</h1>
-          <div></div>
+          <div>
+            <label>
+              <input type="checkbox" checked={accept} onChange={toggleAccept} />
+              <T text="Use Accept-Language from your browser" />
+            </label>
+          </div>
           <div className={styles.blocks}>
             <Block {...props} lang="de" />
             <Block {...props} lang="en" />
