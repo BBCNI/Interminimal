@@ -37,6 +37,9 @@ var groupTree = function (tree) {
     if (tree.length < 2)
         return tree;
     var head = tree[0], next = tree[1], tail = tree.slice(2);
+    // The head.children.length check is subtle. It's the thing
+    // that stops e.g. ["en", "en-US"] from turning into ["en-US", "en"]
+    // allowing ["en-US"] to turn into ["en-US", "en"]
     if (head.lang === next.lang && head.children.length)
         return groupTree(__spreadArray([mergeNodes(head, next)], tail, true));
     return __spreadArray([head], groupTree(__spreadArray([next], tail, true)), true);

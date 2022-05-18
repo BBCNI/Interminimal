@@ -34,6 +34,9 @@ const mergeNodes = (a: LangNode, b: LangNode): LangNode => ({
 const groupTree = (tree: readonly LangNode[]): readonly LangNode[] => {
   if (tree.length < 2) return tree;
   const [head, next, ...tail] = tree;
+  // The head.children.length check is subtle. It's the thing
+  // that stops e.g. ["en", "en-US"] from turning into ["en-US", "en"]
+  // allowing ["en-US"] to turn into ["en-US", "en"]
   if (head.lang === next.lang && head.children.length)
     return groupTree([mergeNodes(head, next), ...tail]);
   return [head, ...groupTree([next, ...tail])];
