@@ -34,7 +34,8 @@ var LangContext = /** @class */ (function () {
     /**
      * Create a new LangContext. Normally you won't need to do this; the root
      * context is initialised by _Interminimal_ and child contexts are created
-     * using [[`derive`]].
+     * using [[`derive`]]. In React use the [[`useTranslation`]] to get the active
+     * [[`LangContext`]].
      *
      * @param props initial properties for this context
      */

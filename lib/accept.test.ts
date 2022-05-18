@@ -44,9 +44,13 @@ describe("parseAcceptLanguage", () => {
   });
 
   it("should canonicalise", () => {
-    expect(parseAcceptLanguage("en-GB, en;q=0.9, en-GB;q=0.9")).toEqual([
+    expect(parseAcceptLanguage("en-Gb, eN;q=0.9, EN-GB;q=0.9")).toEqual([
       "en-GB",
       "en"
     ]);
+  });
+
+  it("should strip bad tags", () => {
+    expect(parseAcceptLanguage("b0rk")).toEqual([]);
   });
 });

@@ -1,12 +1,18 @@
 import { LocaleStack, TFatString } from "./types";
 
 import difference from "lodash/difference";
-import { bestLocale } from "./bcp47";
+import { bestLocale, canonicaliseLanguage } from "./bcp47";
 
 const diffs = (a: string[], b: string[]) => [
   difference(a, b),
   difference(b, a)
 ];
+
+const isNonCanonical = (lang: string) => {
+  if (lang === "*") return false;
+  const canon = canonicaliseLanguage(lang);
+  return canon !== lang;
+};
 
 /**
  * Wrap a fat string with methods to coerce it to a specific
@@ -81,7 +87,16 @@ export class TString {
       if (lang) return obj.toLang([lang]);
       return obj;
     }
-    return new this(obj, lang);
+
+    if (process.env.NODE_ENV !== "production") {
+      const bad = Object.keys(obj).filter(isNonCanonical);
+      if (bad.length)
+        throw new Error(`Badly formed BCP 47 language tags: ${bad.join(", ")}`);
+    }
+
+    const ts = new this(obj);
+    if (lang) return ts.toLang([lang]);
+    return ts;
   }
 
   /**
@@ -98,7 +113,7 @@ export class TString {
    * @returns a new TString
    */
   static literal(str: string, lang: string): TString {
-    return new this({ [lang]: str }, lang);
+    return this.cast({ [lang]: str }, lang);
   }
 
   /**

@@ -36,3 +36,17 @@ export var bestLocale = function (tags, langs) {
     var ts = new Set(tags.map(lc));
     return expand(canonicaliseLocales(langs)).find(function (ln) { return ts.has(lc(ln)); });
 };
+var canonCache = new Map();
+var canonicalise = function (tag) {
+    try {
+        return new Intl.Locale(tag).toString();
+    }
+    catch (e) { }
+};
+export var canonicaliseLanguage = function (tag) {
+    if (canonCache.has(tag))
+        return canonCache.get(tag);
+    var canon = canonicalise(tag);
+    canonCache.set(tag, canon);
+    return canon;
+};

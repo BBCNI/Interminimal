@@ -1,3 +1,4 @@
+import { canonicaliseLanguage } from "./bcp47";
 import { canonicaliseLocales } from "./resolveLocale";
 var parsePriority = function (term) {
     var mt = term.match(/(\S*?)\s*;\s*(.*)/);
@@ -16,11 +17,16 @@ var parsePriority = function (term) {
 var cmp = function (a, b) {
     return a < b ? -1 : a > b ? 1 : 0;
 };
+var canonTag = function (tag) {
+    var canon = canonicaliseLanguage(tag);
+    return canon ? [canon] : [];
+};
 export var parseAcceptLanguage = function (accept) {
     return canonicaliseLocales(accept
         .split(/\s*,\s*/)
         .map(parsePriority)
         .filter(function (t) { return t[0] >= 0; })
         .sort(function (a, b) { return cmp(b[0], a[0]) || cmp(a[1], b[1]); })
-        .map(function (t) { return t[1]; }));
+        .map(function (t) { return t[1]; })
+        .flatMap(canonTag));
 };

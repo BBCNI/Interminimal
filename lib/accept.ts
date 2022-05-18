@@ -1,3 +1,4 @@
+import { canonicaliseLanguage } from "./bcp47";
 import { canonicaliseLocales } from "./resolveLocale";
 import { LocaleStack } from "./types";
 
@@ -18,6 +19,11 @@ const parsePriority = (term: string): [number, string] => {
 const cmp = (a: string | number, b: string | number) =>
   a < b ? -1 : a > b ? 1 : 0;
 
+const canonTag = (tag: string): string[] => {
+  const canon = canonicaliseLanguage(tag);
+  return canon ? [canon] : [];
+};
+
 export const parseAcceptLanguage = (accept: string): LocaleStack =>
   canonicaliseLocales(
     accept
@@ -26,4 +32,5 @@ export const parseAcceptLanguage = (accept: string): LocaleStack =>
       .filter(t => t[0] >= 0)
       .sort((a, b) => cmp(b[0], a[0]) || cmp(a[1], b[1]))
       .map(t => t[1])
+      .flatMap(canonTag)
   );

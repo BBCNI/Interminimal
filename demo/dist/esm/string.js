@@ -10,11 +10,17 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 import difference from "lodash/difference";
-import { bestLocale } from "./bcp47";
+import { bestLocale, canonicaliseLanguage } from "./bcp47";
 var diffs = function (a, b) { return [
     difference(a, b),
     difference(b, a)
 ]; };
+var isNonCanonical = function (lang) {
+    if (lang === "*")
+        return false;
+    var canon = canonicaliseLanguage(lang);
+    return canon !== lang;
+};
 /**
  * Wrap a fat string with methods to coerce it to a specific
  * language and stringify it. TStrings are immutable; all
@@ -84,7 +90,15 @@ var TString = /** @class */ (function () {
                 return obj.toLang([lang]);
             return obj;
         }
-        return new this(obj, lang);
+        if (process.env.NODE_ENV !== "production") {
+            var bad = Object.keys(obj).filter(isNonCanonical);
+            if (bad.length)
+                throw new Error("Badly formed BCP 47 language tags: ".concat(bad.join(", ")));
+        }
+        var ts = new this(obj);
+        if (lang)
+            return ts.toLang([lang]);
+        return ts;
     };
     /**
      * Cast a string literal and language into a single-language TString.
@@ -101,7 +115,7 @@ var TString = /** @class */ (function () {
      */
     TString.literal = function (str, lang) {
         var _a;
-        return new this((_a = {}, _a[lang] = str, _a), lang);
+        return this.cast((_a = {}, _a[lang] = str, _a), lang);
     };
     Object.defineProperty(TString.prototype, "language", {
         /**

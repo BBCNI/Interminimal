@@ -44,3 +44,18 @@ export const bestLocale = (
   const ts = new Set(tags.map(lc));
   return expand(canonicaliseLocales(langs)).find(ln => ts.has(lc(ln)));
 };
+
+const canonCache = new Map<string, string | undefined>();
+
+const canonicalise = (tag: string): string | undefined => {
+  try {
+    return new Intl.Locale(tag).toString();
+  } catch (e) {}
+};
+
+export const canonicaliseLanguage = (tag: string): string | undefined => {
+  if (canonCache.has(tag)) return canonCache.get(tag);
+  const canon = canonicalise(tag);
+  canonCache.set(tag, canon);
+  return canon;
+};

@@ -200,4 +200,17 @@ describe("TSString", () => {
     const ts = new TString({ en: { one: "cat", other: "cats", many: "herd" } });
     expect(() => ts.toLang(["en"]).toString(0)).toThrow(/unknown plural/i);
   });
+
+  it("should fail to cast bad languages", () => {
+    expect(() => TString.cast({ b0rk: "Oh no!" })).toThrow(/b0rk/);
+  });
+
+  it("should accept * as a language tag", () => {
+    const ts = TString.cast({ "*": "Anywhere" }, "en");
+    expect(ts.language).toBe("en");
+  });
+
+  it("should fail to make a literal with a bad languages", () => {
+    expect(() => TString.literal("Oh no!", "b0rk")).toThrow(/b0rk/);
+  });
 });
