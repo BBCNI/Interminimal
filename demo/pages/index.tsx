@@ -370,27 +370,29 @@ const HomePage: NextPage<PageProps> = props => {
   const state3 = useLanguageStates("fr", "de", "en-GB");
 
   return (
-    <Translate dictionary={dictionary}>
-      <div className={styles.container}>
-        <Head>
-          <meta name="description" content="Minimal i18n" />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
+    <div className="show-lang">
+      <Translate dictionary={dictionary}>
+        <div className={styles.container}>
+          <Head>
+            <meta name="description" content="Minimal i18n" />
+            <link rel="icon" href="/favicon.ico" />
+          </Head>
 
-        <TTitle text={["site"]} />
+          <TTitle text={["site"]} />
 
-        <main className={styles.main}>
-          <h1 className={styles.title}>Interminimal Demo</h1>
-          <Links />
+          <main className={styles.main}>
+            <h1 className={styles.title}>Interminimal Demo</h1>
+            <Links />
 
-          <div className={styles.blocks}>
-            <Block {...props} state={state1} lang="de" />
-            <Block {...props} state={state2} lang="en" />
-            <Block {...props} state={state3} lang="fr" />
-          </div>
-        </main>
-      </div>
-    </Translate>
+            <div className={styles.blocks}>
+              <Block {...props} state={state1} lang="de" />
+              <Block {...props} state={state2} lang="en" />
+              <Block {...props} state={state3} lang="fr" />
+            </div>
+          </main>
+        </div>
+      </Translate>
+    </div>
   );
 };
 

@@ -21,23 +21,23 @@ a:hover {
   box-sizing: border-box;
 }
 
-[lang]::before {
+.show-lang [lang]::before {
   content: "<" attr(lang);
   padding-right: 0.25rem;
   color: orange;
 }
 
-[lang]::after {
+.show-lang [lang]::after {
   content: ">";
   padding-left: 0.25rem;
   color: orange;
 }
 
-[lang] {
+.show-lang [lang] {
   transition: background-color 0.5s;
 }
 
-[lang]:hover {
+.show-lang [lang]:hover {
   background-color: rgba(0, 0, 0, 0.2);
   transition: background-color 0.5s;
 }

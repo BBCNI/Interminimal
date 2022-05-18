@@ -45,7 +45,7 @@ var parseAcceptLanguage = function (accept) {
         .split(/\s*,\s*/)
         .map(parsePriority)
         .filter(function (t) { return t[0] >= 0; })
-        .sort(function (a, b) { return cmp(b[0], a[0]) || cmp(a[1], b[1]); })
+        .sort(function (a, b) { return cmp(b[0], a[0]); })
         .map(function (t) { return t[1]; })
         .flatMap(canonTag));
 };

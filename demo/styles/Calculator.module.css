@@ -12,10 +12,15 @@
 }
 
 .stack,
-.is {
+.is,
+.clock {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
   background: #444;
+}
+
+.clock {
+  font-family: "Fira Mono", "Andale Mono", "Consolas", monospace;
 }
 
 .stack h2 {

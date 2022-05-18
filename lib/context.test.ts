@@ -178,4 +178,9 @@ describe("LangContext", () => {
     expect(canonicaliseLocales(["fr", "fr", "en", "fr"])).toBe(frCtx.languages);
     expect(canonicaliseLocales(["fr", "en", "fr"])).toBe(frCtx.languages);
   });
+
+  it("should expose search path", () => {
+    const ctx = new LangContext({ lang: "fr-CA" });
+    expect(ctx.search).toEqual(["fr-CA", "fr", "en"]);
+  });
 });

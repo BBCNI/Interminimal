@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useEffect } from "react";
 import { useMemo } from "react";
 import { useState } from "react";
 import { ComponentType } from "react";
@@ -9,7 +9,11 @@ import {
   parseAcceptLanguage,
   canonicaliseLocales,
   LocaleStack,
-  searchOrder
+  searchOrder,
+  useTranslation,
+  TString,
+  T,
+  Translate
 } from "../dist/esm";
 // import { searchOrder } from "../dist/esm/searchOrder";
 
@@ -38,12 +42,35 @@ const randInt = (min: number, max: number): number =>
   Math.floor(min + Math.random() * (max - min));
 
 const randomColour = () =>
-  `hsl(${randInt(0, 360)}deg, ${randInt(80, 100)}%, ${randInt(50, 80)}%)`;
+  `hsl(${randInt(0, 360)}deg, ${randInt(80, 100)}%, ${randInt(65, 80)}%)`;
 
 const stackColour = (stack: LocaleStack): string => {
   let colour = stackCache.get(stack);
   if (!colour) stackCache.set(stack, (colour = randomColour()));
   return colour;
+};
+
+const DateFormat: ComponentType<{ date: Date }> = ({ date }) => {
+  const ctx = useTranslation();
+  const { dtf, locale } = useMemo(() => {
+    const dtf = new Intl.DateTimeFormat(ctx.search, {
+      dateStyle: "full",
+      timeStyle: "full"
+    });
+    const { locale } = dtf.resolvedOptions();
+    return { dtf, locale };
+  }, [ctx.search]);
+  const ts = TString.literal(dtf.format(date), locale);
+  return <T text={ts} />;
+};
+
+const Clock: ComponentType = () => {
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 500);
+    return () => clearInterval(timer);
+  }, []);
+  return <DateFormat date={now || new Date()} />;
 };
 
 const Stack: ComponentType<{ stack: LocaleStack; title: string }> = ({
@@ -81,8 +108,13 @@ const Calculator: ComponentType<{ init?: string }> = ({ init = "" }) => {
           placeholder="Languages or Accept-Language header"
         />
       </div>
-      <Stack stack={stack} title="Canonical" />
-      <Stack stack={search} title="Search Path" />
+      <Translate lang={stack}>
+        <Stack stack={stack} title="Canonical" />
+        <Stack stack={search} title="Search Path" />
+        <div className={styles.clock}>
+          <Clock />
+        </div>
+      </Translate>
     </div>
   );
 };

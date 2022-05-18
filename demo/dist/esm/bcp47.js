@@ -1,17 +1,6 @@
-import { canonicaliseLocales } from "./resolveLocale";
 import { searchOrder } from "./searchOrder";
+import { canonicaliseLocales } from "./resolveLocale";
 var lc = function (str) { return str.toLowerCase(); };
-var expCache = new WeakMap();
-// Cached expansion of locales:
-//  ["en-GB", "fr-CA"] -> ["en-GB", "en", "fr-CA", "fr"]
-var expand = function (langs) {
-    var tryExp = expCache.get(langs);
-    if (tryExp)
-        return tryExp;
-    var newExp = searchOrder(langs);
-    expCache.set(langs, newExp);
-    return newExp;
-};
 /**
  * Given a set of BCP 47 language tags and a list of locales in
  * descending preference order find the tag that best satisfies
@@ -34,7 +23,7 @@ var expand = function (langs) {
  */
 export var bestLocale = function (tags, langs) {
     var ts = new Set(tags.map(lc));
-    return expand(canonicaliseLocales(langs)).find(function (ln) { return ts.has(lc(ln)); });
+    return searchOrder(canonicaliseLocales(langs)).find(function (ln) { return ts.has(lc(ln)); });
 };
 var canonCache = new Map();
 /**

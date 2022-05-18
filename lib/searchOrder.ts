@@ -52,7 +52,23 @@ const renderNode = (node: LangNode): LocaleStack => [
 const renderTree = (tree: readonly LangNode[]): LocaleStack =>
   tree.flatMap(renderNode);
 
-export const searchOrder = (langs: LocaleStack): LocaleStack =>
+const expandSearch = (langs: LocaleStack): LocaleStack =>
   canonicaliseLocales(
     renderTree(groupTree(langs.map(expandLang).map(makeNode)))
   );
+
+const expCache = new WeakMap<LocaleStack, LocaleStack>();
+
+const cacheLookup = (langs: LocaleStack): LocaleStack => {
+  const tryExp = expCache.get(langs);
+  if (tryExp) return tryExp;
+
+  const newExp = expandSearch(langs);
+  expCache.set(langs, newExp);
+  return newExp;
+};
+
+// Cached expansion of locales:
+//  ["en-GB", "fr-CA"] -> ["en-GB", "en", "fr-CA", "fr"]
+export const searchOrder = (langs: LocaleStack) =>
+  cacheLookup(canonicaliseLocales(langs));

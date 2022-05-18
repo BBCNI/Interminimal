@@ -29,6 +29,7 @@ exports.LangContext = void 0;
 var castArray_1 = __importDefault(require("lodash/castArray"));
 var string_1 = require("./string");
 var resolveLocale_1 = require("./resolveLocale");
+var searchOrder_1 = require("./searchOrder");
 /**
  * A language context. All translation takes place inside a context and contexts
  * nest to allow their configuration to be modified. Normally you'll get a context
@@ -96,6 +97,13 @@ var LangContext = /** @class */ (function () {
          */
         get: function () {
             return this.stack;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(LangContext.prototype, "search", {
+        get: function () {
+            return (0, searchOrder_1.searchOrder)(this.stack);
         },
         enumerable: false,
         configurable: true

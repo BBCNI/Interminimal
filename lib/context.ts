@@ -11,6 +11,7 @@ import {
 } from "./types";
 
 import { localeRoot, resolveLocales } from "./resolveLocale";
+import { searchOrder } from "./searchOrder";
 
 /**
  * A language context. All translation takes place inside a context and contexts
@@ -90,6 +91,10 @@ export class LangContext {
    */
   get languages(): string[] {
     return this.stack as string[];
+  }
+
+  get search(): string[] {
+    return searchOrder(this.stack) as string[];
   }
 
   /**

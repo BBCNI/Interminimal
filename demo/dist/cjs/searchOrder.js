@@ -55,7 +55,21 @@ var renderNode = function (node) { return __spreadArray(__spreadArray([], render
 var renderTree = function (tree) {
     return tree.flatMap(renderNode);
 };
-var searchOrder = function (langs) {
+var expandSearch = function (langs) {
     return (0, resolveLocale_1.canonicaliseLocales)(renderTree(groupTree(langs.map(expandLang).map(makeNode))));
+};
+var expCache = new WeakMap();
+var cacheLookup = function (langs) {
+    var tryExp = expCache.get(langs);
+    if (tryExp)
+        return tryExp;
+    var newExp = expandSearch(langs);
+    expCache.set(langs, newExp);
+    return newExp;
+};
+// Cached expansion of locales:
+//  ["en-GB", "fr-CA"] -> ["en-GB", "en", "fr-CA", "fr"]
+var searchOrder = function (langs) {
+    return cacheLookup((0, resolveLocale_1.canonicaliseLocales)(langs));
 };
 exports.searchOrder = searchOrder;

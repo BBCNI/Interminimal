@@ -23,6 +23,7 @@ var __rest = (this && this.__rest) || function (s, e) {
 import castArray from "lodash/castArray";
 import { TString } from "./string";
 import { localeRoot, resolveLocales } from "./resolveLocale";
+import { searchOrder } from "./searchOrder";
 /**
  * A language context. All translation takes place inside a context and contexts
  * nest to allow their configuration to be modified. Normally you'll get a context
@@ -90,6 +91,13 @@ var LangContext = /** @class */ (function () {
          */
         get: function () {
             return this.stack;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(LangContext.prototype, "search", {
+        get: function () {
+            return searchOrder(this.stack);
         },
         enumerable: false,
         configurable: true

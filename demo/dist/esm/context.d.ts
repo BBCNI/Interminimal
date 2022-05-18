@@ -61,6 +61,7 @@ export declare class LangContext {
      *
      */
     get languages(): string[];
+    get search(): string[];
     /**
      * The current language. This is the same as the first element of the [[`languages`]] array.
      */

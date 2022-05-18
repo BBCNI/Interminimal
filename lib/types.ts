@@ -64,7 +64,7 @@ export interface LangContextProps {
    * A language or list of languages that are preferred for this context. Any languages provided
    * here are prepended to the parent's language stack.
    */
-  readonly lang?: string | string[];
+  readonly lang?: string | readonly string[];
   /**
    * Set the ambient language - which is used to create a context which can't match the desired
    * language. The ambience is used to add `lang` attributes to elements that aren't in the
