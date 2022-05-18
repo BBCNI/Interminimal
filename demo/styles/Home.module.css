@@ -29,3 +29,7 @@
 .clock {
   font-family: monospace;
 }
+
+.code {
+  font-family: "Fira Mono", "Andale Mono", "Consolas", monospace;
+}

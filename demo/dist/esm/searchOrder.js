@@ -19,14 +19,18 @@ var expandLang = function (lang) {
         return expandLang(lang.slice(0, idx - 2)).concat(lang);
     return expandLang(lang.slice(0, idx)).concat(lang);
 };
-var makeNode = function (path) {
-    // istanbul ignore next - can't happen
-    if (path.length === 0)
-        throw new Error("Empty thing");
-    var lang = path[0], tail = path.slice(1);
-    if (tail.length)
-        return { lang: lang, children: [makeNode(tail)] };
-    return { lang: lang, children: [] };
+var makeNode = function (depth) {
+    return function (path) {
+        // istanbul ignore next - can't happen
+        if (path.length === 0)
+            throw new Error("Empty thing");
+        var lang = path[0], tail = path.slice(1);
+        if (tail.length)
+            return { lang: lang, children: [makeNode(depth + 1)(tail)] };
+        if (depth)
+            return { lang: lang, children: [] };
+        return { lang: lang, children: [], keep: true };
+    };
 };
 var mergeNodes = function (a, b) { return ({
     lang: a.lang,
@@ -37,7 +41,7 @@ var groupTree = function (tree) {
     if (tree.length < 2)
         return tree;
     var head = tree[0], next = tree[1], tail = tree.slice(2);
-    if (head.lang === next.lang)
+    if (head.lang === next.lang && !head.keep)
         return groupTree(__spreadArray([mergeNodes(head, next)], tail, true));
     return __spreadArray([head], groupTree(__spreadArray([next], tail, true)), true);
 };
@@ -50,5 +54,5 @@ var renderTree = function (tree) {
     return tree.flatMap(renderNode);
 };
 export var searchOrder = function (langs) {
-    return canonicaliseLocales(renderTree(groupTree(langs.map(expandLang).map(makeNode))));
+    return canonicaliseLocales(renderTree(groupTree(langs.map(expandLang).map(makeNode(0)))));
 };

@@ -4,6 +4,7 @@ import { LocaleStack } from "./types";
 interface LangNode {
   readonly lang: string;
   readonly children: readonly LangNode[];
+  readonly keep?: boolean;
 }
 
 const MaxLength = 35;
@@ -17,13 +18,16 @@ const expandLang = (lang: string): LocaleStack => {
   return expandLang(lang.slice(0, idx)).concat(lang);
 };
 
-const makeNode = (path: LocaleStack): LangNode => {
-  // istanbul ignore next - can't happen
-  if (path.length === 0) throw new Error(`Empty thing`);
-  const [lang, ...tail] = path;
-  if (tail.length) return { lang, children: [makeNode(tail)] };
-  return { lang, children: [] };
-};
+const makeNode =
+  (depth: number) =>
+  (path: LocaleStack): LangNode => {
+    // istanbul ignore next - can't happen
+    if (path.length === 0) throw new Error(`Empty thing`);
+    const [lang, ...tail] = path;
+    if (tail.length) return { lang, children: [makeNode(depth + 1)(tail)] };
+    if (depth) return { lang, children: [] };
+    return { lang, children: [], keep: true };
+  };
 
 const mergeNodes = (a: LangNode, b: LangNode): LangNode => ({
   lang: a.lang,
@@ -34,7 +38,7 @@ const mergeNodes = (a: LangNode, b: LangNode): LangNode => ({
 const groupTree = (tree: readonly LangNode[]): readonly LangNode[] => {
   if (tree.length < 2) return tree;
   const [head, next, ...tail] = tree;
-  if (head.lang === next.lang)
+  if (head.lang === next.lang && !head.keep)
     return groupTree([mergeNodes(head, next), ...tail]);
   return [head, ...groupTree([next, ...tail])];
 };
@@ -51,5 +55,5 @@ const renderTree = (tree: readonly LangNode[]): LocaleStack =>
 
 export const searchOrder = (langs: LocaleStack): LocaleStack =>
   canonicaliseLocales(
-    renderTree(groupTree(langs.map(expandLang).map(makeNode)))
+    renderTree(groupTree(langs.map(expandLang).map(makeNode(0))))
   );

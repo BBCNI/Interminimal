@@ -27,6 +27,18 @@ describe("searchOrder", () => {
           "fr",
           "en-US-x-bar"
         ]
+      },
+      {
+        langs: ["en", "en-GB", "en-US-x-foo", "fr-CA", "en-US-x-bar"],
+        want: [
+          "en",
+          "en-GB",
+          "en-US-x-foo",
+          "en-US",
+          "fr-CA",
+          "fr",
+          "en-US-x-bar"
+        ]
       }
     ];
     for (const { langs, want } of cases)

@@ -2,6 +2,7 @@ import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { Fragment } from "react";
 import { useEffect } from "react";
 import { Children } from "react";
 
@@ -258,15 +259,20 @@ const LanguagePicker: ComponentType<{
 const Stack: ComponentType = () => {
   const ctx = useTranslation();
   return (
-    <TList>
-      {ctx.languages.map(lang =>
-        ctx.hasTag(lang) ? (
-          <T key={lang} tag={lang} />
-        ) : (
-          <T key={lang} text={lang} />
-        )
-      )}
-    </TList>
+    <Fragment>
+      <p>
+        <TList>
+          {ctx.languages.map(lang =>
+            ctx.hasTag(lang) ? (
+              <T key={lang} tag={lang} />
+            ) : (
+              <T key={lang} text={lang} />
+            )
+          )}
+        </TList>
+      </p>
+      <p className={styles.code}>{JSON.stringify(ctx.languages, null, 2)}</p>
+    </Fragment>
   );
 };
 
@@ -379,12 +385,6 @@ const Home: NextPage<PageProps> = props => {
           <h1 className={styles.title}>Interminimal</h1>
           <div></div>
           <div className={styles.blocks}>
-            {/* <Translate lang="cy">
-              <div className={styles.clock}>
-                <Clock dateStyle="full" timeStyle="full" />
-              </div>
-            </Translate> */}
-
             <Block {...props} lang="de" />
             <Block {...props} lang="en" />
             <Block {...props} lang="fr" />
