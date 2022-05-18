@@ -325,7 +325,7 @@ const Block: ComponentType<
         </Tp>
         <Tp tag="colour" />
         <Tp text={nested}>
-          <Link href="/" passHref={true}>
+          <Link href="https://github.com/BBCNI/Interminimal" passHref={true}>
             <T as="a" tag="%1" />
           </Link>
           <T as="i" tag="%2" />
@@ -394,7 +394,7 @@ const Home: NextPage<PageProps> = props => {
               </Link>
             </li>
             <li>
-              <Link href="/">
+              <Link href="https://bbcni.github.io/Interminimal/">
                 <a>API Documentation</a>
               </Link>
             </li>
