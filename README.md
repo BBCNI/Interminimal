@@ -55,6 +55,8 @@ If you're developing your own components that work with _Interminimal_ you might
 
 # Demo
 
+There's a live [Demo of _Interminal_](https://bbcni.github.io/Interminimal/demo/). You can also check out its [source](https://github.com/BBCNI/Interminimal/blob/main/demo/pages/index.tsx)
+
 # Let's Translate!
 
 As you can see in the example above you can translate your text using just two components: `Translate` which creates a translation context and `T` which translates individual chunks of text.

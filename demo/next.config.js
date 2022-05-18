@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  basePath: "/demo",
+  basePath: "/Interminimal/demo",
   reactStrictMode: true,
   images: { loader: "custom", domains: ["placekitten.com"] }
 };

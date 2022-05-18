@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3007 & cd .. && npm run dev",
+    "dev:next": "next dev -p 3007",
     "build": "next build",
     "export": "npm run build && next export -o ../docs/demo",
     "start": "next start",
