@@ -10,6 +10,11 @@ body {
 
 a {
   color: #adff2f;
+  text-decoration: none;
+}
+
+a:hover {
+  background: rgba(100, 200, 100, 0.3);
 }
 
 * {

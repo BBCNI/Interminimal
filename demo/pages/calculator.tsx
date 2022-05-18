@@ -82,7 +82,7 @@ const CalculatorPage: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>Language Preference Calculator</h1>
+        <h1 className={styles.title}>Language Stack Calculator</h1>
         <Links />
         <Calculator />
       </main>
