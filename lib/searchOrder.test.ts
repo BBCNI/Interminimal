@@ -17,11 +17,11 @@ describe("searchOrder", () => {
         want: ["en-GB", "en-US-x-foo", "en-US-x-bar", "en-US", "en"]
       },
       {
-        langs: ["en-GB", "en-US-x-foo", "fr-CA", "en-US-x-bar"],
+        langs: ["en-US-x-foo", "en-GB", "fr-CA", "en-US-x-bar"],
         want: [
-          "en-GB",
           "en-US-x-foo",
           "en-US",
+          "en-GB",
           "en",
           "fr-CA",
           "fr",
