@@ -59,25 +59,16 @@ export class TString {
   /** @ignore */
   private readonly lang: string | undefined;
 
-  /**
-   * Create a new TString, optionally setting the language.
-   *
-   * ```typescript
-   * const ts = new TString({ en: "Hello", de: "Hallo" });
-   * console.log(ts.toLang(["de"]).toString()) // Hallo
-   * ```
-   *
-   * @param dict a fat string like `{ en: "Hello", de: "Hallo" }`
-   * @param lang an optional language; if provided must exist in `dict`
-   */
-  constructor(dict: TFatString, lang?: string) {
-    if (lang && !(lang in dict)) throw new Error(`${lang} not in dictionary`);
+  /** @ignore */
+  private constructor(dict: TFatString, lang?: string) {
     this.dict = dict;
     this.lang = lang;
   }
 
   /**
-   * Cast a TString or TFatString to a TString.
+   * Cast a TString or TFatString to a TString. This is the main way of
+   * creating new TStrings.
+   *
    * @param obj either a fat string or an existing TString
    * @param lang an optional language
    * @returns a TString which may be `obj` if `obj` is already a TString

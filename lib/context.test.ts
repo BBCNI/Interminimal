@@ -102,7 +102,7 @@ describe("LangContext", () => {
 
   it("should render dictionary substitutions", () => {
     const ctx = new LangContext({ lang: "cy", defaultLang: "en", dictionary });
-    const ts = new TString({ en: "Hello, this is %{site}" }, "en");
+    const ts = TString.cast({ en: "Hello, this is %{site}" }, "en");
     const str = ctx.render(ts);
     expect(str).toBe("Hello, this is Interminimal");
   });
