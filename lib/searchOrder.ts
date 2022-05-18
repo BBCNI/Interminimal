@@ -4,7 +4,6 @@ import { LocaleStack } from "./types";
 interface LangNode {
   readonly lang: string;
   readonly children: readonly LangNode[];
-  readonly depth: number;
 }
 
 const MaxLength = 35;
@@ -22,14 +21,12 @@ const makeNode = (path: LocaleStack): LangNode => {
   // istanbul ignore next - can't happen
   if (path.length === 0) throw new Error(`Empty thing`);
   const [lang, ...tail] = path;
-  const depth = path.length;
-  if (tail.length) return { lang, children: [makeNode(tail)], depth };
-  return { lang, children: [], depth };
+  if (tail.length) return { lang, children: [makeNode(tail)] };
+  return { lang, children: [] };
 };
 
 const mergeNodes = (a: LangNode, b: LangNode): LangNode => ({
   lang: a.lang,
-  depth: Math.max(a.depth, b.depth),
   children: groupTree([...a.children, ...b.children])
 });
 
@@ -37,7 +34,7 @@ const mergeNodes = (a: LangNode, b: LangNode): LangNode => ({
 const groupTree = (tree: readonly LangNode[]): readonly LangNode[] => {
   if (tree.length < 2) return tree;
   const [head, next, ...tail] = tree;
-  if (head.lang === next.lang && head.depth > 1)
+  if (head.lang === next.lang && head.children.length)
     return groupTree([mergeNodes(head, next), ...tail]);
   return [head, ...groupTree([next, ...tail])];
 };
