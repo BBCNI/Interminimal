@@ -14,8 +14,8 @@
     "postversion": "npm publish",
     "postpublish": "git push origin --all && git push origin --tags",
     "dev": "tsc --watch",
-    "docs": "typedoc --out docs --categorizeByGroup false lib/index.ts",
-    "docs:watch": "typedoc --watch --out docs --categorizeByGroup false lib/index.ts"
+    "docs": "typedoc --out docs --cleanOutputDir false --categorizeByGroup false lib/index.ts",
+    "docs:watch": "typedoc --watch --out docs --cleanOutputDir false --categorizeByGroup false lib/index.ts"
   },
   "repository": {
     "type": "git",

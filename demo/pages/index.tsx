@@ -382,6 +382,29 @@ const Home: NextPage<PageProps> = props => {
 
         <main className={styles.main}>
           <h1 className={styles.title}>Interminimal</h1>
+          <ul className={styles.links}>
+            <li>
+              <Link href="https://github.com/BBCNI/Interminimal">
+                <a>GitHub</a>
+              </Link>
+            </li>
+            <li>
+              <Link href="https://www.npmjs.com/package/interminimal">
+                <a>NPM</a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/">
+                <a>API Documentation</a>
+              </Link>
+            </li>
+            <li>
+              <Link href="https://github.com/BBCNI/Interminimal/blob/main/demo/pages/index.tsx">
+                <a>Demo Source</a>
+              </Link>
+            </li>
+          </ul>
+
           <div className={styles.blocks}>
             <Block {...props} state={state1} lang="de" />
             <Block {...props} state={state2} lang="en" />

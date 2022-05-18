@@ -18,13 +18,13 @@ a {
 
 [lang]::before {
   content: "<" attr(lang);
-  padding-right: 0.5rem;
+  padding-right: 0.25rem;
   color: orange;
 }
 
 [lang]::after {
   content: ">";
-  padding-right: 0.5rem;
+  padding-left: 0.25rem;
   color: orange;
 }
 
