@@ -21,6 +21,12 @@ var diffs = function (a, b) { return [
     (0, difference_1.default)(a, b),
     (0, difference_1.default)(b, a)
 ]; };
+var isNonCanonical = function (lang) {
+    if (lang === "*")
+        return false;
+    var canon = (0, bcp47_1.canonicaliseLanguage)(lang);
+    return canon !== lang;
+};
 /**
  * Wrap a fat string with methods to coerce it to a specific
  * language and stringify it. TStrings are immutable; all
@@ -61,25 +67,15 @@ var diffs = function (a, b) { return [
  * @category Classes
  */
 var TString = /** @class */ (function () {
-    /**
-     * Create a new TString, optionally setting the language.
-     *
-     * ```typescript
-     * const ts = new TString({ en: "Hello", de: "Hallo" });
-     * console.log(ts.toLang(["de"]).toString()) // Hallo
-     * ```
-     *
-     * @param dict a fat string like `{ en: "Hello", de: "Hallo" }`
-     * @param lang an optional language; if provided must exist in `dict`
-     */
+    /** @ignore */
     function TString(dict, lang) {
-        if (lang && !(lang in dict))
-            throw new Error("".concat(lang, " not in dictionary"));
         this.dict = dict;
         this.lang = lang;
     }
     /**
-     * Cast a TString or TFatString to a TString.
+     * Cast a TString or TFatString to a TString. This is the main way of
+     * creating new TStrings.
+     *
      * @param obj either a fat string or an existing TString
      * @param lang an optional language
      * @returns a TString which may be `obj` if `obj` is already a TString
@@ -90,7 +86,15 @@ var TString = /** @class */ (function () {
                 return obj.toLang([lang]);
             return obj;
         }
-        return new this(obj, lang);
+        if (process.env.NODE_ENV !== "production") {
+            var bad = Object.keys(obj).filter(isNonCanonical);
+            if (bad.length)
+                throw new Error("Badly formed BCP 47 language tags: ".concat(bad.join(", ")));
+        }
+        var ts = new this(obj);
+        if (lang)
+            return ts.toLang([lang]);
+        return ts;
     };
     /**
      * Cast a string literal and language into a single-language TString.
@@ -107,7 +111,7 @@ var TString = /** @class */ (function () {
      */
     TString.literal = function (str, lang) {
         var _a;
-        return new this((_a = {}, _a[lang] = str, _a), lang);
+        return this.cast((_a = {}, _a[lang] = str, _a), lang);
     };
     Object.defineProperty(TString.prototype, "language", {
         /**

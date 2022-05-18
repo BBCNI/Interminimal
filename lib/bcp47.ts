@@ -53,6 +53,12 @@ const canonicalise = (tag: string): string | undefined => {
   } catch (e) {}
 };
 
+/**
+ * Canonicalise a language tag.
+ *
+ * @param tag the language to canonicalise
+ * @returns the canonical version or undefined if tag is invalid
+ */
 export const canonicaliseLanguage = (tag: string): string | undefined => {
   if (canonCache.has(tag)) return canonCache.get(tag);
   const canon = canonicalise(tag);

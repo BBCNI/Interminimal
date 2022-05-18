@@ -43,6 +43,12 @@ var canonicalise = function (tag) {
     }
     catch (e) { }
 };
+/**
+ * Canonicalise a language tag.
+ *
+ * @param tag the language to canonicalise
+ * @returns the canonical version or undefined if tag is invalid
+ */
 export var canonicaliseLanguage = function (tag) {
     if (canonCache.has(tag))
         return canonCache.get(tag);

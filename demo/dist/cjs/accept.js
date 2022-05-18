@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseAcceptLanguage = void 0;
+var bcp47_1 = require("./bcp47");
 var resolveLocale_1 = require("./resolveLocale");
 var parsePriority = function (term) {
     var mt = term.match(/(\S*?)\s*;\s*(.*)/);
@@ -19,12 +20,17 @@ var parsePriority = function (term) {
 var cmp = function (a, b) {
     return a < b ? -1 : a > b ? 1 : 0;
 };
+var canonTag = function (tag) {
+    var canon = (0, bcp47_1.canonicaliseLanguage)(tag);
+    return canon ? [canon] : [];
+};
 var parseAcceptLanguage = function (accept) {
     return (0, resolveLocale_1.canonicaliseLocales)(accept
         .split(/\s*,\s*/)
         .map(parsePriority)
         .filter(function (t) { return t[0] >= 0; })
         .sort(function (a, b) { return cmp(b[0], a[0]) || cmp(a[1], b[1]); })
-        .map(function (t) { return t[1]; }));
+        .map(function (t) { return t[1]; })
+        .flatMap(canonTag));
 };
 exports.parseAcceptLanguage = parseAcceptLanguage;

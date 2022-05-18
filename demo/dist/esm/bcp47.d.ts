@@ -20,4 +20,10 @@ import { LocaleStack } from "./types";
  * @category Locale
  */
 export declare const bestLocale: (tags: LocaleStack, langs: LocaleStack) => string | undefined;
+/**
+ * Canonicalise a language tag.
+ *
+ * @param tag the language to canonicalise
+ * @returns the canonical version or undefined if tag is invalid
+ */
 export declare const canonicaliseLanguage: (tag: string) => string | undefined;

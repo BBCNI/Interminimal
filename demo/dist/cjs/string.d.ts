@@ -43,20 +43,12 @@ export declare class TString {
     private readonly dict;
     /** @ignore */
     private readonly lang;
+    /** @ignore */
+    private constructor();
     /**
-     * Create a new TString, optionally setting the language.
+     * Cast a TString or TFatString to a TString. This is the main way of
+     * creating new TStrings.
      *
-     * ```typescript
-     * const ts = new TString({ en: "Hello", de: "Hallo" });
-     * console.log(ts.toLang(["de"]).toString()) // Hallo
-     * ```
-     *
-     * @param dict a fat string like `{ en: "Hello", de: "Hallo" }`
-     * @param lang an optional language; if provided must exist in `dict`
-     */
-    constructor(dict: TFatString, lang?: string);
-    /**
-     * Cast a TString or TFatString to a TString.
      * @param obj either a fat string or an existing TString
      * @param lang an optional language
      * @returns a TString which may be `obj` if `obj` is already a TString

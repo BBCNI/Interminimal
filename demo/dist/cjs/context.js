@@ -40,7 +40,8 @@ var LangContext = /** @class */ (function () {
     /**
      * Create a new LangContext. Normally you won't need to do this; the root
      * context is initialised by _Interminimal_ and child contexts are created
-     * using [[`derive`]].
+     * using [[`derive`]]. In React use the [[`useTranslation`]] to get the active
+     * [[`LangContext`]].
      *
      * @param props initial properties for this context
      */
@@ -60,10 +61,10 @@ var LangContext = /** @class */ (function () {
         // Upgrade lang to array if necessary.
         var langs = (0, castArray_1.default)(lang).filter(Boolean);
         Object.assign(this, __assign(__assign({}, rest), { dictionary: dictionary }));
-        var ldContext = this.parent
+        var lastStack = this.parent
             ? this.parent.stack
             : (0, resolveLocale_1.resolveLocales)(resolveLocale_1.localeRoot, [this.defaultLang]);
-        this.stack = (0, resolveLocale_1.resolveLocales)(ldContext, langs);
+        this.stack = (0, resolveLocale_1.resolveLocales)(lastStack, langs);
     }
     Object.defineProperty(LangContext.prototype, "languages", {
         /**
