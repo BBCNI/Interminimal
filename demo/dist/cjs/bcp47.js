@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.canonicaliseLanguage = exports.bestLocale = void 0;
+exports.canonicaliseLanguage = exports.canonicaliseLanguageUncached = exports.bestLocale = void 0;
 var resolveLocale_1 = require("./resolveLocale");
 var searchOrder_1 = require("./searchOrder");
 var lc = function (str) { return str.toLowerCase(); };
@@ -41,16 +41,24 @@ var bestLocale = function (tags, langs) {
 };
 exports.bestLocale = bestLocale;
 var canonCache = new Map();
-var canonicalise = function (tag) {
+var canonicaliseLanguageUncached = function (tag) {
     try {
         return new Intl.Locale(tag).toString();
     }
     catch (e) { }
 };
+exports.canonicaliseLanguageUncached = canonicaliseLanguageUncached;
+/**
+ * Canonicalise a language tag.
+ *
+ * @param tag the language to canonicalise
+ * @returns the canonical version or undefined if tag is invalid
+ * @category Locale
+ */
 var canonicaliseLanguage = function (tag) {
     if (canonCache.has(tag))
         return canonCache.get(tag);
-    var canon = canonicalise(tag);
+    var canon = (0, exports.canonicaliseLanguageUncached)(tag);
     canonCache.set(tag, canon);
     return canon;
 };

@@ -1,4 +1,4 @@
-import { canonicaliseLanguage } from "./bcp47";
+import { canonicaliseLanguageUncached } from "./bcp47";
 import { canonicaliseLocales } from "./resolveLocale";
 var parsePriority = function (term) {
     var mt = term.match(/(\S*?)\s*;\s*(.*)/);
@@ -18,9 +18,25 @@ var cmp = function (a, b) {
     return a < b ? -1 : a > b ? 1 : 0;
 };
 var canonTag = function (tag) {
-    var canon = canonicaliseLanguage(tag);
+    // We're dealing with user input so use the uncached method.
+    // If we used the cached version we'd be vulnerable to
+    // cache stuffing attacks.
+    var canon = canonicaliseLanguageUncached(tag);
     return canon ? [canon] : [];
 };
+/**
+ * Parse an HTTP Accept-Language header. Badly formed languages are
+ * dropped, languages are canonicalised.
+ *
+ * ```typescript
+ * const stack = parseAcceptLanguage("fr;b=9,en-GB;q=0.9,en-AU;q=0.8");
+ * console.log(stack); // [ "en-GB", "en-AU" ]
+ * ```
+ *
+ * @param accept the contents of the header
+ * @returns a priority ordered language stack
+ * @category Locale
+ */
 export var parseAcceptLanguage = function (accept) {
     return canonicaliseLocales(accept
         .split(/\s*,\s*/)

@@ -37,7 +37,7 @@ export var bestLocale = function (tags, langs) {
     return expand(canonicaliseLocales(langs)).find(function (ln) { return ts.has(lc(ln)); });
 };
 var canonCache = new Map();
-var canonicalise = function (tag) {
+export var canonicaliseLanguageUncached = function (tag) {
     try {
         return new Intl.Locale(tag).toString();
     }
@@ -48,11 +48,12 @@ var canonicalise = function (tag) {
  *
  * @param tag the language to canonicalise
  * @returns the canonical version or undefined if tag is invalid
+ * @category Locale
  */
 export var canonicaliseLanguage = function (tag) {
     if (canonCache.has(tag))
         return canonCache.get(tag);
-    var canon = canonicalise(tag);
+    var canon = canonicaliseLanguageUncached(tag);
     canonCache.set(tag, canon);
     return canon;
 };

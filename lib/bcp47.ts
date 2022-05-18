@@ -47,7 +47,9 @@ export const bestLocale = (
 
 const canonCache = new Map<string, string | undefined>();
 
-const canonicalise = (tag: string): string | undefined => {
+export const canonicaliseLanguageUncached = (
+  tag: string
+): string | undefined => {
   try {
     return new Intl.Locale(tag).toString();
   } catch (e) {}
@@ -58,10 +60,11 @@ const canonicalise = (tag: string): string | undefined => {
  *
  * @param tag the language to canonicalise
  * @returns the canonical version or undefined if tag is invalid
+ * @category Locale
  */
 export const canonicaliseLanguage = (tag: string): string | undefined => {
   if (canonCache.has(tag)) return canonCache.get(tag);
-  const canon = canonicalise(tag);
+  const canon = canonicaliseLanguageUncached(tag);
   canonCache.set(tag, canon);
   return canon;
 };
