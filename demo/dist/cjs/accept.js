@@ -24,7 +24,7 @@ var canonTag = function (tag) {
     // We're dealing with user input so use the uncached method.
     // If we used the cached version we'd be vulnerable to
     // cache stuffing attacks.
-    var canon = (0, bcp47_1.canonicaliseLanguageUncached)(tag);
+    var canon = (0, bcp47_1.safeCanonicaliseLanguage)(tag);
     return canon ? [canon] : [];
 };
 /**

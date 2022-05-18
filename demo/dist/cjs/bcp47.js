@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.canonicaliseLanguage = exports.canonicaliseLanguageUncached = exports.bestLocale = void 0;
+exports.canonicaliseLanguage = exports.safeCanonicaliseLanguage = exports.bestLocale = void 0;
 var resolveLocale_1 = require("./resolveLocale");
 var searchOrder_1 = require("./searchOrder");
 var lc = function (str) { return str.toLowerCase(); };
@@ -41,15 +41,24 @@ var bestLocale = function (tags, langs) {
 };
 exports.bestLocale = bestLocale;
 var canonCache = new Map();
-var canonicaliseLanguageUncached = function (tag) {
+/**
+ * Canonicalise a language tag. No caching - safe to use on user input.
+ *
+ * @param tag the language to canonicalise
+ * @returns the canonical version or undefined if tag is invalid
+ * @category Locale
+ */
+var safeCanonicaliseLanguage = function (tag) {
     try {
         return new Intl.Locale(tag).toString();
     }
     catch (e) { }
 };
-exports.canonicaliseLanguageUncached = canonicaliseLanguageUncached;
+exports.safeCanonicaliseLanguage = safeCanonicaliseLanguage;
 /**
- * Canonicalise a language tag.
+ * Canonicalise a language tag. Canonicalisation is cached so don't
+ * call this function on untrusted input. Use
+ * [[`canonicaliseLanguageUncached`]]
  *
  * @param tag the language to canonicalise
  * @returns the canonical version or undefined if tag is invalid
@@ -58,7 +67,7 @@ exports.canonicaliseLanguageUncached = canonicaliseLanguageUncached;
 var canonicaliseLanguage = function (tag) {
     if (canonCache.has(tag))
         return canonCache.get(tag);
-    var canon = (0, exports.canonicaliseLanguageUncached)(tag);
+    var canon = (0, exports.safeCanonicaliseLanguage)(tag);
     canonCache.set(tag, canon);
     return canon;
 };

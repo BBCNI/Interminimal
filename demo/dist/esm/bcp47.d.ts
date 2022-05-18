@@ -31,7 +31,7 @@ export declare const safeCanonicaliseLanguage: (tag: string) => string | undefin
 /**
  * Canonicalise a language tag. Canonicalisation is cached so don't
  * call this function on untrusted input. Use
- * [[`canonicaliseLanguageUncached`]]
+ * [[`safeCanonicaliseLanguage`]] for user input.
  *
  * @param tag the language to canonicalise
  * @returns the canonical version or undefined if tag is invalid
