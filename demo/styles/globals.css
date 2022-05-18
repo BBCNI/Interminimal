@@ -4,10 +4,12 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  background: #333;
+  color: #eee;
 }
 
 a {
-  color: red;
+  color: #adff2f;
 }
 
 * {
@@ -15,16 +17,17 @@ a {
 }
 
 [lang]::before {
-  content: attr(lang);
+  content: "<" attr(lang);
   padding-right: 0.5rem;
   color: orange;
-  font-size: 0.8rem;
 }
 
-[lang] {
-  background: linear-gradient(
-    90deg,
-    rgba(128, 255, 0, 0.4),
-    rgba(255, 0, 200, 0.1)
-  );
+[lang]::after {
+  content: ">";
+  padding-right: 0.5rem;
+  color: orange;
+}
+
+[lang]:hover {
+  background: rgba(0, 0, 0, 0.1);
 }

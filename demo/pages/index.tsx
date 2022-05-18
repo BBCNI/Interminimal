@@ -154,17 +154,6 @@ const DateFormat: ComponentType<
   return <T text={ts} />;
 };
 
-const TDateFormat: ComponentType<{ date: Date }> = ({ date }) => {
-  // Get the context
-  const ctx = useTranslation();
-  // Use context's languages stack to find a format for our locale
-  const dtf = new Intl.DateTimeFormat(ctx.languages);
-  // Find out which language was matched...
-  const { locale } = dtf.resolvedOptions();
-  const ts = TString.literal(dtf.format(date), locale);
-  return <T text={ts} />;
-};
-
 const TList: ComponentType<{
   children: ReactNode;
   type?: "conjunction" | "disjunction";
@@ -222,11 +211,27 @@ const TTitle: ComponentType<TTitleProps> = ({ text, ...rest }) => {
 interface LanguageState {
   lang: string;
   setLang: (lang: string) => void;
+  label: string;
 }
 
-const useLanguageState = (defaultLang: string): LanguageState => {
+const useLanguageState = (
+  defaultLang: string,
+  label: string
+): LanguageState => {
   const [lang, setLang] = useState(defaultLang);
-  return { lang, setLang };
+  return { lang, setLang, label };
+};
+
+const useLanguageStates = (
+  lang1: string,
+  lang2: string,
+  lang3: string
+): LanguageState[] => {
+  return [
+    useLanguageState(lang1, "one"),
+    useLanguageState(lang2, "two"),
+    useLanguageState(lang3, "three")
+  ];
 };
 
 const langs = ["en-GB", "en", "fr", "de", "cy"];
@@ -273,17 +278,9 @@ const Stack: ComponentType = () => {
   );
 };
 
-const Block: ComponentType<PageProps & { lang: string }> = ({
-  greeting,
-  message,
-  info,
-  nested,
-  lang
-}) => {
-  const lang1 = useLanguageState(lang);
-  const lang2 = useLanguageState("en");
-  const lang3 = useLanguageState("en");
-
+const Block: ComponentType<
+  PageProps & { lang: string; state: LanguageState[] }
+> = ({ greeting, message, info, nested, state }) => {
   const counts = [0, 1, 1.5, 2, 3, 6, 42];
 
   // Bake an alternative to <T as="li" ...>
@@ -296,10 +293,12 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
 
   return (
     <div>
-      <Translate lang={[lang1.lang, lang2.lang, lang3.lang]}>
-        <LanguagePicker label={["one"]} state={lang1} />{" "}
-        <LanguagePicker label={["two"]} state={lang2} />{" "}
-        <LanguagePicker label={["three"]} state={lang3} />
+      <Translate lang={state.map(s => s.lang)}>
+        {state.map(s => (
+          <Fragment key={s.label}>
+            <LanguagePicker label={[s.label]} state={s} />{" "}
+          </Fragment>
+        ))}
         <Th2 text="Languages" />
         <Stack />
         <Th2 text="Time" />
@@ -368,6 +367,9 @@ const Block: ComponentType<PageProps & { lang: string }> = ({
 
 const Home: NextPage<PageProps> = props => {
   const [accept, setAccept] = useState(false);
+  const state1 = useLanguageStates("de", "en", "fr");
+  const state2 = useLanguageStates("en", "en", "en");
+  const state3 = useLanguageStates("fr", "en", "en");
 
   const toggleAccept = () => setAccept(!accept);
   const extraProps = accept ? { lang: props.langs } : {};
@@ -392,9 +394,9 @@ const Home: NextPage<PageProps> = props => {
             </label>
           </div>
           <div className={styles.blocks}>
-            <Block {...props} lang="de" />
-            <Block {...props} lang="en" />
-            <Block {...props} lang="fr" />
+            <Block {...props} state={state1} lang="de" />
+            <Block {...props} state={state2} lang="en" />
+            <Block {...props} state={state3} lang="fr" />
           </div>
         </main>
       </div>
