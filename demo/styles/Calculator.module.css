@@ -11,7 +11,8 @@
   align-items: center;
 }
 
-.stack {
+.stack,
+.is {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
   background: #444;
@@ -30,11 +31,39 @@
   padding: 0;
 }
 
+.stack ul:before {
+  content: "[";
+  color: orange;
+  padding-right: 0.75rem;
+}
+
+.stack ul:after {
+  content: "]";
+  color: orange;
+  padding-left: 0.75rem;
+}
+
 .stack li {
   display: inline;
-  padding-right: 1em;
+  padding-right: 1rem;
+}
+
+.stack li:last-of-type {
+  padding-right: 0;
 }
 
 .calculator {
   padding-top: 3rem;
+}
+
+.is-empty {
+  outline: 3px solid #666666;
+}
+
+.is-accept {
+  outline: 3px solid #2299dd;
+}
+
+.is-stack {
+  outline: 3px solid #229922;
 }

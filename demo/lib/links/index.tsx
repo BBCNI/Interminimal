@@ -20,6 +20,11 @@ export function Links() {
         </Link>
       </li>
       <li>
+        <Link href="https://bbcni.github.io/Interminimal/">
+          <a>API Documentation</a>
+        </Link>
+      </li>
+      <li>
         <Link href="https://github.com/BBCNI/Interminimal">
           <a>GitHub</a>
         </Link>
@@ -27,11 +32,6 @@ export function Links() {
       <li>
         <Link href="https://www.npmjs.com/package/interminimal">
           <a>NPM</a>
-        </Link>
-      </li>
-      <li>
-        <Link href="https://bbcni.github.io/Interminimal/">
-          <a>API Documentation</a>
         </Link>
       </li>
     </ul>

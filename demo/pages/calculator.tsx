@@ -24,30 +24,25 @@ const canonicalise = (lang: string) => {
 
 const parseLangs = (inp: string) => inp.split(/\s+/).flatMap(canonicalise);
 
-function parseInput(inp: string) {
-  return /[;,]/.test(inp)
-    ? { stack: parseAcceptLanguage(inp), type: "accept" }
-    : { stack: canonicaliseLocales(parseLangs(inp)), type: "stack" };
+function parseInput(inp: string): { stack: LocaleStack; type: string } {
+  return /^\s*$/.test(inp)
+    ? { stack: [], type: "is-empty" }
+    : /[;,]/.test(inp)
+    ? { stack: parseAcceptLanguage(inp), type: "is-accept" }
+    : { stack: canonicaliseLocales(parseLangs(inp)), type: "is-stack" };
 }
 
 const stackCache = new WeakMap<LocaleStack, string>();
 
-const randomByte = (): string =>
-  Math.floor(Math.random() * 128 + 128)
-    .toString(16)
-    .padStart(2, "0");
-
-const randomColour = () => "#" + [1, 2, 3].map(randomByte).join("");
-
 const randInt = (min: number, max: number): number =>
   Math.floor(min + Math.random() * (max - min));
 
-const randomHSL = () =>
-  `hsl(${randInt(0, 360)}deg, ${randInt(70, 90)}%, ${randInt(70, 100)}%)`;
+const randomColour = () =>
+  `hsl(${randInt(0, 360)}deg, ${randInt(80, 100)}%, ${randInt(50, 80)}%)`;
 
 const stackColour = (stack: LocaleStack): string => {
   let colour = stackCache.get(stack);
-  if (!colour) stackCache.set(stack, (colour = randomHSL()));
+  if (!colour) stackCache.set(stack, (colour = randomColour()));
   return colour;
 };
 
@@ -60,16 +55,14 @@ const Stack: ComponentType<{ stack: LocaleStack; title: string }> = ({
     <div className={styles.stack}>
       <h2 style={{ color }}>{title}</h2>
       <ul style={{ color }}>
-        {stack.map((lang, i) => (
-          <li key={i}>{lang}</li>
-        ))}
+        {stack.length ? stack.map((lang, i) => <li key={i}>{lang}</li>) : null}
       </ul>
     </div>
   );
 };
 
-const Calculator: ComponentType = () => {
-  const [inp, setInp] = useState("");
+const Calculator: ComponentType<{ init?: string }> = ({ init = "" }) => {
+  const [inp, setInp] = useState(init);
   const inpChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInp(e.target.value);
   };
@@ -79,7 +72,7 @@ const Calculator: ComponentType = () => {
 
   return (
     <div className={styles.calculator}>
-      <div>
+      <div className={styles.is + " " + styles[type]}>
         <input
           size={100}
           type="text"
@@ -107,8 +100,8 @@ const CalculatorPage: NextPage = () => {
         <h1 className={styles.title}>Language Stack Calculator</h1>
         <Links />
         <Calculator />
-        <Calculator />
-        <Calculator />
+        <Calculator init="en-US;q=0.5, en-GB;q=0.9" />
+        <Calculator init="en-GB en-US" />
       </main>
     </div>
   );
