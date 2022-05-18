@@ -16,19 +16,19 @@ describe("parseAcceptLanguage", () => {
     ]);
   });
 
-  it("should order lexically by default", () => {
+  it("should order naturally by default", () => {
     expect(parseAcceptLanguage("en-AU,en-GB")).toEqual(["en-AU", "en-GB"]);
-    expect(parseAcceptLanguage("en-GB, en-AU")).toEqual(["en-AU", "en-GB"]);
+    expect(parseAcceptLanguage("en-GB, en-AU")).toEqual(["en-GB", "en-AU"]);
   });
 
   it("should default to priority 1", () => {
     expect(parseAcceptLanguage("en-GB; q=1, en-AU")).toEqual([
-      "en-AU",
-      "en-GB"
+      "en-GB",
+      "en-AU"
     ]);
     expect(parseAcceptLanguage("en-GB, en-AU; q=1")).toEqual([
-      "en-AU",
-      "en-GB"
+      "en-GB",
+      "en-AU"
     ]);
   });
 

@@ -46,7 +46,7 @@ export const parseAcceptLanguage = (accept: string): LocaleStack =>
       .split(/\s*,\s*/)
       .map(parsePriority)
       .filter(t => t[0] >= 0)
-      .sort((a, b) => cmp(b[0], a[0]) || cmp(a[1], b[1]))
+      .sort((a, b) => cmp(b[0], a[0]))
       .map(t => t[1])
       .flatMap(canonTag)
   );
