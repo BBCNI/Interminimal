@@ -28,6 +28,11 @@ a {
   color: orange;
 }
 
+[lang] {
+  transition: background-color 0.5s;
+}
+
 [lang]:hover {
-  background: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.2);
+  transition: background-color 0.5s;
 }
