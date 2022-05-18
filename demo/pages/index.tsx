@@ -1,4 +1,4 @@
-import type { GetServerSideProps, NextPage } from "next";
+import type { GetServerSideProps, GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
@@ -34,16 +34,12 @@ interface PageProps {
   message: TFatString;
   info: TFatString;
   nested: TFatString;
-  langs: string[];
 }
 
 // Mock service data
-export const getServerSideProps: GetServerSideProps = async context => {
-  const accept = context.req.headers["accept-language"];
-  const langs = accept ? parseAcceptLanguage(accept) : [];
+export const getStaticProps: GetStaticProps = async context => {
   return {
     props: {
-      langs,
       greeting: { en: "Hello", fr: "Bonjour", de: "Hallo" },
       message: {
         en: "Let's translate text!",
@@ -278,6 +274,9 @@ const Stack: ComponentType = () => {
   );
 };
 
+const loader = ({ src, width }: { src: string; width: number }) =>
+  `${src}/${width}/${Math.round((width * 9) / 16)}`;
+
 const Block: ComponentType<
   PageProps & { lang: string; state: LanguageState[] }
 > = ({ greeting, message, info, nested, state }) => {
@@ -344,9 +343,10 @@ const Block: ComponentType<
           {/* translate alt attribute via cat tag */}
           <TImage
             t-alt={["cat"]}
-            width="500"
-            height="200"
-            src="http://placekitten.com/g/500/200"
+            width="512"
+            height="288"
+            loader={loader}
+            src="http://placekitten.com/g"
           />
         </figure>
         {/* many cats, many plurals */}
@@ -366,19 +366,14 @@ const Block: ComponentType<
 };
 
 const Home: NextPage<PageProps> = props => {
-  const [accept, setAccept] = useState(false);
   const state1 = useLanguageStates("de", "en", "fr");
   const state2 = useLanguageStates("en", "en", "en");
   const state3 = useLanguageStates("fr", "en", "en");
 
-  const toggleAccept = () => setAccept(!accept);
-  const extraProps = accept ? { lang: props.langs } : {};
-
   return (
-    <Translate {...extraProps} dictionary={dictionary}>
+    <Translate dictionary={dictionary}>
       <div className={styles.container}>
         <Head>
-          {/* <title>Interminimal</title> */}
           <meta name="description" content="Minimal i18n" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
@@ -387,12 +382,6 @@ const Home: NextPage<PageProps> = props => {
 
         <main className={styles.main}>
           <h1 className={styles.title}>Interminimal</h1>
-          <div>
-            <label>
-              <input type="checkbox" checked={accept} onChange={toggleAccept} />
-              <T text="Use Accept-Language from your browser" />
-            </label>
-          </div>
           <div className={styles.blocks}>
             <Block {...props} state={state1} lang="de" />
             <Block {...props} state={state2} lang="en" />

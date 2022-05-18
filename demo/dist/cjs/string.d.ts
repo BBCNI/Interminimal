@@ -23,7 +23,7 @@ import { LocaleStack, TFatString } from "./types";
  * const counts = [0, 1, 1.5, 2, 3, 6, 42];
  *
  * // Count the cats in Welsh
- * const cat = new TString(catsDict);
+ * const cat = TString.cast(catsDict);
  * const welshCat = cat.toLang(["cy", "en"]);
  * for (const count of counts) {
  *   console.log(`${count} ${welshCat.toString(count)}`);

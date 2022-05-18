@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  basePath: "/demo",
   reactStrictMode: true,
-  images: { domains: ["placekitten.com"] }
+  images: { loader: "custom", domains: ["placekitten.com"] }
 };
 
 module.exports = nextConfig;
