@@ -47,16 +47,23 @@ export const bestLocale = (
 
 const canonCache = new Map<string, string | undefined>();
 
-export const canonicaliseLanguageUncached = (
-  tag: string
-): string | undefined => {
+/**
+ * Canonicalise a language tag. No caching - safe to use on user input.
+ *
+ * @param tag the language to canonicalise
+ * @returns the canonical version or undefined if tag is invalid
+ * @category Locale
+ */
+export const safeCanonicaliseLanguage = (tag: string): string | undefined => {
   try {
     return new Intl.Locale(tag).toString();
   } catch (e) {}
 };
 
 /**
- * Canonicalise a language tag.
+ * Canonicalise a language tag. Canonicalisation is cached so don't
+ * call this function on untrusted input. Use
+ * [[`canonicaliseLanguageUncached`]]
  *
  * @param tag the language to canonicalise
  * @returns the canonical version or undefined if tag is invalid
@@ -64,7 +71,7 @@ export const canonicaliseLanguageUncached = (
  */
 export const canonicaliseLanguage = (tag: string): string | undefined => {
   if (canonCache.has(tag)) return canonCache.get(tag);
-  const canon = canonicaliseLanguageUncached(tag);
+  const canon = safeCanonicaliseLanguage(tag);
   canonCache.set(tag, canon);
   return canon;
 };

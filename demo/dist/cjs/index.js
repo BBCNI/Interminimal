@@ -20,3 +20,4 @@ __exportStar(require("./string"), exports);
 __exportStar(require("./context"), exports);
 __exportStar(require("./bcp47"), exports);
 __exportStar(require("./resolveLocale"), exports);
+__exportStar(require("./accept"), exports);

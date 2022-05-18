@@ -1,4 +1,4 @@
-import { canonicaliseLanguageUncached } from "./bcp47";
+import { safeCanonicaliseLanguage } from "./bcp47";
 import { canonicaliseLocales } from "./resolveLocale";
 var parsePriority = function (term) {
     var mt = term.match(/(\S*?)\s*;\s*(.*)/);
@@ -21,7 +21,7 @@ var canonTag = function (tag) {
     // We're dealing with user input so use the uncached method.
     // If we used the cached version we'd be vulnerable to
     // cache stuffing attacks.
-    var canon = canonicaliseLanguageUncached(tag);
+    var canon = safeCanonicaliseLanguage(tag);
     return canon ? [canon] : [];
 };
 /**

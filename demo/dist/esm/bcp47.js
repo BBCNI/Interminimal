@@ -37,14 +37,23 @@ export var bestLocale = function (tags, langs) {
     return expand(canonicaliseLocales(langs)).find(function (ln) { return ts.has(lc(ln)); });
 };
 var canonCache = new Map();
-export var canonicaliseLanguageUncached = function (tag) {
+/**
+ * Canonicalise a language tag. No caching - safe to use on user input.
+ *
+ * @param tag the language to canonicalise
+ * @returns the canonical version or undefined if tag is invalid
+ * @category Locale
+ */
+export var safeCanonicaliseLanguage = function (tag) {
     try {
         return new Intl.Locale(tag).toString();
     }
     catch (e) { }
 };
 /**
- * Canonicalise a language tag.
+ * Canonicalise a language tag. Canonicalisation is cached so don't
+ * call this function on untrusted input. Use
+ * [[`canonicaliseLanguageUncached`]]
  *
  * @param tag the language to canonicalise
  * @returns the canonical version or undefined if tag is invalid
@@ -53,7 +62,7 @@ export var canonicaliseLanguageUncached = function (tag) {
 export var canonicaliseLanguage = function (tag) {
     if (canonCache.has(tag))
         return canonCache.get(tag);
-    var canon = canonicaliseLanguageUncached(tag);
+    var canon = safeCanonicaliseLanguage(tag);
     canonCache.set(tag, canon);
     return canon;
 };

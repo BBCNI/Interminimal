@@ -1,4 +1,4 @@
-import { canonicaliseLanguageUncached } from "./bcp47";
+import { safeCanonicaliseLanguage } from "./bcp47";
 import { canonicaliseLocales } from "./resolveLocale";
 import { LocaleStack } from "./types";
 
@@ -23,7 +23,7 @@ const canonTag = (tag: string): string[] => {
   // We're dealing with user input so use the uncached method.
   // If we used the cached version we'd be vulnerable to
   // cache stuffing attacks.
-  const canon = canonicaliseLanguageUncached(tag);
+  const canon = safeCanonicaliseLanguage(tag);
   return canon ? [canon] : [];
 };
 
