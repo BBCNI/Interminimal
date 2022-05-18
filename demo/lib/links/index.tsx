@@ -1,7 +1,7 @@
 import Link from "next/link";
 import styles from "./Links.module.css";
 
-export function Links() {
+export function Links({ source }: { source: string }) {
   return (
     <ul className={styles.links}>
       <li>
@@ -15,8 +15,8 @@ export function Links() {
         </Link>
       </li>
       <li>
-        <Link href="https://github.com/BBCNI/Interminimal/blob/main/demo/pages/index.tsx">
-          <a>Demo Source</a>
+        <Link href={source}>
+          <a>Page Source</a>
         </Link>
       </li>
       <li>

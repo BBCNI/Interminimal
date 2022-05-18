@@ -382,7 +382,7 @@ const HomePage: NextPage<PageProps> = props => {
 
           <main className={styles.main}>
             <h1 className={styles.title}>Interminimal Demo</h1>
-            <Links />
+            <Links source="https://github.com/BBCNI/Interminimal/blob/main/demo/pages/index.tsx" />
 
             <div className={styles.blocks}>
               <Block {...props} state={state1} lang="de" />
