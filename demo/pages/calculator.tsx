@@ -50,6 +50,73 @@ const stackColour = (stack: LocaleStack): string => {
   return colour;
 };
 
+// Which APIs?
+
+const API = [
+  "Collator",
+  "DateTimeFormat",
+  "ListFormat",
+  "NumberFormat",
+  "PluralRules",
+  "RelativeTimeFormat",
+  "Segmenter"
+];
+
+interface Judgement {
+  state: "fail" | "exact" | "miss" | "match";
+  reason: string;
+  locale?: string;
+}
+
+const bail = (reason: string): Judgement => ({ state: "fail", reason });
+
+const js = (x: any) => JSON.stringify(x, null, 2);
+
+const tryApi = (langs: LocaleStack, api: string) => {
+  const impl = (Intl as { [key: string]: any })[api];
+  if (!impl) return bail(`Intl.${api} is not implemented`);
+  const intl = new impl(langs);
+  if (typeof intl.resolvedOptions !== "function")
+    return bail(`Intl.${api} does not implement resolvedOptions()`);
+  const opt = intl.resolvedOptions();
+  if (!opt || typeof opt !== "object")
+    return bail(`Intl.${api}.resolvedOptions() doesn't return an object`);
+  const { locale } = opt;
+  if (!locale)
+    return bail(`Intl.${api}.resolvedOptions() doesn't return a locale`);
+  if (locale === langs[0])
+    return {
+      state: "exact",
+      reason: `matched ${js(langs)} as ${js(locale)}`
+    };
+  const state = langs.includes(locale) ? "match" : "miss";
+  return { state, locale, reason: `resolved ${js(langs)} as ${js(locale)}` };
+};
+
+const APIStatus: ComponentType<{ search: LocaleStack }> = ({ search }) => {
+  const verdict = useMemo(
+    () => API.map(api => ({ api, status: tryApi(search, api) })),
+    [search]
+  );
+
+  return (
+    <div className={styles.api}>
+      <h2>API Support</h2>
+      <table>
+        <tbody>
+          {verdict.map(({ api, status }) => (
+            <tr key={api} className={styles[status.state]}>
+              <td>Intl.{api}</td>
+              <td>{status.state}</td>
+              <td>({status.reason})</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
 const DateFormat: ComponentType<{ date: Date }> = ({ date }) => {
   const ctx = useTranslation();
   const { dtf, locale } = useMemo(() => {
@@ -88,7 +155,10 @@ const Stack: ComponentType<{ stack: LocaleStack; title: string }> = ({
   );
 };
 
-const Calculator: ComponentType<{ init?: string }> = ({ init = "" }) => {
+const Calculator: ComponentType<{ init?: string; children?: Function }> = ({
+  init = "",
+  children
+}) => {
   const [inp, setInp] = useState(init);
   const inpChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInp(e.target.value);
@@ -111,6 +181,7 @@ const Calculator: ComponentType<{ init?: string }> = ({ init = "" }) => {
       <Translate lang={stack}>
         <Stack stack={stack} title="Canonical" />
         <Stack stack={search} title="Search Path" />
+        {children && children(search)}
         <div className={styles.clock}>
           <Clock />
         </div>
@@ -131,7 +202,9 @@ const CalculatorPage: NextPage = () => {
       <main className={styles.main}>
         <h1 className={styles.title}>Language Stack Calculator</h1>
         <Links />
-        <Calculator />
+        <Calculator>
+          {(search: LocaleStack) => <APIStatus search={search} />}
+        </Calculator>
         <Calculator init="en-US;q=0.5, en-GB;q=0.9" />
         <Calculator init="en-GB en-US" />
       </main>

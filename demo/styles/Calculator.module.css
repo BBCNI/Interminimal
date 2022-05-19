@@ -13,7 +13,8 @@
 
 .stack,
 .is,
-.clock {
+.clock,
+.api {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
   background: #444;
@@ -23,7 +24,8 @@
   font-family: "Fira Mono", "Andale Mono", "Consolas", monospace;
 }
 
-.stack h2 {
+.stack h2,
+.api h2 {
   font-size: 1.1em;
   padding: 0;
   margin: 0;
@@ -71,4 +73,32 @@
 
 .is-stack {
   outline: 3px solid #229922;
+}
+
+.api td {
+  padding-right: 1em;
+}
+
+.api td:nth-child(1) {
+  font-family: "Fira Mono", "Andale Mono", "Consolas", monospace;
+}
+
+.api td:nth-child(3) {
+  font-style: italic;
+}
+
+.api .fail {
+  color: rgba(255, 60, 80);
+}
+
+.api .match {
+  color: rgb(255, 230, 100);
+}
+
+.api .exact {
+  color: rgb(80, 255, 100);
+}
+
+.api .miss {
+  color: rgb(255, 130, 80);
 }
