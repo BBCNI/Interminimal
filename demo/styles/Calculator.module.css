@@ -61,6 +61,7 @@
 
 .calculator {
   padding-top: 3rem;
+  width: 90%;
 }
 
 .is-empty {
@@ -73,6 +74,10 @@
 
 .is-stack {
   outline: 3px solid #229922;
+}
+
+.api td {
+  vertical-align: top;
 }
 
 .api td {

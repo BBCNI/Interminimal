@@ -25,11 +25,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LangContext = void 0;
+exports.LangContext = exports.checkDictionary = void 0;
 var castArray_1 = __importDefault(require("lodash/castArray"));
 var string_1 = require("./string");
 var resolveLocale_1 = require("./resolveLocale");
 var searchOrder_1 = require("./searchOrder");
+var checkDictionary = function (dictionary) {
+    if (!("$$dict" in dictionary))
+        throw new Error("Invalid dictionary (missing $$dict key)");
+    if (process.env.NODE_ENV !== "production") {
+        Object.values(dictionary.$$dict).map(function (ts) {
+            return "$$dict" in ts ? (0, exports.checkDictionary)(ts) : string_1.TString.cast(ts);
+        });
+    }
+};
+exports.checkDictionary = checkDictionary;
 /**
  * A language context. All translation takes place inside a context and contexts
  * nest to allow their configuration to be modified. Normally you'll get a context
@@ -57,8 +67,8 @@ var LangContext = /** @class */ (function () {
         /** @ignore */
         this.tagCache = {};
         var lang = props.lang, dictionary = props.dictionary, rest = __rest(props, ["lang", "dictionary"]);
-        if (dictionary && !("$$dict" in dictionary))
-            throw new Error("Invalid dictionary (missing $$dict key)");
+        if (dictionary)
+            (0, exports.checkDictionary)(dictionary);
         // Upgrade lang to array if necessary.
         var langs = (0, castArray_1.default)(lang).filter(Boolean);
         Object.assign(this, __assign(__assign({}, rest), { dictionary: dictionary }));

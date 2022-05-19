@@ -1,5 +1,6 @@
 import { TString } from "./string";
-import { LangContextProps, TextPropType, StringPropType, LocaleStack } from "./types";
+import { LangContextProps, TextPropType, TDictionaryRoot, StringPropType, LocaleStack } from "./types";
+export declare const checkDictionary: (dictionary: TDictionaryRoot) => void;
 /**
  * A language context. All translation takes place inside a context and contexts
  * nest to allow their configuration to be modified. Normally you'll get a context

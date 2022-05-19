@@ -202,11 +202,10 @@ const CalculatorPage: NextPage = () => {
       <main className={styles.main}>
         <h1 className={styles.title}>Language Stack Calculator</h1>
         <Links />
-        <Calculator>
+        <Calculator init="en">
           {(search: LocaleStack) => <APIStatus search={search} />}
         </Calculator>
         <Calculator init="en-US;q=0.5, en-GB;q=0.9" />
-        <Calculator init="en-GB en-US" />
       </main>
     </div>
   );
