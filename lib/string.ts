@@ -82,7 +82,9 @@ export class TString {
     if (process.env.NODE_ENV !== "production") {
       const bad = Object.keys(obj).filter(isNonCanonical);
       if (bad.length)
-        throw new Error(`Badly formed BCP 47 language tags: ${bad.join(", ")}`);
+        throw new Error(
+          `Non-canonical BCP 47 language tags: ${bad.join(", ")}`
+        );
     }
 
     const ts = new this(obj);

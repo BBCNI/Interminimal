@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { ComponentType } from "react";
 import styles from "./Links.module.css";
 
-export function Links({ source }: { source: string }) {
+export const Links: ComponentType = () => {
   return (
     <ul className={styles.links}>
       <li>
@@ -15,8 +16,8 @@ export function Links({ source }: { source: string }) {
         </Link>
       </li>
       <li>
-        <Link href={source}>
-          <a>Page Source</a>
+        <Link href="https://github.com/BBCNI/Interminimal/blob/main/demo">
+          <a>Demo App Source</a>
         </Link>
       </li>
       <li>
@@ -36,4 +37,4 @@ export function Links({ source }: { source: string }) {
       </li>
     </ul>
   );
-}
+};

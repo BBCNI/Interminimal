@@ -13,6 +13,17 @@ import {
 import { localeRoot, resolveLocales } from "./resolveLocale";
 import { searchOrder } from "./searchOrder";
 
+export const checkDictionary = (dictionary: TDictionaryRoot): void => {
+  if (!("$$dict" in dictionary))
+    throw new Error(`Invalid dictionary (missing $$dict key)`);
+
+  if (process.env.NODE_ENV !== "production") {
+    Object.values(dictionary.$$dict).map(ts =>
+      "$$dict" in ts ? checkDictionary(ts as TDictionaryRoot) : TString.cast(ts)
+    );
+  }
+};
+
 /**
  * A language context. All translation takes place inside a context and contexts
  * nest to allow their configuration to be modified. Normally you'll get a context
@@ -47,8 +58,8 @@ export class LangContext {
    */
   constructor(props: LangContextProps & { parent?: LangContext } = {}) {
     const { lang, dictionary, ...rest } = props;
-    if (dictionary && !("$$dict" in dictionary))
-      throw new Error(`Invalid dictionary (missing $$dict key)`);
+
+    if (dictionary) checkDictionary(dictionary);
 
     // Upgrade lang to array if necessary.
     const langs = castArray(lang).filter(Boolean);

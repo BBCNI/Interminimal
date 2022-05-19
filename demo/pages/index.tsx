@@ -125,7 +125,10 @@ const dictionary: TDictionaryRoot = {
     // A nested dictionary for use with dictionaryFromTag
     "madness": {
       $$dict: {
-        site: { en: "Or maybe something else", fr: "Ou peut-être autre chose" }
+        site: {
+          en: "Or maybe something else",
+          fr: "Ou peut-être autre chose"
+        }
       }
     },
     "h.siteName": { en: "It's Called", fr: "C'est Appelé" },
@@ -261,13 +264,9 @@ const Stack: ComponentType = () => {
   return (
     <p>
       <TList>
-        {ctx.languages.map(lang =>
-          ctx.hasTag(lang) ? (
-            <T key={lang} tag={lang} />
-          ) : (
-            <T key={lang} text={lang} />
-          )
-        )}
+        {ctx.languages.map(lang => (
+          <T key={lang} text={ctx.hasTag(lang) ? [lang] : lang} />
+        ))}
       </TList>
     </p>
   );
@@ -382,7 +381,7 @@ const HomePage: NextPage<PageProps> = props => {
 
           <main className={styles.main}>
             <h1 className={styles.title}>Interminimal Demo</h1>
-            <Links source="https://github.com/BBCNI/Interminimal/blob/main/demo/pages/index.tsx" />
+            <Links />
 
             <div className={styles.blocks}>
               <Block {...props} state={state1} lang="de" />
