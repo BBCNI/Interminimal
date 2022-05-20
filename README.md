@@ -375,7 +375,12 @@ return (
   </T>
 );
 // En Français:
-//   <p>Voici <i>du texte en italique</i> et un <a href="/">lien utile</a></p>
+//   <span>
+//     Voici
+//     <i>du texte en italique</i>
+//     et un
+//     <a href="/">lien utile</a>
+//   </span>
 ```
 
 Within the nested components any text `[in square brackets]` after the placeholder will be available as tags named after that placeholder: `%1`, `%2` etc.
