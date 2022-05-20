@@ -135,15 +135,23 @@ const colour = {
   "de": "Farbe"
 };
 
-// and later
-
+// and later...
 ts.toLang(["en-AU"]); // -> color
 ts.toLang(["en-GB"]); // -> colour
 ts.toLang(["en"]); // -> color
 ts.toLang(["de-AT"]); // -> Farbe
 ```
 
-The `en-GB` tag is able to satisfy `en`. In general the most specific match wins.
+The language stack you ask for is expanded to make a search path. For example
+
+```js
+ts.toLang(["en-US-x-foo-bar", "en-GB-x-bar"]);
+// Looks for
+//    en-US-x-foo-bar, en-US-x-foo, en-US, en-GB-x-bar, en-GB, en
+// in that order
+```
+
+You can find out how a particular langugae stack expands using the [Language Stack Calculator](https://bbcni.github.io/Interminimal/demo/calculator).
 
 ## Language Agnostic Fat Strings
 

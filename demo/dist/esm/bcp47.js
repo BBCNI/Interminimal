@@ -1,6 +1,5 @@
 import { searchOrder } from "./searchOrder";
 import { canonicaliseLocales } from "./resolveLocale";
-var lc = function (str) { return str.toLowerCase(); };
 /**
  * Given a set of BCP 47 language tags and a list of locales in
  * descending preference order find the tag that best satisfies
@@ -22,8 +21,8 @@ var lc = function (str) { return str.toLowerCase(); };
  * @category Locale
  */
 export var bestLocale = function (tags, langs) {
-    var ts = new Set(tags.map(lc));
-    return searchOrder(canonicaliseLocales(langs)).find(function (ln) { return ts.has(lc(ln)); });
+    var ts = new Set(tags);
+    return searchOrder(canonicaliseLocales(langs)).find(function (ln) { return ts.has(ln); });
 };
 var canonCache = new Map();
 /**

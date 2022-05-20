@@ -2,8 +2,6 @@ import { searchOrder } from "./searchOrder";
 import { canonicaliseLocales } from "./resolveLocale";
 import { LocaleStack } from "./types";
 
-const lc = (str: string): string => str.toLowerCase();
-
 /**
  * Given a set of BCP 47 language tags and a list of locales in
  * descending preference order find the tag that best satisfies
@@ -28,8 +26,8 @@ export const bestLocale = (
   tags: LocaleStack,
   langs: LocaleStack
 ): string | undefined => {
-  const ts = new Set(tags.map(lc));
-  return searchOrder(canonicaliseLocales(langs)).find(ln => ts.has(lc(ln)));
+  const ts = new Set(tags);
+  return searchOrder(canonicaliseLocales(langs)).find(ln => ts.has(ln));
 };
 
 const canonCache = new Map<string, string | undefined>();
