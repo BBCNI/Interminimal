@@ -88,10 +88,10 @@ const tryApi = (langs: LocaleStack, api: string) => {
   if (locale === langs[0])
     return {
       state: "exact",
-      reason: `matched ${js(langs)} as ${js(locale)}`
+      reason: `matched as ${js(locale)}`
     };
   const state = langs.includes(locale) ? "match" : "miss";
-  return { state, locale, reason: `resolved ${js(langs)} as ${js(locale)}` };
+  return { state, locale, reason: `resolved as ${js(locale)}` };
 };
 
 const APIStatus: ComponentType<{ search: LocaleStack }> = ({ search }) => {
@@ -103,6 +103,9 @@ const APIStatus: ComponentType<{ search: LocaleStack }> = ({ search }) => {
   return (
     <div className={styles.api}>
       <h2>API Support</h2>
+      <p>
+        Here&apos;s how the Intl APIs resolve <code>{js(search)}</code>
+      </p>
       <table>
         <tbody>
           {verdict.map(({ api, status }) => (
@@ -156,13 +159,24 @@ const Stack: ComponentType<{ stack: LocaleStack; title: string }> = ({
   );
 };
 
+const tryArray = (str: string): string | undefined => {
+  try {
+    const obj = JSON.parse(str);
+    if (Array.isArray(obj) && obj.every(s => typeof s === "string"))
+      return obj.join(" ");
+  } catch (e) {}
+};
+
+const tryJSON = (str: string) => tryArray(str) || tryArray(`[${str}]`);
+const maybeJSON = (str: string) => tryJSON(str.replace(/,\s*$/, "")) || str;
+
 const Calculator: ComponentType<{ init?: string; children?: Function }> = ({
   init = "",
   children
 }) => {
   const [inp, setInp] = useState(init);
   const inpChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setInp(e.target.value);
+    setInp(maybeJSON(e.target.value));
   };
 
   const { type, stack } = useMemo(() => parseInput(inp), [inp]);
@@ -191,26 +205,7 @@ const Calculator: ComponentType<{ init?: string; children?: Function }> = ({
   );
 };
 
-const demo = () => {
-  const ctx = new LangContext({
-    lang: ["en-GB-x-foo", "en-US", "fr-CA", "de-AT"]
-  });
-  // Search path expands and groups tags
-  console.log(ctx.search);
-  // [
-  //   "en-GB-x-foo",
-  //   "en-GB",
-  //   "en-US",
-  //   "en",
-  //   "fr-CA",
-  //   "fr",
-  //   "de-AT",
-  //   "de"
-  // ]
-};
-
 const CalculatorPage: NextPage = () => {
-  demo();
   return (
     <div className={styles.container}>
       <Head>
