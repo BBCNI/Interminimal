@@ -80,6 +80,14 @@ function MyThing() {
 }
 ```
 
+### Properties
+
+- `lang` a single BCP 47 language tag, or an array of tags. e.g. `["en-GB", "en-AU"]`
+- `defaultLang` a BCP 47 language which as the assumed language for non-translated content
+- `dictionary` a [translation dictionary](#dictionaries)
+
+To access the currently active translation context use the [`useTranslation()` hook](https://bbcni.github.io/Interminimal/modules.html#useTranslation) which returns a [`LangContext`](https://bbcni.github.io/Interminimal/classes/LangContext.html).
+
 ## `T` - the translator
 
 The `T` component represents translatable text. It will attempt to render using the language specified by the containing translation context.
@@ -104,7 +112,7 @@ Here's a simple example:
 { en: "Hello", fr: "Bonjour" }
 ```
 
-When looking for a translation `T` tries the containing context's desired language `lang` first. If that fails to find a translation it walks up the context stack trying each `lang` in turn. Then it tries `defaultLang`. If none of those yield a translation it will use the first of any languages present in the fat string. Translation can only fail completely if the fat string is just an empty object.
+To resolve a translation `T` checks for all the languages in the context's language stack returning the first that matches. The language stack is expanded so that, for example "en-GB" will try "en-GB" first then fall back to "en". You can try this out using the [Language Stack Calculator](https://bbcni.github.io/Interminimal/demo/calculator).
 
 Fat strings can also handle pluralisation - which is quite involved for languages such as Welsh. Here's how we'd represent translations for a count of cats. The `%1` in the strings is a placeholder for the number of cats - we'll see how to use that soon.
 
@@ -123,6 +131,10 @@ const cats = {
   }
 };
 ```
+
+### Rules for Language Tags
+
+The keys in fat strings are BCP 47 language codes. They must be canonical; "en-GB" is fine; "EN-GB" is an error. In development mode (when `NODE_ENV !== "production"`) any non-canonical tags will throw an error.
 
 ## Finding the best language
 
@@ -151,7 +163,7 @@ ts.toLang(["en-US-x-foo-bar", "en-GB-x-bar"]);
 // in that order
 ```
 
-You can find out how a particular langugae stack expands using the [Language Stack Calculator](https://bbcni.github.io/Interminimal/demo/calculator).
+You can find out how a particular language stack expands using the [Language Stack Calculator](https://bbcni.github.io/Interminimal/demo/calculator).
 
 ## Language Agnostic Fat Strings
 

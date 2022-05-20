@@ -4,6 +4,7 @@ import { ChangeEvent, useEffect } from "react";
 import { useMemo } from "react";
 import { useState } from "react";
 import { ComponentType } from "react";
+import { LangContext } from "../dist/cjs";
 import {
   canonicaliseLanguage,
   parseAcceptLanguage,
@@ -190,7 +191,26 @@ const Calculator: ComponentType<{ init?: string; children?: Function }> = ({
   );
 };
 
+const demo = () => {
+  const ctx = new LangContext({
+    lang: ["en-GB-x-foo", "en-US", "fr-CA", "de-AT"]
+  });
+  // Search path expands and groups tags
+  console.log(ctx.search);
+  // [
+  //   "en-GB-x-foo",
+  //   "en-GB",
+  //   "en-US",
+  //   "en",
+  //   "fr-CA",
+  //   "fr",
+  //   "de-AT",
+  //   "de"
+  // ]
+};
+
 const CalculatorPage: NextPage = () => {
+  demo();
   return (
     <div className={styles.container}>
       <Head>

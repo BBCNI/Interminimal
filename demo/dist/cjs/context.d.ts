@@ -62,6 +62,34 @@ export declare class LangContext {
      *
      */
     get languages(): string[];
+    /**
+     * The context's language expanded for searching. The expansion of a
+     * particular language stack is canonicalised and cached - different
+     * contexts with the same [[`languages`]] will have the same `search`
+     * property too.
+     *
+     * ```typescript
+     * const ctx = new LangContext({
+     *   lang: ["en-GB-x-foo", "en-US", "fr-CA", "de-AT"]
+     * });
+     * // Search path expands and groups tags
+     * console.log(ctx.search);
+     * // [
+     * //   "en-GB-x-foo",
+     * //   "en-GB",
+     * //   "en-US",
+     * //   "en",
+     * //   "fr-CA",
+     * //   "fr",
+     * //   "de-AT",
+     * //   "de"
+     * // ]
+     * ```
+     *
+     * The rules for tag expansion are slightly subtle. Notice in the
+     * example above that "en" is only injected after both "en-GB"
+     * and "en-US".
+     */
     get search(): string[];
     /**
      * The current language. This is the same as the first element of the [[`languages`]] array.

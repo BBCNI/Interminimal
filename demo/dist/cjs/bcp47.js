@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.canonicaliseLanguage = exports.safeCanonicaliseLanguage = exports.bestLocale = void 0;
 var searchOrder_1 = require("./searchOrder");
 var resolveLocale_1 = require("./resolveLocale");
-var lc = function (str) { return str.toLowerCase(); };
 /**
  * Given a set of BCP 47 language tags and a list of locales in
  * descending preference order find the tag that best satisfies
@@ -25,8 +24,8 @@ var lc = function (str) { return str.toLowerCase(); };
  * @category Locale
  */
 var bestLocale = function (tags, langs) {
-    var ts = new Set(tags.map(lc));
-    return (0, searchOrder_1.searchOrder)((0, resolveLocale_1.canonicaliseLocales)(langs)).find(function (ln) { return ts.has(lc(ln)); });
+    var ts = new Set(tags);
+    return (0, searchOrder_1.searchOrder)((0, resolveLocale_1.canonicaliseLocales)(langs)).find(function (ln) { return ts.has(ln); });
 };
 exports.bestLocale = bestLocale;
 var canonCache = new Map();
