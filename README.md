@@ -501,6 +501,8 @@ The [ECMAScript Internationalization API](https://tc39.es/ecma402/#intl-object) 
 
 Bear in mind when using the `Intl` APIs that locale and feature support varies by browser and will also likely be different between NodeJS and any particular browser. That can cause problems for Server Side Rendering - for example, at the time of writing, Node 18 has support for Welsh Date/Time formatting but Chrome does not. An SSR Welsh page will therefore render date / time strings differently on initial render and hydration.
 
+You can test browser support for the languages you're interested in using the [Language Stack Calculator](https://bbcni.github.io/Interminimal/demo/calculator).
+
 With that caveat `Intl` is extremely useful so let's see how it works. Here's a component that wraps `Intl.DateTimeFormat`:
 
 ```js

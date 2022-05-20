@@ -61,7 +61,7 @@
 
 .calculator {
   padding-top: 3rem;
-  width: 90%;
+  min-width: 90%;
 }
 
 .is-empty {
