@@ -19,6 +19,9 @@ const isNonCanonical = (lang: string) => {
  * language and stringify it. TStrings are immutable; all
  * methods that appear to modify a TString return a new one.
  *
+ * To create a new `TString` call [[`cast`]] or
+ * [[`literal`]].
+ *
  * ```typescript
  * import { TString } from "interminimal";
  *
@@ -66,8 +69,8 @@ export class TString {
   }
 
   /**
-   * Cast a TString or TFatString to a TString. This is the main way of
-   * creating new TStrings.
+   * Cast a TString or TFatString to a TString. This and [[`literal`]] are the
+   * main ways of creating new a `TString`.
    *
    * @param obj either a fat string or an existing TString
    * @param lang an optional language
@@ -94,6 +97,7 @@ export class TString {
 
   /**
    * Cast a string literal and language into a single-language TString.
+   * This and [[`cast`]] are the main ways of creating new a `TString`.
    *
    * ```typescript
    * const ts = TString.literal("Hello", "en");
@@ -178,6 +182,10 @@ export class TString {
    * // (U.S. English) which is the best match for "en-GB"
    * console.log(ts.toLang(["en-GB", "fr"]), toString()); // "color"
    * ```
+   *
+   * Use the [Language Stack Calculator](/Interminimal/demo/calculator) to
+   * experiment with the search path that is used to find the best language
+   * match.
    *
    * @param langs an array of BCP47 language codes in descending preference order
    * @returns a new TString with its `language` set to the best match
