@@ -31,6 +31,16 @@
 <pre><code class="language-js"><span class="hl-1">function</span><span class="hl-2"> </span><span class="hl-8">MyThing</span><span class="hl-2">() {</span><br/><span class="hl-2">  </span><span class="hl-6">return</span><span class="hl-2"> (</span><br/><span class="hl-2">    </span><span class="hl-9">&lt;</span><span class="hl-7">Translate</span><span class="hl-2"> </span><span class="hl-10">dictionary</span><span class="hl-2">=</span><span class="hl-1">{</span><span class="hl-4">dictionary</span><span class="hl-1">}</span><span class="hl-2"> </span><span class="hl-10">lang</span><span class="hl-2">=</span><span class="hl-5">&quot;en&quot;</span><span class="hl-9">&gt;</span><br/><span class="hl-2">      </span><span class="hl-1">{</span><span class="hl-0">/* english */</span><span class="hl-1">}</span><br/><span class="hl-2">      </span><span class="hl-9">&lt;</span><span class="hl-7">T</span><span class="hl-2"> </span><span class="hl-10">as</span><span class="hl-2">=</span><span class="hl-5">&quot;p&quot;</span><span class="hl-2"> </span><span class="hl-10">text</span><span class="hl-2">=</span><span class="hl-1">{</span><span class="hl-4">oneString</span><span class="hl-1">}</span><span class="hl-2"> </span><span class="hl-9">/&gt;</span><br/><span class="hl-2">      </span><span class="hl-9">&lt;</span><span class="hl-7">Translate</span><span class="hl-2"> </span><span class="hl-10">lang</span><span class="hl-2">=</span><span class="hl-5">&quot;cy&quot;</span><span class="hl-9">&gt;</span><br/><span class="hl-2">        </span><span class="hl-1">{</span><span class="hl-0">/* welsh */</span><span class="hl-1">}</span><br/><span class="hl-2">        </span><span class="hl-9">&lt;</span><span class="hl-7">T</span><span class="hl-2"> </span><span class="hl-10">as</span><span class="hl-2">=</span><span class="hl-5">&quot;p&quot;</span><span class="hl-2"> </span><span class="hl-10">text</span><span class="hl-2">=</span><span class="hl-1">{</span><span class="hl-4">anotherString</span><span class="hl-1">}</span><span class="hl-2"> </span><span class="hl-9">/&gt;</span><br/><span class="hl-2">      </span><span class="hl-9">&lt;/</span><span class="hl-7">Translate</span><span class="hl-9">&gt;</span><br/><span class="hl-2">    </span><span class="hl-9">&lt;/</span><span class="hl-7">Translate</span><span class="hl-9">&gt;</span><br/><span class="hl-2">  );</span><br/><span class="hl-2">}</span>
 </code></pre>
 
+<a href="#properties" id="properties" style="color: inherit; text-decoration: none;">
+  <h3>Properties</h3>
+</a>
+<ul>
+<li><code>lang</code> a single BCP 47 language tag, or an array of tags. e.g. <code>[&quot;en-GB&quot;, &quot;en-AU&quot;]</code></li>
+<li><code>defaultLang</code> a BCP 47 language which as the assumed language for non-translated content</li>
+<li><code>dictionary</code> a <a href="#dictionaries">translation dictionary</a></li>
+</ul>
+<p>To access the currently active translation context use the <a href="https://bbcni.github.io/Interminimal/modules.html#useTranslation"><code>useTranslation()</code> hook</a> which returns a <a href="https://bbcni.github.io/Interminimal/classes/LangContext.html"><code>LangContext</code></a>.</p>
+
 <a href="#t---the-translator" id="t---the-translator" style="color: inherit; text-decoration: none;">
   <h2><code>T</code> - the translator</h2>
 </a>
@@ -53,10 +63,15 @@
 <p>Here&#39;s a simple example:</p>
 <pre><code class="language-js"><span class="hl-2">{ </span><span class="hl-12">en</span><span class="hl-2">: </span><span class="hl-5">&quot;Hello&quot;</span><span class="hl-2">, </span><span class="hl-12">fr</span><span class="hl-2">: </span><span class="hl-5">&quot;Bonjour&quot;</span><span class="hl-2"> }</span>
 </code></pre>
-<p>When looking for a translation <code>T</code> tries the containing context&#39;s desired language <code>lang</code> first. If that fails to find a translation it walks up the context stack trying each <code>lang</code> in turn. Then it tries <code>defaultLang</code>. If none of those yield a translation it will use the first of any languages present in the fat string. Translation can only fail completely if the fat string is just an empty object.</p>
+<p>To resolve a translation <code>T</code> checks for all the languages in the context&#39;s language stack returning the first that matches. The language stack is expanded so that, for example &quot;en-GB&quot; will try &quot;en-GB&quot; first then fall back to &quot;en&quot;. You can try this out using the <a href="https://bbcni.github.io/Interminimal/demo/calculator">Language Stack Calculator</a>.</p>
 <p>Fat strings can also handle pluralisation - which is quite involved for languages such as Welsh. Here&#39;s how we&#39;d represent translations for a count of cats. The <code>%1</code> in the strings is a placeholder for the number of cats - we&#39;ll see how to use that soon.</p>
 <pre><code class="language-js"><span class="hl-0">// Combien de moggie?</span><br/><span class="hl-1">const</span><span class="hl-2"> </span><span class="hl-3">cats</span><span class="hl-2"> = {</span><br/><span class="hl-2">  </span><span class="hl-4">en:</span><span class="hl-2"> { </span><span class="hl-4">one:</span><span class="hl-2"> </span><span class="hl-5">&quot;%1 cat&quot;</span><span class="hl-2">, </span><span class="hl-4">other:</span><span class="hl-2"> </span><span class="hl-5">&quot;%1 cats&quot;</span><span class="hl-2"> },</span><br/><span class="hl-2">  </span><span class="hl-4">de:</span><span class="hl-2"> { </span><span class="hl-4">one:</span><span class="hl-2"> </span><span class="hl-5">&quot;%1 Katze&quot;</span><span class="hl-2">, </span><span class="hl-4">other:</span><span class="hl-2"> </span><span class="hl-5">&quot;%1 Katzen&quot;</span><span class="hl-2"> },</span><br/><span class="hl-2">  </span><span class="hl-4">cy:</span><span class="hl-2"> {</span><br/><span class="hl-2">    </span><span class="hl-4">zero:</span><span class="hl-2"> </span><span class="hl-5">&quot;%1 cathod&quot;</span><span class="hl-2">,</span><br/><span class="hl-2">    </span><span class="hl-4">one:</span><span class="hl-2"> </span><span class="hl-5">&quot;%1 gath&quot;</span><span class="hl-2">,</span><br/><span class="hl-2">    </span><span class="hl-4">two:</span><span class="hl-2"> </span><span class="hl-5">&quot;%1 gath&quot;</span><span class="hl-2">,</span><br/><span class="hl-2">    </span><span class="hl-4">few:</span><span class="hl-2"> </span><span class="hl-5">&quot;%1 cath&quot;</span><span class="hl-2">,</span><br/><span class="hl-2">    </span><span class="hl-4">many:</span><span class="hl-2"> </span><span class="hl-5">&quot;%1 chath&quot;</span><span class="hl-2">,</span><br/><span class="hl-2">    </span><span class="hl-4">other:</span><span class="hl-2"> </span><span class="hl-5">&quot;%1 cath&quot;</span><br/><span class="hl-2">  }</span><br/><span class="hl-2">};</span>
 </code></pre>
+
+<a href="#rules-for-language-tags" id="rules-for-language-tags" style="color: inherit; text-decoration: none;">
+  <h3>Rules for Language Tags</h3>
+</a>
+<p>The keys in fat strings are BCP 47 language codes. They must be canonical; &quot;en-GB&quot; is fine; &quot;EN-GB&quot; is an error. In development mode (when <code>NODE_ENV !== &quot;production&quot;</code>) any non-canonical tags will throw an error.</p>
 
 <a href="#finding-the-best-language" id="finding-the-best-language" style="color: inherit; text-decoration: none;">
   <h2>Finding the best language</h2>
@@ -67,7 +82,7 @@
 <p>The language stack you ask for is expanded to make a search path. For example</p>
 <pre><code class="language-js"><span class="hl-4">ts</span><span class="hl-2">.</span><span class="hl-8">toLang</span><span class="hl-2">([</span><span class="hl-5">&quot;en-US-x-foo-bar&quot;</span><span class="hl-2">, </span><span class="hl-5">&quot;en-GB-x-bar&quot;</span><span class="hl-2">]);</span><br/><span class="hl-0">// Looks for</span><br/><span class="hl-0">//    en-US-x-foo-bar, en-US-x-foo, en-US, en-GB-x-bar, en-GB, en</span><br/><span class="hl-0">// in that order</span>
 </code></pre>
-<p>You can find out how a particular langugae stack expands using the <a href="https://bbcni.github.io/Interminimal/demo/calculator">Language Stack Calculator</a>.</p>
+<p>You can find out how a particular language stack expands using the <a href="https://bbcni.github.io/Interminimal/demo/calculator">Language Stack Calculator</a>.</p>
 
 <a href="#language-agnostic-fat-strings" id="language-agnostic-fat-strings" style="color: inherit; text-decoration: none;">
   <h2>Language Agnostic Fat Strings</h2>
@@ -110,7 +125,7 @@
 </code></pre>
 <p><code>tBind</code> also accepts an HTML element name or a React component.</p>
 
-<a href="#properties" id="properties" style="color: inherit; text-decoration: none;">
+<a href="#properties-1" id="properties-1" style="color: inherit; text-decoration: none;">
   <h2>Properties</h2>
 </a>
 <p>With the exception of <code>text</code>, <code>tag</code>, <code>content</code>, <code>as</code> and <code>count</code>, <code>T</code> passes remaining properties to the underlying element.</p>
