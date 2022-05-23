@@ -1,6 +1,5 @@
-import React, { ComponentType, ReactNode } from "react";
-import { AsType, TextPropType, TranslateLocalProps, TranslateProps } from "./types";
-import { LangContext } from "./context";
+import React, { ComponentType, ReactNode, ReactElement, Ref, ComponentClass, FunctionComponent } from "react";
+import { LangContext, LangContextProps, TextPropType } from "./context";
 /**
  * Hook that gets the currently active translation context. Here's an example
  * of a component that wraps the `Intl.DateTimeFormat` API using the translation
@@ -23,6 +22,9 @@ import { LangContext } from "./context";
  * @category Hooks
  */
 export declare const useTranslation: () => LangContext;
+export declare type TranslateLocalProps = LangContextProps & {
+    children: ReactNode;
+};
 /**
  * Wrap components in a nested [[`LangContext`]]. Used to override settings in
  * the context. For example we can add an additional dictionary.
@@ -37,6 +39,10 @@ export declare const useTranslation: () => LangContext;
  * @category Components
  */
 export declare const TranslateLocal: ComponentType<TranslateLocalProps>;
+export declare type TranslateProps = LangContextProps & {
+    children: ReactNode;
+    as?: AsType;
+};
 /**
  * Wrap components in a nested [[`LangContext`]] that establishes a new
  * language stack. By default any children will be wrapped in a `div` with
@@ -66,6 +72,16 @@ export declare const TranslateLocal: ComponentType<TranslateLocalProps>;
  * @category Components
  */
 export declare const Translate: ComponentType<TranslateProps>;
+/**
+ * The type of a component - either a string like `"div"` or `"span"` or a React component.
+ */
+export declare type AsType = string | FunctionComponent<{
+    lang?: string;
+    ref?: Ref<ReactElement>;
+}> | ComponentClass<{
+    lang?: string;
+    ref?: Ref<ReactElement>;
+}, any>;
 /**
  * Properties for the `<T>` component.
  */

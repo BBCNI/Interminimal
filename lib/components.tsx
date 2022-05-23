@@ -10,18 +10,13 @@ import React, {
   isValidElement,
   forwardRef,
   ReactElement,
-  Ref
+  Ref,
+  ComponentClass,
+  FunctionComponent
 } from "react";
 
-import {
-  AsType,
-  TextPropType,
-  TranslateLocalProps,
-  TranslateProps
-} from "./types";
-
 import { parseTemplate } from "./template";
-import { LangContext } from "./context";
+import { LangContext, LangContextProps, TextPropType } from "./context";
 import { TString } from "./string";
 import { TDictionaryRoot } from "./dictionary";
 
@@ -50,6 +45,8 @@ const TContext = createContext(new LangContext());
  */
 export const useTranslation = (): LangContext => useContext(TContext);
 
+export type TranslateLocalProps = LangContextProps & { children: ReactNode };
+
 /**
  * Wrap components in a nested [[`LangContext`]]. Used to override settings in
  * the context. For example we can add an additional dictionary.
@@ -69,6 +66,11 @@ export const TranslateLocal: ComponentType<TranslateLocalProps> = ({
 }): ReactElement => {
   const ctx = useTranslation().derive(props);
   return <TContext.Provider value={ctx}>{children}</TContext.Provider>;
+};
+
+export type TranslateProps = LangContextProps & {
+  children: ReactNode;
+  as?: AsType;
 };
 
 /**
@@ -111,6 +113,14 @@ export const Translate: ComponentType<TranslateProps> = ({
     </TText>
   );
 };
+
+/**
+ * The type of a component - either a string like `"div"` or `"span"` or a React component.
+ */
+export type AsType =
+  | string
+  | FunctionComponent<{ lang?: string; ref?: Ref<ReactElement> }>
+  | ComponentClass<{ lang?: string; ref?: Ref<ReactElement> }, any>;
 
 interface AsProps {
   as: AsType;

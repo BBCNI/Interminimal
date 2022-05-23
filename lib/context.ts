@@ -1,8 +1,6 @@
 import castArray from "lodash/castArray";
 import { TFatString, TString } from "./string";
 
-import { TextPropType, StringPropType } from "./types";
-
 import { localeRoot, LocaleStack, resolveLocales } from "./resolveLocale";
 import { searchOrder } from "./searchOrder";
 import {
@@ -11,6 +9,9 @@ import {
   rootDict,
   TDictionaryRoot
 } from "./dictionary";
+
+export type StringPropType = TFatString | TString | string;
+export type TextPropType = TFatString | TString | string | string[];
 
 /**
  * Properties that can be passed to [[`LangContext.constructor`]] and [[`LangContext.derive`]]

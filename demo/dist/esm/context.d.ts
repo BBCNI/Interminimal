@@ -1,7 +1,8 @@
-import { TString } from "./string";
-import { TextPropType, StringPropType } from "./types";
+import { TFatString, TString } from "./string";
 import { LocaleStack } from "./resolveLocale";
 import { TDictionaryRoot } from "./dictionary";
+export declare type StringPropType = TFatString | TString | string;
+export declare type TextPropType = TFatString | TString | string | string[];
 /**
  * Properties that can be passed to [[`LangContext.constructor`]] and [[`LangContext.derive`]]
  */
