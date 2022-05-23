@@ -95,6 +95,5 @@ export const localeRoot = node([]);
  * @returns the canonical language stack
  * @category Locale
  */
-
 export const canonicaliseLocales = (stack: LocaleStack) =>
   parentCache.has(stack) ? stack : resolve(localeRoot, stack);
