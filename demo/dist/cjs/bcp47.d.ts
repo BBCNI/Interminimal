@@ -1,4 +1,4 @@
-import { LocaleStack } from "./types";
+import { LocaleStack } from "./resolveLocale";
 /**
  * Given a set of BCP 47 language tags and a list of locales in
  * descending preference order find the tag that best satisfies

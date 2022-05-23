@@ -1,6 +1,5 @@
-import React, { ComponentType } from "react";
-import { AsType, TProps, TranslateLocalProps, TranslateProps } from "./types";
-import { LangContext } from "./context";
+import React, { ComponentType, ReactNode, ReactElement, Ref, ComponentClass, FunctionComponent } from "react";
+import { LangContext, LangContextProps, TextPropType } from "./context";
 /**
  * Hook that gets the currently active translation context. Here's an example
  * of a component that wraps the `Intl.DateTimeFormat` API using the translation
@@ -23,6 +22,9 @@ import { LangContext } from "./context";
  * @category Hooks
  */
 export declare const useTranslation: () => LangContext;
+export declare type TranslateLocalProps = LangContextProps & {
+    children: ReactNode;
+};
 /**
  * Wrap components in a nested [[`LangContext`]]. Used to override settings in
  * the context. For example we can add an additional dictionary.
@@ -37,6 +39,10 @@ export declare const useTranslation: () => LangContext;
  * @category Components
  */
 export declare const TranslateLocal: ComponentType<TranslateLocalProps>;
+export declare type TranslateProps = LangContextProps & {
+    children: ReactNode;
+    as?: AsType;
+};
 /**
  * Wrap components in a nested [[`LangContext`]] that establishes a new
  * language stack. By default any children will be wrapped in a `div` with
@@ -66,6 +72,53 @@ export declare const TranslateLocal: ComponentType<TranslateLocalProps>;
  * @category Components
  */
 export declare const Translate: ComponentType<TranslateProps>;
+/**
+ * The type of a component - either a string like `"div"` or `"span"` or a React component.
+ */
+export declare type AsType = string | FunctionComponent<{
+    lang?: string;
+    ref?: Ref<ReactElement>;
+}> | ComponentClass<{
+    lang?: string;
+    ref?: Ref<ReactElement>;
+}, any>;
+/**
+ * Properties for the `<T>` component.
+ */
+export interface TProps {
+    /**
+     * Any children. When `tag` or `text` is also present any children are mapped to the
+     * corresponding placeholder
+     */
+    children?: ReactNode;
+    /**
+     * A tag to look up in the current dictionary and perform template substitution on.
+     */
+    tag?: string;
+    /**
+     * Text to translate. Can also refer to a dictionary tag if it's a single element array:
+     * `["tag"]`. The resolved text is processed with template substitution.
+     */
+    text?: TextPropType;
+    /**
+     * Text to translate without any further template substitution. Use for e.g. literal
+     * translated text from an API.
+     */
+    content?: TextPropType;
+    /**
+     * The number of the thing being described for cases where the translation provides
+     * pluralisation rules. Defaults to 1.
+     */
+    count?: number;
+    /**
+     * The element to render as. May be a string (e.g. `"div", "section"`) or a React component.
+     */
+    as?: AsType;
+    /**
+     * The remaining properties are passed to the rendered element.
+     */
+    [key: string]: any;
+}
 /**
  * A wrapper for content that should be translated. It attempts to translate
  * the content you give it according to the active [[`LangContext`]]. It can

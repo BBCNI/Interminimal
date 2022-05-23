@@ -1,2 +1,2 @@
-import { LocaleStack } from "./types";
+import { LocaleStack } from "./resolveLocale";
 export declare const searchOrder: (langs: LocaleStack) => LocaleStack;

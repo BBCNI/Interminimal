@@ -16,7 +16,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseAcceptLanguage = void 0;
+exports.parseAcceptLanguage = exports.maxAcceptLanguageLength = void 0;
 var bcp47_1 = require("./bcp47");
 var resolveLocale_1 = require("./resolveLocale");
 var parsePriority = function (term) {
@@ -43,6 +43,7 @@ var canonTag = function (tag) {
     var canon = (0, bcp47_1.safeCanonicaliseLanguage)(tag);
     return canon ? [canon] : [];
 };
+exports.maxAcceptLanguageLength = 200;
 /**
  * Parse an HTTP Accept-Language header. Badly formed languages are
  * dropped, languages are canonicalised.
@@ -58,6 +59,7 @@ var canonTag = function (tag) {
  */
 var parseAcceptLanguage = function (accept) {
     return (0, resolveLocale_1.canonicaliseLocales)(accept
+        .slice(0, exports.maxAcceptLanguageLength)
         .split(/\s*,\s*/)
         .map(parsePriority)
         .filter(function (t) { return t[0] >= 0; })

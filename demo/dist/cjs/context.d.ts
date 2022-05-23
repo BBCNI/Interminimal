@@ -1,6 +1,39 @@
-import { TString } from "./string";
-import { LangContextProps, TextPropType, TDictionaryRoot, StringPropType, LocaleStack } from "./types";
-export declare const checkDictionary: (dictionary: TDictionaryRoot) => void;
+import { TFatString, TString } from "./string";
+import { LocaleStack } from "./resolveLocale";
+import { TDictionaryRoot } from "./dictionary";
+export declare type StringPropType = TFatString | TString | string;
+export declare type TextPropType = TFatString | TString | string | string[];
+/**
+ * Properties that can be passed to [[`LangContext.constructor`]] and [[`LangContext.derive`]]
+ */
+export interface LangContextProps {
+    /**
+     * The default language for the context. Untranslated text will be assumed to be in this
+     * language. Setting `defaultLang` also places the default in the language stack before
+     * any languages in `lang`
+     */
+    readonly defaultLang?: string;
+    /**
+     * A dictionary to resolve translations. Dictionaries are consulted in order walking up the
+     * context parent chain.
+     */
+    readonly dictionary?: TDictionaryRoot;
+    /**
+     * Use a tagged section of a current dictionary as the new dictionary.
+     */
+    readonly dictionaryFromTag?: string;
+    /**
+     * A language or list of languages that are preferred for this context. Any languages provided
+     * here are prepended to the parent's language stack.
+     */
+    readonly lang?: string | readonly string[];
+    /**
+     * Set the ambient language - which is used to create a context which can't match the desired
+     * language. The ambience is used to add `lang` attributes to elements that aren't in the
+     * expected language.
+     */
+    readonly ambient?: string;
+}
 /**
  * A language context. All translation takes place inside a context and contexts
  * nest to allow their configuration to be modified. Normally you'll get a context

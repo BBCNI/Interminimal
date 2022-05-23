@@ -1,4 +1,14 @@
-import { LocaleStack, TFatString } from "./types";
+import { LocaleStack } from "./resolveLocale";
+export declare type TPluralType = {
+    readonly [key in Intl.LDMLPluralRule]?: string;
+};
+export declare type TFatString = {
+    readonly [key: string]: string | TPluralType;
+} & {
+    $$dict?: never;
+} & {
+    $$meta?: object;
+};
 /**
  * Wrap a fat string with methods to coerce it to a specific
  * language and stringify it. TStrings are immutable; all

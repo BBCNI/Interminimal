@@ -37,54 +37,16 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LangContext = exports.checkDictionary = void 0;
+exports.LangContext = void 0;
 var castArray_1 = __importDefault(require("lodash/castArray"));
 var string_1 = require("./string");
 var resolveLocale_1 = require("./resolveLocale");
 var searchOrder_1 = require("./searchOrder");
-var nextCache_1 = require("./nextCache");
-var checkDictionary = function (dictionary) {
-    if (!("$$dict" in dictionary))
-        throw new Error("Invalid dictionary (missing $$dict key)");
-    if (process.env.NODE_ENV !== "production") {
-        Object.values(dictionary.$$dict).map(function (ts) {
-            return "$$dict" in ts ? (0, exports.checkDictionary)(ts) : string_1.TString.cast(ts);
-        });
-    }
-};
-exports.checkDictionary = checkDictionary;
-var canMerge = function (obj) {
-    return obj && typeof obj === "object" && !Array.isArray(obj);
-};
-// Frozen dictionary merge
-var mergeObj = function (a, b) {
-    if (canMerge(a) && canMerge(b))
-        return Object.fromEntries(__spreadArray([], __read(new Set(__spreadArray(__spreadArray([], __read(Object.keys(a)), false), __read(Object.keys(b)), false))), false).map(function (key) {
-            if (key in b) {
-                if (key in a)
-                    return [key, merge(a[key], b[key])];
-                return [key, b[key]];
-            }
-            return [key, a[key]];
-        }));
-    return b;
-};
-var merge = function (a, b) { return Object.freeze(mergeObj(a, b)); };
-var nextDict = new nextCache_1.NextCache(merge);
-var rootDict = Object.freeze({ $$dict: {} });
+var dictionary_1 = require("./dictionary");
 /**
  * A language context. All translation takes place inside a context and contexts
  * nest to allow their configuration to be modified. Normally you'll get a context
@@ -111,10 +73,11 @@ var LangContext = /** @class */ (function () {
         this.stack = resolveLocale_1.localeRoot;
         var lang = props.lang, dictionary = props.dictionary, rest = __rest(props, ["lang", "dictionary"]);
         Object.assign(this, __assign({}, rest));
-        var baseDict = this.parent ? this.parent.dictionary : rootDict;
+        var baseDict = this.parent ? this.parent.dictionary : dictionary_1.rootDict;
         if (dictionary) {
-            (0, exports.checkDictionary)(dictionary);
-            this.dictionary = nextDict.next(baseDict, dictionary);
+            if (process.env.NODE_ENV !== "production")
+                (0, dictionary_1.checkDictionary)(dictionary);
+            this.dictionary = dictionary_1.nextDict.next(baseDict, dictionary);
         }
         else {
             this.dictionary = baseDict;
