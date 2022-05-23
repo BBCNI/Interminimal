@@ -1,7 +1,7 @@
 import { LangContext } from "./context";
+import { TDictionaryRoot } from "./dictionary";
 import { canonicaliseLocales } from "./resolveLocale";
 import { TString } from "./string";
-import { TDictionaryRoot } from "./types";
 
 const dictionary: TDictionaryRoot = {
   $$dict: {

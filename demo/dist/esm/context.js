@@ -36,48 +36,11 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 import castArray from "lodash/castArray";
 import { TString } from "./string";
 import { localeRoot, resolveLocales } from "./resolveLocale";
 import { searchOrder } from "./searchOrder";
-import { NextCache } from "./nextCache";
-export var checkDictionary = function (dictionary) {
-    if (!("$$dict" in dictionary))
-        throw new Error("Invalid dictionary (missing $$dict key)");
-    if (process.env.NODE_ENV !== "production") {
-        Object.values(dictionary.$$dict).map(function (ts) {
-            return "$$dict" in ts ? checkDictionary(ts) : TString.cast(ts);
-        });
-    }
-};
-var canMerge = function (obj) {
-    return obj && typeof obj === "object" && !Array.isArray(obj);
-};
-// Frozen dictionary merge
-var mergeObj = function (a, b) {
-    if (canMerge(a) && canMerge(b))
-        return Object.fromEntries(__spreadArray([], __read(new Set(__spreadArray(__spreadArray([], __read(Object.keys(a)), false), __read(Object.keys(b)), false))), false).map(function (key) {
-            if (key in b) {
-                if (key in a)
-                    return [key, merge(a[key], b[key])];
-                return [key, b[key]];
-            }
-            return [key, a[key]];
-        }));
-    return b;
-};
-var merge = function (a, b) { return Object.freeze(mergeObj(a, b)); };
-var nextDict = new NextCache(merge);
-var rootDict = Object.freeze({ $$dict: {} });
+import { checkDictionary, nextDict, rootDict } from "./dictionary";
 /**
  * A language context. All translation takes place inside a context and contexts
  * nest to allow their configuration to be modified. Normally you'll get a context
@@ -106,7 +69,8 @@ var LangContext = /** @class */ (function () {
         Object.assign(this, __assign({}, rest));
         var baseDict = this.parent ? this.parent.dictionary : rootDict;
         if (dictionary) {
-            checkDictionary(dictionary);
+            if (process.env.NODE_ENV !== "production")
+                checkDictionary(dictionary);
             this.dictionary = nextDict.next(baseDict, dictionary);
         }
         else {

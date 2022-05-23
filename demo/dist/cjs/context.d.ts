@@ -20,9 +20,7 @@ export declare class LangContext {
     /** @ignore */
     private readonly ambient?;
     /** @ignore */
-    private readonly dictionary?;
-    /** @ignore */
-    private tagCache;
+    private readonly dictionary;
     /**
      * Create a new LangContext. Normally you won't need to do this; the root
      * context is initialised by _Interminimal_ and child contexts are created

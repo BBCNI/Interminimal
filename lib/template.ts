@@ -1,4 +1,10 @@
-import { TemplateToken, TemplatePlaceholder } from "./types";
+export interface TemplatePlaceholder {
+  index: number;
+  name?: string;
+  text?: string;
+}
+
+export type TemplateToken = string | TemplatePlaceholder;
 
 const escapePercent = (text: string) => text.replace(/([%\[\]])/g, "%$1");
 

@@ -1,5 +1,4 @@
-import { TString } from "./string";
-import { TFatString } from "./types";
+import { TFatString, TString } from "./string";
 
 describe("TSString", () => {
   it("should handle literals", () => {
@@ -34,13 +33,6 @@ describe("TSString", () => {
     expect(ts2).not.toBe(ts1);
     expect(() => ts1.language).toThrow(/must have/);
   });
-
-  // it("should handle undefined / null in toLang args", () => {
-  //   const ts = TString.cast({ en: "Hello", de: "Hallo" }, "en");
-  //   const ts2 = ts.toLang(["cy", null, "de", "en"] as string[]);
-  //   expect(ts2.language).toBe("de");
-  //   expect(ts2.toString()).toBe("Hallo");
-  // });
 
   it("should return this if no translation required", () => {
     const ts = TString.cast({ en: "Hello", de: "Hallo" }, "en");

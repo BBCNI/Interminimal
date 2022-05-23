@@ -1,6 +1,5 @@
 import { safeCanonicaliseLanguage } from "./bcp47";
-import { canonicaliseLocales } from "./resolveLocale";
-import { LocaleStack } from "./types";
+import { canonicaliseLocales, LocaleStack } from "./resolveLocale";
 
 const parsePriority = (term: string): [number, string] => {
   const mt = term.match(/(\S*?)\s*;\s*(.*)/);

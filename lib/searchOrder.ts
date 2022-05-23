@@ -1,5 +1,4 @@
-import { canonicaliseLocales } from "./resolveLocale";
-import { LocaleStack } from "./types";
+import { canonicaliseLocales, LocaleStack } from "./resolveLocale";
 
 interface LangNode {
   readonly lang: string;

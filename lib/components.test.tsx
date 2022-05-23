@@ -2,8 +2,7 @@ import React, { ComponentType, FunctionComponent, ReactNode, Ref } from "react";
 import R from "react-test-renderer";
 
 import { Translate, T, tBind, tBindMulti } from "./components";
-
-import { TDictionaryRoot } from "./types";
+import { TDictionaryRoot } from "./dictionary";
 
 const dictionary: TDictionaryRoot = {
   $$dict: {

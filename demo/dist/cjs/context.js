@@ -37,6 +37,15 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -46,6 +55,7 @@ var castArray_1 = __importDefault(require("lodash/castArray"));
 var string_1 = require("./string");
 var resolveLocale_1 = require("./resolveLocale");
 var searchOrder_1 = require("./searchOrder");
+var nextCache_1 = require("./nextCache");
 var checkDictionary = function (dictionary) {
     if (!("$$dict" in dictionary))
         throw new Error("Invalid dictionary (missing $$dict key)");
@@ -56,6 +66,25 @@ var checkDictionary = function (dictionary) {
     }
 };
 exports.checkDictionary = checkDictionary;
+var canMerge = function (obj) {
+    return obj && typeof obj === "object" && !Array.isArray(obj);
+};
+// Frozen dictionary merge
+var mergeObj = function (a, b) {
+    if (canMerge(a) && canMerge(b))
+        return Object.fromEntries(__spreadArray([], __read(new Set(__spreadArray(__spreadArray([], __read(Object.keys(a)), false), __read(Object.keys(b)), false))), false).map(function (key) {
+            if (key in b) {
+                if (key in a)
+                    return [key, merge(a[key], b[key])];
+                return [key, b[key]];
+            }
+            return [key, a[key]];
+        }));
+    return b;
+};
+var merge = function (a, b) { return Object.freeze(mergeObj(a, b)); };
+var nextDict = new nextCache_1.NextCache(merge);
+var rootDict = Object.freeze({ $$dict: {} });
 /**
  * A language context. All translation takes place inside a context and contexts
  * nest to allow their configuration to be modified. Normally you'll get a context
@@ -80,18 +109,20 @@ var LangContext = /** @class */ (function () {
         this.defaultLang = "en";
         /** @ignore */
         this.stack = resolveLocale_1.localeRoot;
-        /** @ignore */
-        this.tagCache = {};
         var lang = props.lang, dictionary = props.dictionary, rest = __rest(props, ["lang", "dictionary"]);
-        if (dictionary)
+        Object.assign(this, __assign({}, rest));
+        var baseDict = this.parent ? this.parent.dictionary : rootDict;
+        if (dictionary) {
             (0, exports.checkDictionary)(dictionary);
-        // Upgrade lang to array if necessary.
-        var langs = (0, castArray_1.default)(lang).filter(Boolean);
-        Object.assign(this, __assign(__assign({}, rest), { dictionary: dictionary }));
+            this.dictionary = nextDict.next(baseDict, dictionary);
+        }
+        else {
+            this.dictionary = baseDict;
+        }
         var lastStack = this.parent
             ? this.parent.stack
             : (0, resolveLocale_1.resolveLocales)(resolveLocale_1.localeRoot, [this.defaultLang]);
-        this.stack = (0, resolveLocale_1.resolveLocales)(lastStack, langs);
+        this.stack = (0, resolveLocale_1.resolveLocales)(lastStack, (0, castArray_1.default)(lang).filter(Boolean));
     }
     Object.defineProperty(LangContext.prototype, "languages", {
         /**
@@ -213,7 +244,7 @@ var LangContext = /** @class */ (function () {
             var lang = rest.lang, other = __rest(rest, ["lang"]);
             return __assign({ defaultLang: defaultLang, lang: (0, castArray_1.default)(lang || []).concat(defaultLang) }, other);
         };
-        var _a = this, dictionary = _a.dictionary, tagCache = _a.tagCache, locale = _a.stack, rest = __rest(_a, ["dictionary", "tagCache", "stack"]);
+        var _a = this, dictionary = _a.dictionary, stack = _a.stack, rest = __rest(_a, ["dictionary", "stack"]);
         return new LangContext(__assign(__assign(__assign({}, rest), trDFT(trDL(props))), { parent: this }));
     };
     /**
@@ -298,20 +329,7 @@ var LangContext = /** @class */ (function () {
     };
     /** @ignore */
     LangContext.prototype.lookupTag = function (tag) {
-        var _this = this;
-        var tagCache = this.tagCache;
-        var rt = function () {
-            var _a = _this, parent = _a.parent, dictionary = _a.dictionary;
-            if (dictionary) {
-                var $$dict = dictionary.$$dict;
-                if ($$dict && tag in $$dict)
-                    return $$dict[tag];
-            }
-            if (parent)
-                return parent.lookupTag(tag);
-            return;
-        };
-        return (tagCache[tag] = tagCache[tag] || rt());
+        return this.dictionary.$$dict[tag];
     };
     /**
      * Check whether this context can resolve a particular tag. Use it to guard

@@ -1,20 +1,13 @@
 import Link from "next/link";
+import { Fragment } from "react";
 import { ComponentType } from "react";
 import styles from "./Links.module.css";
 
-export const Links: ComponentType = () => {
+const cn = (...cl: string[]) => cl.join(" ");
+
+const MainLinks: ComponentType = () => {
   return (
-    <ul className={styles.links}>
-      <li>
-        <Link href="/">
-          <a>Demo</a>
-        </Link>
-      </li>
-      <li>
-        <Link href="/calculator">
-          <a>Calculator</a>
-        </Link>
-      </li>
+    <ul>
       <li>
         <Link href="https://github.com/BBCNI/Interminimal/blob/main/demo">
           <a>Demo App Source</a>
@@ -36,5 +29,35 @@ export const Links: ComponentType = () => {
         </Link>
       </li>
     </ul>
+  );
+};
+
+const DemoLinks: ComponentType = () => {
+  return (
+    <ul>
+      <li>
+        <Link href="/">
+          <a>Playground</a>
+        </Link>
+      </li>
+      <li>
+        <Link href="/calculator">
+          <a>Calculator</a>
+        </Link>
+      </li>
+    </ul>
+  );
+};
+
+export const Links: ComponentType = () => {
+  return (
+    <Fragment>
+      <div className={cn(styles.links, styles.mainLinks)}>
+        <MainLinks />
+      </div>
+      <div className={cn(styles.links, styles.demoLinks)}>
+        <DemoLinks />
+      </div>
+    </Fragment>
   );
 };

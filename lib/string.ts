@@ -1,7 +1,6 @@
-import { LocaleStack, TFatString } from "./types";
-
 import difference from "lodash/difference";
 import { bestLocale, canonicaliseLanguage } from "./bcp47";
+import { LocaleStack } from "./resolveLocale";
 
 const diffs = (a: string[], b: string[]) => [
   difference(a, b),
@@ -13,6 +12,14 @@ const isNonCanonical = (lang: string) => {
   const canon = canonicaliseLanguage(lang);
   return canon !== lang;
 };
+
+export type TPluralType = {
+  readonly [key in Intl.LDMLPluralRule]?: string;
+};
+
+export type TFatString = {
+  readonly [key: string]: string | TPluralType;
+} & { $$dict?: never };
 
 /**
  * Wrap a fat string with methods to coerce it to a specific

@@ -1,6 +1,6 @@
 import "./weakRef"; // Polyfill WeakRef for Opera
 
-import { LocaleStack } from "./types";
+export type LocaleStack = readonly string[];
 
 type NextCache = { [key: string]: WeakRef<LocaleStack> };
 

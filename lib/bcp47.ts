@@ -1,6 +1,5 @@
 import { searchOrder } from "./searchOrder";
-import { canonicaliseLocales } from "./resolveLocale";
-import { LocaleStack } from "./types";
+import { canonicaliseLocales, LocaleStack } from "./resolveLocale";
 
 /**
  * Given a set of BCP 47 language tags and a list of locales in

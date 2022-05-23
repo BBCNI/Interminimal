@@ -1,4 +1,4 @@
-import { LocaleStack } from "./types";
+import { LocaleStack } from "./resolveLocale";
 /**
  * Parse an HTTP Accept-Language header. Badly formed languages are
  * dropped, languages are canonicalised.

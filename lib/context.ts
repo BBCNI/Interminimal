@@ -1,52 +1,48 @@
 import castArray from "lodash/castArray";
-import { TString } from "./string";
+import { TFatString, TString } from "./string";
 
-import {
-  LangContextProps,
-  TextPropType,
-  TFatString,
-  TDictionaryRoot,
-  StringPropType,
-  LocaleStack
-} from "./types";
+import { TextPropType, StringPropType } from "./types";
 
-import { localeRoot, resolveLocales } from "./resolveLocale";
+import { localeRoot, LocaleStack, resolveLocales } from "./resolveLocale";
 import { searchOrder } from "./searchOrder";
-import { NextCache } from "./nextCache";
+import {
+  checkDictionary,
+  nextDict,
+  rootDict,
+  TDictionaryRoot
+} from "./dictionary";
 
-export const checkDictionary = (dictionary: TDictionaryRoot): void => {
-  if (!("$$dict" in dictionary))
-    throw new Error(`Invalid dictionary (missing $$dict key)`);
-
-  if (process.env.NODE_ENV !== "production") {
-    Object.values(dictionary.$$dict).map(ts =>
-      "$$dict" in ts ? checkDictionary(ts as TDictionaryRoot) : TString.cast(ts)
-    );
-  }
-};
-
-const canMerge = (obj: any): boolean =>
-  obj && typeof obj === "object" && !Array.isArray(obj);
-
-// Frozen dictionary merge
-const mergeObj = (a: any, b: any): any => {
-  if (canMerge(a) && canMerge(b))
-    return Object.fromEntries(
-      [...new Set([...Object.keys(a), ...Object.keys(b)])].map(key => {
-        if (key in b) {
-          if (key in a) return [key, merge(a[key], b[key])];
-          return [key, b[key]];
-        }
-        return [key, a[key]];
-      })
-    );
-  return b;
-};
-
-const merge = (a: any, b: any) => Object.freeze(mergeObj(a, b));
-
-const nextDict = new NextCache<TDictionaryRoot, TDictionaryRoot>(merge);
-const rootDict: TDictionaryRoot = Object.freeze({ $$dict: {} });
+/**
+ * Properties that can be passed to [[`LangContext.constructor`]] and [[`LangContext.derive`]]
+ */
+export interface LangContextProps {
+  /**
+   * The default language for the context. Untranslated text will be assumed to be in this
+   * language. Setting `defaultLang` also places the default in the language stack before
+   * any languages in `lang`
+   */
+  readonly defaultLang?: string;
+  /**
+   * A dictionary to resolve translations. Dictionaries are consulted in order walking up the
+   * context parent chain.
+   */
+  readonly dictionary?: TDictionaryRoot;
+  /**
+   * Use a tagged section of a current dictionary as the new dictionary.
+   */
+  readonly dictionaryFromTag?: string;
+  /**
+   * A language or list of languages that are preferred for this context. Any languages provided
+   * here are prepended to the parent's language stack.
+   */
+  readonly lang?: string | readonly string[];
+  /**
+   * Set the ambient language - which is used to create a context which can't match the desired
+   * language. The ambience is used to add `lang` attributes to elements that aren't in the
+   * expected language.
+   */
+  readonly ambient?: string;
+}
 
 /**
  * A language context. All translation takes place inside a context and contexts
@@ -83,7 +79,7 @@ export class LangContext {
 
     const baseDict = this.parent ? this.parent.dictionary : rootDict;
     if (dictionary) {
-      checkDictionary(dictionary);
+      if (process.env.NODE_ENV !== "production") checkDictionary(dictionary);
       this.dictionary = nextDict.next(baseDict, dictionary);
     } else {
       this.dictionary = baseDict;

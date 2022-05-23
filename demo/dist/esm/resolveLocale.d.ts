@@ -1,5 +1,5 @@
 import "./weakRef";
-import { LocaleStack } from "./types";
+export declare type LocaleStack = readonly string[];
 /**
  * Return the stack that is the result of prepending a
  * (possibly empty) list of locales to a locale stack

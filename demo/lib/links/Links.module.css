@@ -1,4 +1,4 @@
-.links {
+.links ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -7,18 +7,30 @@
 
 .links li {
   display: inline;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
 }
 
-.links li::before {
+.mainLinks li::after {
+  content: "|";
+  padding-left: 0.5rem;
+  color: orange;
+}
+
+.mainLinks li:last-of-type::after {
+  content: "";
+}
+
+.demoLinks li::before {
   content: "<";
 }
 
-.links li::after {
+.demoLinks li::after {
   content: ">";
 }
 
-.links li::before,
-.links li::after {
+.demoLinks li::before,
+.demoLinks li::after {
   padding-left: 0.25rem;
   padding-right: 0.25rem;
   color: orange;
