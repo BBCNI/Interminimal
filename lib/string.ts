@@ -19,7 +19,7 @@ export type TPluralType = {
 
 export type TFatString = {
   readonly [key: string]: string | TPluralType;
-} & { $$dict?: never };
+} & { $$dict?: never } & { $$meta?: object };
 
 /**
  * Wrap a fat string with methods to coerce it to a specific
