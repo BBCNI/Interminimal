@@ -1,4 +1,5 @@
 import { LocaleStack } from "./resolveLocale";
+export declare const maxAcceptLanguageLength = 200;
 /**
  * Parse an HTTP Accept-Language header. Badly formed languages are
  * dropped, languages are canonicalised.

@@ -26,6 +26,8 @@ const canonTag = (tag: string): string[] => {
   return canon ? [canon] : [];
 };
 
+export const maxAcceptLanguageLength = 200;
+
 /**
  * Parse an HTTP Accept-Language header. Badly formed languages are
  * dropped, languages are canonicalised.
@@ -42,6 +44,7 @@ const canonTag = (tag: string): string[] => {
 export const parseAcceptLanguage = (accept: string): LocaleStack =>
   canonicaliseLocales(
     accept
+      .slice(0, maxAcceptLanguageLength)
       .split(/\s*,\s*/)
       .map(parsePriority)
       .filter(t => t[0] >= 0)

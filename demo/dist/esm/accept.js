@@ -40,6 +40,7 @@ var canonTag = function (tag) {
     var canon = safeCanonicaliseLanguage(tag);
     return canon ? [canon] : [];
 };
+export var maxAcceptLanguageLength = 200;
 /**
  * Parse an HTTP Accept-Language header. Badly formed languages are
  * dropped, languages are canonicalised.
@@ -55,6 +56,7 @@ var canonTag = function (tag) {
  */
 export var parseAcceptLanguage = function (accept) {
     return canonicaliseLocales(accept
+        .slice(0, maxAcceptLanguageLength)
         .split(/\s*,\s*/)
         .map(parsePriority)
         .filter(function (t) { return t[0] >= 0; })
