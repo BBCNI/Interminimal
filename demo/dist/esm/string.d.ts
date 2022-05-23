@@ -1,7 +1,13 @@
 import { LocaleStack } from "./resolveLocale";
+/**
+ * @category TString
+ */
 export declare type TPluralType = {
     readonly [key in Intl.LDMLPluralRule]?: string;
 };
+/**
+ * @category TString
+ */
 export declare type TFatString = {
     readonly [key: string]: string | TPluralType;
 } & {
@@ -49,7 +55,7 @@ export declare type TFatString = {
  * // 6 chath
  * // 42 cath
  * ```
- * @category Classes
+ * @category TString
  */
 export declare class TString {
     /** @ignore */

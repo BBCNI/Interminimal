@@ -13,10 +13,16 @@ const isNonCanonical = (lang: string) => {
   return canon !== lang;
 };
 
+/**
+ * @category TString
+ */
 export type TPluralType = {
   readonly [key in Intl.LDMLPluralRule]?: string;
 };
 
+/**
+ * @category TString
+ */
 export type TFatString = {
   readonly [key: string]: string | TPluralType;
 } & { $$dict?: never } & { $$meta?: object };
@@ -61,7 +67,7 @@ export type TFatString = {
  * // 6 chath
  * // 42 cath
  * ```
- * @category Classes
+ * @category TString
  */
 export class TString {
   /** @ignore */

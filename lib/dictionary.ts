@@ -5,12 +5,17 @@ type TDictionaryType = {
   [key: string]: TFatString | TDictionaryRoot;
 } & { $$dict?: never };
 
+/**
+ * @category Dictionary
+ */
 export type TDictionaryMeta = {
   [key: string]: string;
 };
 
 /**
  * The root of a translation dictionary
+ *
+ * @category Dictionary
  */
 export type TDictionaryRoot = {
   /** the translations */
@@ -19,6 +24,9 @@ export type TDictionaryRoot = {
   $$meta?: TDictionaryMeta;
 };
 
+/**
+ * @category Dictionary
+ */
 export const checkDictionary = (dictionary: TDictionaryRoot): void => {
   if (!("$$dict" in dictionary))
     throw new Error(`Invalid dictionary (missing $$dict key)`);
@@ -48,5 +56,12 @@ const mergeObj = (a: any, b: any): any => {
 
 const merge = (a: any, b: any) => Object.freeze(mergeObj(a, b));
 
+/**
+ * @category Dictionary
+ */
 export const nextDict = new NextCache<TDictionaryRoot, TDictionaryRoot>(merge);
+
+/**
+ * @category Dictionary
+ */
 export const rootDict: TDictionaryRoot = Object.freeze({ $$dict: {} });

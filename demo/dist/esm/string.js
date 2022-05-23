@@ -77,7 +77,7 @@ var isNonCanonical = function (lang) {
  * // 6 chath
  * // 42 cath
  * ```
- * @category Classes
+ * @category TString
  */
 var TString = /** @class */ (function () {
     /** @ignore */

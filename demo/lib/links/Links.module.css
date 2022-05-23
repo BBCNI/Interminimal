@@ -7,18 +7,28 @@
 
 .links li {
   display: inline;
-  padding-left: 0.25rem;
-  padding-right: 0.25rem;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+  padding-bottom: 0.3rem;
+}
+
+.active {
+  border-bottom: 1px solid orange;
+}
+
+.links li::before,
+.links li:after {
+  color: orange;
 }
 
 .mainLinks li::after {
   content: "|";
   padding-left: 0.5rem;
-  color: orange;
 }
 
 .mainLinks li:last-of-type::after {
   content: "";
+  padding-left: 0;
 }
 
 .demoLinks li::before {
@@ -31,7 +41,6 @@
 
 .demoLinks li::before,
 .demoLinks li::after {
-  padding-left: 0.25rem;
-  padding-right: 0.25rem;
-  color: orange;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
 }

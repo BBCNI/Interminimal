@@ -1,10 +1,18 @@
 import { TFatString, TString } from "./string";
 import { LocaleStack } from "./resolveLocale";
 import { TDictionaryRoot } from "./dictionary";
+/**
+ * @category LangContext
+ */
 export declare type StringPropType = TFatString | TString | string;
+/**
+ * @category LangContext
+ */
 export declare type TextPropType = TFatString | TString | string | string[];
 /**
  * Properties that can be passed to [[`LangContext.constructor`]] and [[`LangContext.derive`]]
+ *
+ * @category LangContext
  */
 export interface LangContextProps {
     /**
@@ -39,7 +47,7 @@ export interface LangContextProps {
  * nest to allow their configuration to be modified. Normally you'll get a context
  * using the [[`useTranslation`]] hook.
  *
- * @category Classes
+ * @category LangContext
  */
 export declare class LangContext {
     /**

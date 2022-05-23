@@ -25,6 +25,9 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 import { TString } from "./string";
 import { NextCache } from "./nextCache";
+/**
+ * @category Dictionary
+ */
 export var checkDictionary = function (dictionary) {
     if (!("$$dict" in dictionary))
         throw new Error("Invalid dictionary (missing $$dict key)");
@@ -49,5 +52,11 @@ var mergeObj = function (a, b) {
     return b;
 };
 var merge = function (a, b) { return Object.freeze(mergeObj(a, b)); };
+/**
+ * @category Dictionary
+ */
 export var nextDict = new NextCache(merge);
+/**
+ * @category Dictionary
+ */
 export var rootDict = Object.freeze({ $$dict: {} });
