@@ -12,6 +12,7 @@ import {
 
 import { localeRoot, resolveLocales } from "./resolveLocale";
 import { searchOrder } from "./searchOrder";
+import { NextCache } from "./nextCache";
 
 export const checkDictionary = (dictionary: TDictionaryRoot): void => {
   if (!("$$dict" in dictionary))
@@ -23,6 +24,29 @@ export const checkDictionary = (dictionary: TDictionaryRoot): void => {
     );
   }
 };
+
+const canMerge = (obj: any): boolean =>
+  obj && typeof obj === "object" && !Array.isArray(obj);
+
+// Frozen dictionary merge
+const mergeObj = (a: any, b: any): any => {
+  if (canMerge(a) && canMerge(b))
+    return Object.fromEntries(
+      [...new Set([...Object.keys(a), ...Object.keys(b)])].map(key => {
+        if (key in b) {
+          if (key in a) return [key, merge(a[key], b[key])];
+          return [key, b[key]];
+        }
+        return [key, a[key]];
+      })
+    );
+  return b;
+};
+
+const merge = (a: any, b: any) => Object.freeze(mergeObj(a, b));
+
+const nextDict = new NextCache<TDictionaryRoot, TDictionaryRoot>(merge);
+const rootDict: TDictionaryRoot = Object.freeze({ $$dict: {} });
 
 /**
  * A language context. All translation takes place inside a context and contexts
@@ -43,10 +67,7 @@ export class LangContext {
   /** @ignore */
   private readonly ambient?: string;
   /** @ignore */
-  private readonly dictionary?: TDictionaryRoot;
-
-  /** @ignore */
-  private tagCache: { [key: string]: TFatString | TDictionaryRoot } = {};
+  private readonly dictionary: TDictionaryRoot;
 
   /**
    * Create a new LangContext. Normally you won't need to do this; the root
@@ -58,19 +79,21 @@ export class LangContext {
    */
   constructor(props: LangContextProps & { parent?: LangContext } = {}) {
     const { lang, dictionary, ...rest } = props;
+    Object.assign(this, { ...rest });
 
-    if (dictionary) checkDictionary(dictionary);
-
-    // Upgrade lang to array if necessary.
-    const langs = castArray(lang).filter(Boolean);
-
-    Object.assign(this, { ...rest, dictionary });
+    const baseDict = this.parent ? this.parent.dictionary : rootDict;
+    if (dictionary) {
+      checkDictionary(dictionary);
+      this.dictionary = nextDict.next(baseDict, dictionary);
+    } else {
+      this.dictionary = baseDict;
+    }
 
     const lastStack = this.parent
       ? this.parent.stack
       : resolveLocales(localeRoot, [this.defaultLang]);
 
-    this.stack = resolveLocales(lastStack, langs);
+    this.stack = resolveLocales(lastStack, castArray(lang).filter(Boolean));
   }
 
   /**
@@ -185,7 +208,7 @@ export class LangContext {
       };
     };
 
-    const { dictionary, tagCache, stack: locale, ...rest } = this;
+    const { dictionary, stack, ...rest } = this;
 
     return new LangContext({ ...rest, ...trDFT(trDL(props)), parent: this });
   }
@@ -278,19 +301,7 @@ export class LangContext {
 
   /** @ignore */
   private lookupTag(tag: string): TFatString | TDictionaryRoot | undefined {
-    const { tagCache } = this;
-
-    const rt = () => {
-      const { parent, dictionary } = this;
-      if (dictionary) {
-        const { $$dict } = dictionary;
-        if ($$dict && tag in $$dict) return $$dict[tag];
-      }
-      if (parent) return parent.lookupTag(tag);
-      return;
-    };
-
-    return (tagCache[tag] = tagCache[tag] || rt());
+    return this.dictionary.$$dict[tag];
   }
 
   /**

@@ -9,6 +9,22 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
 import difference from "lodash/difference";
 import { bestLocale, canonicaliseLanguage } from "./bcp47";
 var diffs = function (a, b) { return [
@@ -161,7 +177,7 @@ var TString = /** @class */ (function () {
             // Check that our fat string has all the required
             // plural categories.
             var pluralCategories = pl.resolvedOptions().pluralCategories;
-            var _a = diffs(pluralCategories, Object.keys(ttx)), missing = _a[0], extra = _a[1];
+            var _a = __read(diffs(pluralCategories, Object.keys(ttx)), 2), missing = _a[0], extra = _a[1];
             if (missing.length)
                 throw new Error("Missing plural categories: ".concat(missing.join(", ")));
             if (extra.length)

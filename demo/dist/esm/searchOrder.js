@@ -1,3 +1,19 @@
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
 var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
         if (ar || !(i in from)) {
@@ -23,30 +39,30 @@ var makeNode = function (path) {
     // istanbul ignore next - can't happen
     if (path.length === 0)
         throw new Error("Empty thing");
-    var lang = path[0], tail = path.slice(1);
+    var _a = __read(path), lang = _a[0], tail = _a.slice(1);
     if (tail.length)
         return { lang: lang, children: [makeNode(tail)] };
     return { lang: lang, children: [] };
 };
 var mergeNodes = function (a, b) { return ({
     lang: a.lang,
-    children: groupTree(__spreadArray(__spreadArray([], a.children, true), b.children, true))
+    children: groupTree(__spreadArray(__spreadArray([], __read(a.children), false), __read(b.children), false))
 }); };
 // Group shared prefixes.
 var groupTree = function (tree) {
     if (tree.length < 2)
         return tree;
-    var head = tree[0], next = tree[1], tail = tree.slice(2);
+    var _a = __read(tree), head = _a[0], next = _a[1], tail = _a.slice(2);
     // The head.children.length check is subtle. It's the thing
     // that stops e.g. ["en", "en-US"] from turning into ["en-US", "en"]
     // while allowing ["en-US"] to turn into ["en-US", "en"].
     if (head.lang === next.lang && head.children.length)
-        return groupTree(__spreadArray([mergeNodes(head, next)], tail, true));
-    return __spreadArray([head], groupTree(__spreadArray([next], tail, true)), true);
+        return groupTree(__spreadArray([mergeNodes(head, next)], __read(tail), false));
+    return __spreadArray([head], __read(groupTree(__spreadArray([next], __read(tail), false))), false);
 };
 // Render node in depth first postfix order so more specific
 // tags come first
-var renderNode = function (node) { return __spreadArray(__spreadArray([], renderTree(node.children), true), [
+var renderNode = function (node) { return __spreadArray(__spreadArray([], __read(renderTree(node.children)), false), [
     node.lang
 ], false); };
 var renderTree = function (tree) {
