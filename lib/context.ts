@@ -353,7 +353,7 @@ export class LangContext {
   private resolveDictionary(tag: string): TDictionaryRoot {
     const it = this.findTag(tag);
     if (!isDictionary(it)) throw new Error(`${tag} is not a dictionary`);
-    return it as TDictionaryRoot;
+    return it;
   }
 
   /**
