@@ -165,7 +165,7 @@ describe("Interminimal Components", () => {
     const ref = React.createRef<boolean>();
 
     // Test that MyLink gets a ref even though there's no explicit
-    // ref in it's properties.
+    // ref in its properties.
     expect(
       R.create(
         <Translate lang="en">
