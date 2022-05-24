@@ -5,6 +5,7 @@ import { localeRoot, LocaleStack, resolveLocales } from "./resolveLocale";
 import { searchOrder } from "./searchOrder";
 import {
   checkDictionary,
+  isDictionary,
   nextDict,
   rootDict,
   TDictionaryRoot
@@ -344,14 +345,14 @@ export class LangContext {
   /** @ignore */
   private resolveTag(tag: string): TString {
     const it = this.findTag(tag);
-    if ("$$dict" in it) throw new Error(`${tag} is a dictionary`);
+    if (isDictionary(it)) throw new Error(`${tag} is a dictionary`);
     return this.castString(it);
   }
 
   /** @ignore */
   private resolveDictionary(tag: string): TDictionaryRoot {
     const it = this.findTag(tag);
-    if (!("$$dict" in it)) throw new Error(`${tag} is not a dictionary`);
+    if (!isDictionary(it)) throw new Error(`${tag} is not a dictionary`);
     return it as TDictionaryRoot;
   }
 

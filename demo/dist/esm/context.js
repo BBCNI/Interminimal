@@ -40,7 +40,7 @@ import castArray from "lodash/castArray";
 import { TString } from "./string";
 import { localeRoot, resolveLocales } from "./resolveLocale";
 import { searchOrder } from "./searchOrder";
-import { checkDictionary, nextDict, rootDict } from "./dictionary";
+import { checkDictionary, isDictionary, nextDict, rootDict } from "./dictionary";
 /**
  * A language context. All translation takes place inside a context and contexts
  * nest to allow their configuration to be modified. Normally you'll get a context
@@ -312,14 +312,14 @@ var LangContext = /** @class */ (function () {
     /** @ignore */
     LangContext.prototype.resolveTag = function (tag) {
         var it = this.findTag(tag);
-        if ("$$dict" in it)
+        if (isDictionary(it))
             throw new Error("".concat(tag, " is a dictionary"));
         return this.castString(it);
     };
     /** @ignore */
     LangContext.prototype.resolveDictionary = function (tag) {
         var it = this.findTag(tag);
-        if (!("$$dict" in it))
+        if (!isDictionary(it))
             throw new Error("".concat(tag, " is not a dictionary"));
         return it;
     };

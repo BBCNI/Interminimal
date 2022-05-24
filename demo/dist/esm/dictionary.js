@@ -26,10 +26,18 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 import { TString } from "./string";
 import { NextCache } from "./nextCache";
 /**
+ * Dictionary type guard: checks that an object looks like a dictionary.
+ * Specifically does it have a `$$dict` key?
+ *
+ * @param d maybe a dictionary
+ * @returns true if `d` looks like a dictionary
+ */
+export var isDictionary = function (d) { return "$$dict" in d; };
+/**
  * @category Dictionary
  */
 export var checkDictionary = function (dictionary) {
-    if (!("$$dict" in dictionary))
+    if (!isDictionary(dictionary))
         throw new Error("Invalid dictionary (missing $$dict key)");
     Object.values(dictionary.$$dict).map(function (ts) {
         return "$$dict" in ts ? checkDictionary(ts) : TString.cast(ts);

@@ -25,10 +25,19 @@ export type TDictionaryRoot = {
 };
 
 /**
+ * Dictionary type guard: checks that an object looks like a dictionary.
+ * Specifically does it have a `$$dict` key?
+ *
+ * @param d maybe a dictionary
+ * @returns true if `d` looks like a dictionary
+ */
+export const isDictionary = (d: object): d is TDictionaryRoot => "$$dict" in d;
+
+/**
  * @category Dictionary
  */
-export const checkDictionary = (dictionary: TDictionaryRoot): void => {
-  if (!("$$dict" in dictionary))
+export const checkDictionary = (dictionary: object): void => {
+  if (!isDictionary(dictionary))
     throw new Error(`Invalid dictionary (missing $$dict key)`);
 
   Object.values(dictionary.$$dict).map(ts =>
