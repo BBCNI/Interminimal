@@ -29,6 +29,26 @@ exports[`Interminimal Components should bind T to a tag 1`] = `
 </div>
 `;
 
+exports[`Interminimal Components should handle ambience 1`] = `
+<div
+  lang="en-GB"
+>
+  <p>
+    Spiffing! 
+    <span
+      lang="en"
+    >
+      switch 
+      <span
+        lang="en-GB"
+      >
+        Tally Ho!
+      </span>
+    </span>
+  </p>
+</div>
+`;
+
 exports[`Interminimal Components should pass refs via Format 1`] = `
 <div>
   <span>
@@ -115,6 +135,24 @@ exports[`Interminimal Components should resolve tags 1`] = `
       Traduisons!
     </span>
   </div>
+</div>
+`;
+
+exports[`Interminimal Components should retain ambience 1`] = `
+<div
+  lang="en-GB"
+>
+  <p>
+    Spiffing! 
+    <span
+      lang="en"
+    >
+      switch 
+      <span>
+        Let's go
+      </span>
+    </span>
+  </p>
 </div>
 `;
 

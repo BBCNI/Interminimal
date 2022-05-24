@@ -41,6 +41,10 @@ export interface LangContextProps {
      * expected language.
      */
     readonly ambient?: string;
+    /**
+     * Whether to pass ambient language down the context stack.
+     */
+    readonly retainAmbience?: boolean;
 }
 /**
  * A language context. All translation takes place inside a context and contexts
@@ -62,6 +66,10 @@ export declare class LangContext {
     private readonly ambient?;
     /** @ignore */
     private readonly dictionary;
+    /**
+     * Whether to pass ambient language down the context stack.
+     */
+    readonly retainAmbience: boolean;
     /**
      * Create a new LangContext. Normally you won't need to do this; the root
      * context is initialised by _Interminimal_ and child contexts are created

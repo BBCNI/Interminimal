@@ -55,6 +55,11 @@ export interface LangContextProps {
    * expected language.
    */
   readonly ambient?: string;
+
+  /**
+   * Whether to pass ambient language down the context stack.
+   */
+  readonly retainAmbience?: boolean;
 }
 
 /**
@@ -77,6 +82,11 @@ export class LangContext {
   private readonly ambient?: string;
   /** @ignore */
   private readonly dictionary: TDictionaryRoot;
+
+  /**
+   * Whether to pass ambient language down the context stack.
+   */
+  public readonly retainAmbience: boolean = false;
 
   /**
    * Create a new LangContext. Normally you won't need to do this; the root

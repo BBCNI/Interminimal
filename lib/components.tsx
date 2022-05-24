@@ -146,14 +146,17 @@ const TText: ComponentType<TTextProps> = forwardRef<ReactElement, TTextProps>(
   ({ children, lang, as, ...props }, ref): ReactElement => {
     const ctx = useTranslation();
 
-    if (lang !== ctx.ambience)
+    if (lang !== ctx.ambience) {
+      const ctxProps = ctx.retainAmbience ? { lang: lang } : { ambient: lang };
       return (
-        <TranslateLocal ambient={lang}>
+        <TranslateLocal {...ctxProps}>
           <As as={as} ref={ref} {...props} lang={lang}>
             {children}
           </As>
         </TranslateLocal>
       );
+    }
+
     return (
       <As as={as} ref={ref} {...props}>
         {children}

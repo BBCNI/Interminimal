@@ -65,6 +65,10 @@ var LangContext = /** @class */ (function () {
         this.defaultLang = "en";
         /** @ignore */
         this.stack = localeRoot;
+        /**
+         * Whether to pass ambient language down the context stack.
+         */
+        this.retainAmbience = false;
         var lang = props.lang, dictionary = props.dictionary, rest = __rest(props, ["lang", "dictionary"]);
         Object.assign(this, __assign({}, rest));
         var baseDict = this.parent ? this.parent.dictionary : rootDict;

@@ -180,6 +180,50 @@ describe("Interminimal Components", () => {
     expect(ref.current).toBe("foo");
   });
 
+  it("should handle ambience", () => {
+    const dict = {
+      $$dict: {
+        info: { "en-GB": "Spiffing! %1", "en": "Good %1" },
+        switch: { en: "switch %1" },
+        caption: { "en-GB": "Tally Ho!", "en": "Let's go" }
+      }
+    };
+
+    expect(
+      R.create(
+        <Translate lang="en-GB" dictionary={dict}>
+          <T as="p" tag="info">
+            <T tag="switch">
+              <T tag="caption" />
+            </T>
+          </T>
+        </Translate>
+      )
+    ).toMatchSnapshot();
+  });
+
+  it("should retain ambience", () => {
+    const dict = {
+      $$dict: {
+        info: { "en-GB": "Spiffing! %1", "en": "Good %1" },
+        switch: { en: "switch %1" },
+        caption: { "en-GB": "Tally Ho!", "en": "Let's go" }
+      }
+    };
+
+    expect(
+      R.create(
+        <Translate lang="en-GB" dictionary={dict} retainAmbience={true}>
+          <T as="p" tag="info">
+            <T tag="switch">
+              <T tag="caption" />
+            </T>
+          </T>
+        </Translate>
+      )
+    ).toMatchSnapshot();
+  });
+
   ////////////////////
   // Negative cases //
   ////////////////////

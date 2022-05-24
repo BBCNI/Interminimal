@@ -107,9 +107,11 @@ As.displayName = "As";
 var TText = forwardRef(function (_a, ref) {
     var children = _a.children, lang = _a.lang, as = _a.as, props = __rest(_a, ["children", "lang", "as"]);
     var ctx = useTranslation();
-    if (lang !== ctx.ambience)
-        return (React.createElement(TranslateLocal, { ambient: lang },
+    if (lang !== ctx.ambience) {
+        var ctxProps = ctx.retainAmbience ? { lang: lang } : { ambient: lang };
+        return (React.createElement(TranslateLocal, __assign({}, ctxProps),
             React.createElement(As, __assign({ as: as, ref: ref }, props, { lang: lang }), children)));
+    }
     return (React.createElement(As, __assign({ as: as, ref: ref }, props), children));
 });
 TText.displayName = "TText";
