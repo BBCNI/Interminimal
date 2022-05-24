@@ -52,7 +52,7 @@ var dictionary_1 = require("./dictionary");
  * nest to allow their configuration to be modified. Normally you'll get a context
  * using the [[`useTranslation`]] hook.
  *
- * @category Classes
+ * @category LangContext
  */
 var LangContext = /** @class */ (function () {
     /**

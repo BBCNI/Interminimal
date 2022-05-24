@@ -32,6 +32,7 @@ export interface LangContextProps {
    * any languages in `lang`
    */
   readonly defaultLang?: string;
+
   /**
    * A dictionary to resolve translations. Dictionaries are consulted in order walking up the
    * context parent chain.
@@ -41,11 +42,13 @@ export interface LangContextProps {
    * Use a tagged section of a current dictionary as the new dictionary.
    */
   readonly dictionaryFromTag?: string;
+
   /**
    * A language or list of languages that are preferred for this context. Any languages provided
    * here are prepended to the parent's language stack.
    */
   readonly lang?: string | readonly string[];
+
   /**
    * Set the ambient language - which is used to create a context which can't match the desired
    * language. The ambience is used to add `lang` attributes to elements that aren't in the

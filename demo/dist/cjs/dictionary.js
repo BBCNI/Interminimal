@@ -28,6 +28,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.rootDict = exports.nextDict = exports.checkDictionary = void 0;
 var string_1 = require("./string");
 var nextCache_1 = require("./nextCache");
+/**
+ * @category Dictionary
+ */
 var checkDictionary = function (dictionary) {
     if (!("$$dict" in dictionary))
         throw new Error("Invalid dictionary (missing $$dict key)");
@@ -53,5 +56,11 @@ var mergeObj = function (a, b) {
     return b;
 };
 var merge = function (a, b) { return Object.freeze(mergeObj(a, b)); };
+/**
+ * @category Dictionary
+ */
 exports.nextDict = new nextCache_1.NextCache(merge);
+/**
+ * @category Dictionary
+ */
 exports.rootDict = Object.freeze({ $$dict: {} });
