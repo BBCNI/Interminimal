@@ -65,7 +65,7 @@ export declare class LangContext {
     /** @ignore */
     private readonly ambient?;
     /** @ignore */
-    private readonly dictionary;
+    readonly dictionary: TDictionaryRoot;
     /**
      * Whether to pass ambient language down the context stack.
      */

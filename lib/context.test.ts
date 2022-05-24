@@ -183,4 +183,32 @@ describe("LangContext", () => {
     const ctx = new LangContext({ lang: "fr-CA" });
     expect(ctx.search).toEqual(["fr-CA", "fr", "en"]);
   });
+
+  it("should deep merge dictionaries", () => {
+    const d1 = { $$dict: { tag: { en: "Hello" } } };
+    const d2 = { $$dict: { tag: { fr: "Bonjour" } } };
+    const c1 = new LangContext({ dictionary: d1 });
+    const c2 = c1.derive({ dictionary: d2 });
+
+    expect(c2.dictionary).toEqual({
+      $$dict: {
+        tag: {
+          en: "Hello",
+          fr: "Bonjour"
+        }
+      }
+    });
+    // Make sure nothing changed
+    expect(d1).toEqual({ $$dict: { tag: { en: "Hello" } } });
+    expect(d2).toEqual({ $$dict: { tag: { fr: "Bonjour" } } });
+  });
+
+  it("should re-use dictionaries", () => {
+    const d1 = { $$dict: { tag: { en: "Hello" } } };
+    const d2 = { $$dict: { tag: { fr: "Bonjour" } } };
+    const c1 = new LangContext({ dictionary: d1 });
+    const c2 = c1.derive({ dictionary: d2 });
+    const c3 = c1.derive({ dictionary: d2 });
+    expect(c2.dictionary).toBe(c3.dictionary);
+  });
 });
