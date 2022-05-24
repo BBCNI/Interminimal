@@ -319,9 +319,9 @@ var LangContext = /** @class */ (function () {
     /** @ignore */
     LangContext.prototype.resolveDictionary = function (tag) {
         var it = this.findTag(tag);
-        if ("$$dict" in it)
-            return it;
-        throw new Error("".concat(tag, " is not a dictionary"));
+        if (!("$$dict" in it))
+            throw new Error("".concat(tag, " is not a dictionary"));
+        return it;
     };
     /**
      * Get a new language stack that prepends languages to the context's stack.

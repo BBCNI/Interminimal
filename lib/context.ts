@@ -351,8 +351,8 @@ export class LangContext {
   /** @ignore */
   private resolveDictionary(tag: string): TDictionaryRoot {
     const it = this.findTag(tag);
-    if ("$$dict" in it) return it as TDictionaryRoot;
-    throw new Error(`${tag} is not a dictionary`);
+    if (!("$$dict" in it)) throw new Error(`${tag} is not a dictionary`);
+    return it as TDictionaryRoot;
   }
 
   /**
