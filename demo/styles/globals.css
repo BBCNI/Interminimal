@@ -33,6 +33,14 @@ a:hover {
   color: orange;
 }
 
+.show-lang [lang]:hover::before {
+  content: '<x lang="' attr(lang) '"';
+}
+
+.show-lang [lang]:hover::after {
+  content: "</x>";
+}
+
 .show-lang [lang] {
   transition: background-color 0.5s;
 }
