@@ -12,13 +12,13 @@ interface LinkInfo {
 }
 
 const mainLinks: LinkInfo[] = [
+  { href: "https://bbcni.github.io/Interminimal/", title: "Documentation" },
+  { href: "https://github.com/BBCNI/Interminimal", title: "GitHub" },
+  { href: "https://www.npmjs.com/package/interminimal", title: "NPM" },
   {
     href: "https://github.com/BBCNI/Interminimal/blob/main/demo",
     title: "Demo App Source"
-  },
-  { href: "https://bbcni.github.io/Interminimal/", title: "Documentation" },
-  { href: "https://github.com/BBCNI/Interminimal", title: "GitHub" },
-  { href: "https://www.npmjs.com/package/interminimal", title: "NPM" }
+  }
 ];
 
 const demoLinks: LinkInfo[] = [
