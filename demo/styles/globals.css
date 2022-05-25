@@ -34,11 +34,11 @@ a:hover {
 }
 
 .show-lang [lang]:hover::before {
-  content: '<x lang="' attr(lang) '"';
+  color: red;
 }
 
 .show-lang [lang]:hover::after {
-  content: "</x>";
+  color: red;
 }
 
 .show-lang [lang] {
