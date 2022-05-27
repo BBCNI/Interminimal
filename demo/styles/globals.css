@@ -45,4 +45,10 @@ a:hover {
 .show-lang [lang]:hover::before,
 .show-lang [lang]:hover::after {
   color: red;
+  transition: color 0.5s;
+}
+
+.show-lang [lang]::before,
+.show-lang [lang]::after {
+  transition: color 0.5s;
 }
