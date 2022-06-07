@@ -71,6 +71,10 @@ var LangContext = /** @class */ (function () {
         this.defaultLang = "en";
         /** @ignore */
         this.stack = resolveLocale_1.localeRoot;
+        /**
+         * Whether to pass ambient language down the context stack.
+         */
+        this.retainAmbience = false;
         var lang = props.lang, dictionary = props.dictionary, rest = __rest(props, ["lang", "dictionary"]);
         Object.assign(this, __assign({}, rest));
         var baseDict = this.parent ? this.parent.dictionary : dictionary_1.rootDict;
@@ -314,16 +318,16 @@ var LangContext = /** @class */ (function () {
     /** @ignore */
     LangContext.prototype.resolveTag = function (tag) {
         var it = this.findTag(tag);
-        if ("$$dict" in it)
+        if ((0, dictionary_1.isDictionary)(it))
             throw new Error("".concat(tag, " is a dictionary"));
         return this.castString(it);
     };
     /** @ignore */
     LangContext.prototype.resolveDictionary = function (tag) {
         var it = this.findTag(tag);
-        if ("$$dict" in it)
-            return it;
-        throw new Error("".concat(tag, " is not a dictionary"));
+        if (!(0, dictionary_1.isDictionary)(it))
+            throw new Error("".concat(tag, " is not a dictionary"));
+        return it;
     };
     /**
      * Get a new language stack that prepends languages to the context's stack.

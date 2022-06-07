@@ -23,9 +23,17 @@ export declare type TDictionaryRoot = {
     $$meta?: TDictionaryMeta;
 };
 /**
+ * Dictionary type guard: checks that an object looks like a dictionary.
+ * Specifically does it have a `$$dict` key?
+ *
+ * @param d maybe a dictionary
+ * @returns true if `d` looks like a dictionary
+ */
+export declare const isDictionary: (d: object) => d is TDictionaryRoot;
+/**
  * @category Dictionary
  */
-export declare const checkDictionary: (dictionary: TDictionaryRoot) => void;
+export declare const checkDictionary: (dictionary: object) => void;
 /**
  * @category Dictionary
  */

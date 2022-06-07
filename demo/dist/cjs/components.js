@@ -45,7 +45,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tBindMulti = exports.tBind = exports.T = exports.Translate = exports.TranslateLocal = exports.useTranslation = void 0;
+exports.tBind = exports.T = exports.TText = exports.As = exports.Translate = exports.TranslateLocal = exports.useTranslation = void 0;
 var react_1 = __importStar(require("react"));
 var template_1 = require("./template");
 var context_1 = require("./context");
@@ -122,26 +122,29 @@ exports.TranslateLocal = TranslateLocal;
  * @category Components
  */
 var Translate = function (_a) {
-    var children = _a.children, _b = _a.as, as = _b === void 0 ? "div" : _b, props = __rest(_a, ["children", "as"]);
+    var as = _a.as, children = _a.children, props = __rest(_a, ["as", "children"]);
     var ctx = (0, exports.useTranslation)().derive(props);
-    return (react_1.default.createElement(TText, { as: as, lang: ctx.language },
+    return (react_1.default.createElement(exports.TText, { as: as || "div", lang: ctx.language },
         react_1.default.createElement(TContext.Provider, { value: ctx }, children)));
 };
 exports.Translate = Translate;
-var As = (0, react_1.forwardRef)(function (_a, ref) {
-    var as = _a.as, children = _a.children, props = __rest(_a, ["as", "children"]);
-    return (0, react_1.createElement)(as, __assign({ ref: ref }, props), children);
+exports.As = (0, react_1.forwardRef)(function (_a, ref) {
+    var as = _a.as, children = _a.children, rest = __rest(_a, ["as", "children"]);
+    var Component = as || "span";
+    return (react_1.default.createElement(Component, __assign({}, rest, { ref: ref }), children));
 });
-As.displayName = "As";
-var TText = (0, react_1.forwardRef)(function (_a, ref) {
-    var children = _a.children, lang = _a.lang, as = _a.as, props = __rest(_a, ["children", "lang", "as"]);
+exports.As.displayName = "As";
+exports.TText = (0, react_1.forwardRef)(function (_a, ref) {
+    var as = _a.as, lang = _a.lang, children = _a.children, props = __rest(_a, ["as", "lang", "children"]);
     var ctx = (0, exports.useTranslation)();
-    if (lang !== ctx.ambience)
-        return (react_1.default.createElement(exports.TranslateLocal, { ambient: lang },
-            react_1.default.createElement(As, __assign({ as: as, ref: ref }, props, { lang: lang }), children)));
-    return (react_1.default.createElement(As, __assign({ as: as, ref: ref }, props), children));
+    if (lang !== ctx.ambience) {
+        var ctxProps = ctx.retainAmbience ? { lang: lang } : { ambient: lang };
+        return (react_1.default.createElement(exports.TranslateLocal, __assign({}, ctxProps),
+            react_1.default.createElement(exports.As, __assign({ as: as || "span", ref: ref }, props, { lang: lang }), children)));
+    }
+    return (react_1.default.createElement(exports.As, __assign({ as: as || "span", ref: ref }, props), children));
 });
-TText.displayName = "TText";
+exports.TText.displayName = "TText";
 var TFormat = (0, react_1.forwardRef)(function (_a, ref) {
     var format = _a.format, lang = _a.lang, children = _a.children;
     var clone = function (elt, props) {
@@ -192,10 +195,6 @@ var TFormat = (0, react_1.forwardRef)(function (_a, ref) {
     return react_1.default.createElement(react_1.Fragment, null, out);
 });
 TFormat.displayName = "TFormat";
-var noRef = function (ref) {
-    if (ref)
-        throw new Error("Can't pass ref");
-};
 function resolveTranslationProps(ctx, tag, text) {
     var r = function () {
         if (process.env.NODE_ENV !== "production")
@@ -210,6 +209,10 @@ function resolveTranslationProps(ctx, tag, text) {
     };
     return r().toLang(ctx.languages);
 }
+var noRef = function (ref) {
+    if (ref)
+        throw new Error("Can't pass ref");
+};
 /**
  * A wrapper for content that should be translated. It attempts to translate
  * the content you give it according to the active [[`LangContext`]]. It can
@@ -274,7 +277,7 @@ function resolveTranslationProps(ctx, tag, text) {
  * @category Components
  */
 exports.T = (0, react_1.forwardRef)(function (_a, ref) {
-    var children = _a.children, tag = _a.tag, text = _a.text, content = _a.content, count = _a.count, _b = _a.as, as = _b === void 0 ? "span" : _b, props = __rest(_a, ["children", "tag", "text", "content", "count", "as"]);
+    var as = _a.as, tag = _a.tag, text = _a.text, content = _a.content, count = _a.count, children = _a.children, props = __rest(_a, ["as", "tag", "text", "content", "count", "children"]);
     var ctx = (0, exports.useTranslation)();
     if (content) {
         if (process.env.NODE_ENV !== "production") {
@@ -283,16 +286,16 @@ exports.T = (0, react_1.forwardRef)(function (_a, ref) {
             noRef(ref);
         }
         var ts = ctx.translate(content);
-        return (react_1.default.createElement(TText, __assign({ as: as, lang: ts.language }, ctx.resolveMagicProps(props, ts.language)), ts.toString(count)));
+        return (react_1.default.createElement(exports.TText, __assign({ as: as || "span", lang: ts.language }, ctx.resolveMagicProps(props, ts.language)), ts.toString(count)));
     }
     if (tag || text) {
         var ts = resolveTranslationProps(ctx, tag, text);
-        return (react_1.default.createElement(TText, __assign({ as: as, lang: ts.language }, ctx.resolveMagicProps(props, ts.language)),
+        return (react_1.default.createElement(exports.TText, __assign({ as: as || "span", lang: ts.language }, ctx.resolveMagicProps(props, ts.language)),
             react_1.default.createElement(TFormat, { ref: ref, lang: ts.language, format: ctx.render(ts, count) }, children)));
     }
     if (process.env.NODE_ENV !== "production")
         noRef(ref);
-    return (react_1.default.createElement(TText, __assign({ as: as, lang: ctx.defaultLang }, ctx.resolveMagicProps(props)), children));
+    return (react_1.default.createElement(exports.TText, __assign({ as: as || "span", lang: ctx.defaultLang }, ctx.resolveMagicProps(props)), children));
 });
 exports.T.displayName = "T";
 var boundMap = new Map();
@@ -319,11 +322,17 @@ var boundMap = new Map();
  *
  * @category Utilities
  */
+//  Type '{ as: C; ref: ForwardedRef<ReactElement<any, string | JSXElementConstructor<any>>>; } & Omit<TProps<C>, "children"> & { ...; }'
+//    is not assignable to type 'IntrinsicAttributes & { tag?: string | undefined; text?: TextPropType | undefined; content?: TextPropType | undefined; count?: number | undefined; } & AsProperty<...> & { ...; } & Omit<...> & { ...; }'.
+//  Type '{ as: C; ref: ForwardedRef<ReactElement<any, string | JSXElementConstructor<any>>>; } & Omit<TProps<C>, "children"> & { ...; }'
+//    is not assignable to type 'Omit<PropsWithoutRef<ComponentProps<C>>, "text" | "as" | "content" | "tag" | "count">'.ts(2322)
 var tBind = function (as) {
     var bind = function (as) {
         var bound = (0, react_1.forwardRef)(function (_a, ref) {
             var children = _a.children, props = __rest(_a, ["children"]);
-            return (react_1.default.createElement(exports.T, __assign({ as: as, ref: ref }, props), children));
+            return (
+            // @ts-ignore
+            react_1.default.createElement(exports.T, __assign({ as: as, ref: ref }, props), children));
         });
         var asName = typeof as === "string" ? as : as.displayName;
         if (asName) {
@@ -338,14 +347,3 @@ var tBind = function (as) {
     return bound;
 };
 exports.tBind = tBind;
-/**
- * Make multiple bound versions of `<T>` at once.
- *
- * ```typescript
- * const [Tli, Tdiv, Th2, Tp] = tBindMulti(["li", "div", "h2", "p"]);
- * ```
- *
- * @category Utilities
- */
-var tBindMulti = function (as) { return as.map(exports.tBind); };
-exports.tBindMulti = tBindMulti;

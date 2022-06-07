@@ -25,14 +25,23 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rootDict = exports.nextDict = exports.checkDictionary = void 0;
+exports.rootDict = exports.nextDict = exports.checkDictionary = exports.isDictionary = void 0;
 var string_1 = require("./string");
 var nextCache_1 = require("./nextCache");
+/**
+ * Dictionary type guard: checks that an object looks like a dictionary.
+ * Specifically does it have a `$$dict` key?
+ *
+ * @param d maybe a dictionary
+ * @returns true if `d` looks like a dictionary
+ */
+var isDictionary = function (d) { return "$$dict" in d; };
+exports.isDictionary = isDictionary;
 /**
  * @category Dictionary
  */
 var checkDictionary = function (dictionary) {
-    if (!("$$dict" in dictionary))
+    if (!(0, exports.isDictionary)(dictionary))
         throw new Error("Invalid dictionary (missing $$dict key)");
     Object.values(dictionary.$$dict).map(function (ts) {
         return "$$dict" in ts ? (0, exports.checkDictionary)(ts) : string_1.TString.cast(ts);
