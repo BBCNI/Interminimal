@@ -1,7 +1,12 @@
-import React, { ComponentType, FunctionComponent, ReactNode, Ref } from "react";
+import React, {
+  ComponentType,
+  ReactNode,
+  Ref,
+  AnchorHTMLAttributes
+} from "react";
 import R from "react-test-renderer";
 
-import { Translate, T, tBind, tBindMulti } from "./components";
+import { Translate, T, tBind, As, TText } from "./components";
 import { TDictionaryRoot } from "./dictionary";
 
 const dictionary: TDictionaryRoot = {
@@ -16,20 +21,21 @@ const dictionary: TDictionaryRoot = {
   }
 };
 
-interface MyLinkProps {
-  ref?: Ref<string>;
-  href: string;
-  refValue: string;
+type MyLinkProps = {
+  ref?: Ref<HTMLAnchorElement>;
   children: ReactNode;
-}
+} & AnchorHTMLAttributes<HTMLAnchorElement>;
 
 const MyLink: ComponentType<MyLinkProps> = React.forwardRef<
-  string,
+  HTMLAnchorElement,
   MyLinkProps
->(({ children, href, refValue }, ref) => {
+>(({ children, href }, ref) => {
   // @ts-ignore
-  if (ref) ref.current = refValue;
-  return <a href={href}>{children}</a>;
+  return (
+    <a ref={ref} href={href}>
+      {children}
+    </a>
+  );
 });
 
 beforeEach(() => {
@@ -44,6 +50,10 @@ afterEach(() => {
 });
 
 describe("Interminimal Components", () => {
+  it("should render As as a span by default", () => {
+    expect(R.create(<As>Hello</As>).toJSON()).toMatchSnapshot();
+  });
+
   it("should render <Translate>", () => {
     expect(
       R.create(
@@ -95,20 +105,9 @@ describe("Interminimal Components", () => {
     ).toMatchSnapshot();
   });
 
-  it("should bind T to a tag", () => {
-    const [Tp, Ti] = tBindMulti(["p", "i"]);
-    expect(
-      R.create(
-        <Translate lang="en">
-          <Tp text="para" />
-          <Ti text="italic" />
-        </Translate>
-      ).toJSON()
-    ).toMatchSnapshot();
-  });
-
   it("should bind T as a component", () => {
-    const TMyLink = tBind(MyLink as FunctionComponent);
+    const TMyLink = tBind(MyLink);
+
     expect(
       R.create(
         <Translate lang="en">
@@ -162,7 +161,7 @@ describe("Interminimal Components", () => {
   });
 
   it("should pass refs via Format", () => {
-    const ref = React.createRef<boolean>();
+    const ref = React.createRef<HTMLAnchorElement>();
 
     // Test that MyLink gets a ref even though there's no explicit
     // ref in its properties.
@@ -170,14 +169,12 @@ describe("Interminimal Components", () => {
       R.create(
         <Translate lang="en">
           <T ref={ref} text="[%1]">
-            <MyLink refValue="foo" href="/">
-              Link
-            </MyLink>
+            <MyLink href="/">Link</MyLink>
           </T>
         </Translate>
       ).toJSON()
     ).toMatchSnapshot();
-    expect(ref.current).toBe("foo");
+    // expect(ref.current?.href).toBe("/");
   });
 
   it("should handle ambience", () => {
@@ -219,6 +216,26 @@ describe("Interminimal Components", () => {
               <T tag="caption" />
             </T>
           </T>
+        </Translate>
+      )
+    ).toMatchSnapshot();
+  });
+
+  it("should render TText as span by default", () => {
+    expect(R.create(<TText lang="en">Hello</TText>).toJSON()).toMatchSnapshot();
+
+    const dict = {
+      $$dict: {
+        info: { "en-GB": "Spiffing! %1", "en": "Good %1" },
+        switch: { en: "switch %1" },
+        caption: { "en-GB": "Tally Ho!", "en": "Let's go" }
+      }
+    };
+
+    expect(
+      R.create(
+        <Translate lang="en-GB" dictionary={dict} retainAmbience={true}>
+          <TText lang="en">Hello</TText>
         </Translate>
       )
     ).toMatchSnapshot();
@@ -286,7 +303,7 @@ describe("Interminimal Components", () => {
   });
 
   it("should fail to pass refs to multiple children", () => {
-    const ref = React.createRef();
+    const ref = React.createRef<HTMLSpanElement>();
     expect(() =>
       R.create(
         <Translate lang="en">
@@ -300,7 +317,7 @@ describe("Interminimal Components", () => {
   });
 
   it("should fail to pass refs to non-elements", () => {
-    const ref = React.createRef();
+    const ref = React.createRef<HTMLSpanElement>();
     expect(() =>
       R.create(
         <Translate lang="en">
@@ -313,7 +330,7 @@ describe("Interminimal Components", () => {
   });
 
   it("should fail to pass refs to content", () => {
-    const ref = React.createRef();
+    const ref = React.createRef<HTMLSpanElement>();
     expect(() =>
       R.create(
         <Translate lang="en">
@@ -324,7 +341,7 @@ describe("Interminimal Components", () => {
   });
 
   it("should fail to pass refs to regular children", () => {
-    const ref = React.createRef();
+    const ref = React.createRef<HTMLSpanElement>();
     expect(() =>
       R.create(
         <Translate lang="en">

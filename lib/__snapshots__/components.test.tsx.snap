@@ -18,17 +18,6 @@ exports[`Interminimal Components should bind T as a component 1`] = `
 </div>
 `;
 
-exports[`Interminimal Components should bind T to a tag 1`] = `
-<div>
-  <p>
-    para
-  </p>
-  <i>
-    italic
-  </i>
-</div>
-`;
-
 exports[`Interminimal Components should handle ambience 1`] = `
 <div
   lang="en-GB"
@@ -95,6 +84,30 @@ exports[`Interminimal Components should render <Translate> 1`] = `
 exports[`Interminimal Components should render <Translate> 2`] = `
 <div>
   <span>
+    Hello
+  </span>
+</div>
+`;
+
+exports[`Interminimal Components should render As as a span by default 1`] = `
+<span>
+  Hello
+</span>
+`;
+
+exports[`Interminimal Components should render TText as span by default 1`] = `
+<span>
+  Hello
+</span>
+`;
+
+exports[`Interminimal Components should render TText as span by default 2`] = `
+<div
+  lang="en-GB"
+>
+  <span
+    lang="en"
+  >
     Hello
   </span>
 </div>

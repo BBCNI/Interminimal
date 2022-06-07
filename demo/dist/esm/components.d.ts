@@ -1,5 +1,21 @@
-import React, { ComponentType, ReactNode, ReactElement, Ref, ComponentClass, FunctionComponent } from "react";
+import React, { ComponentType, ReactNode, ReactElement, ComponentPropsWithoutRef, ComponentPropsWithRef, ElementType, PropsWithChildren } from "react";
 import { LangContext, LangContextProps, TextPropType } from "./context";
+declare type Scalar = string | number | boolean;
+declare type TPrefix<T> = {
+    [P in keyof T as T[P] extends Scalar ? `t-${string & P}` : never]?: T[P] | [string];
+};
+declare type PolyRef<C extends ElementType> = ComponentPropsWithRef<C>["ref"];
+declare type AsProperty<C extends ElementType> = {
+    as?: C;
+};
+declare type PropsToOmit<C extends ElementType, P> = keyof (AsProperty<C> & P);
+declare type WithName<T> = T & {
+    displayName?: string | undefined;
+};
+declare type PolyProp<C extends ElementType, Props = {}> = PropsWithChildren<Props & AsProperty<C>> & Omit<ComponentPropsWithoutRef<C>, PropsToOmit<C, Props>>;
+declare type PolyPropRef<C extends ElementType, Props = {}> = PolyProp<C, Props> & {
+    ref?: PolyRef<C>;
+};
 /**
  * Hook that gets the currently active translation context. Here's an example
  * of a component that wraps the `Intl.DateTimeFormat` API using the translation
@@ -39,10 +55,8 @@ export declare type TranslateLocalProps = LangContextProps & {
  * @category Components
  */
 export declare const TranslateLocal: ComponentType<TranslateLocalProps>;
-export declare type TranslateProps = LangContextProps & {
-    children: ReactNode;
-    as?: AsType;
-};
+declare type TranslateProps<C extends ElementType> = PolyProp<C, LangContextProps>;
+declare type TranslateComponent = WithName<(<C extends ElementType = "div">(props: TranslateProps<C>) => ReactElement | null)>;
 /**
  * Wrap components in a nested [[`LangContext`]] that establishes a new
  * language stack. By default any children will be wrapped in a `div` with
@@ -71,26 +85,19 @@ export declare type TranslateProps = LangContextProps & {
  *
  * @category Components
  */
-export declare const Translate: ComponentType<TranslateProps>;
-/**
- * The type of a component - either a string like `"div"` or `"span"` or a React component.
- */
-export declare type AsType = string | FunctionComponent<{
-    lang?: string;
-    ref?: Ref<ReactElement>;
-}> | ComponentClass<{
-    lang?: string;
-    ref?: Ref<ReactElement>;
-}, any>;
+export declare const Translate: TranslateComponent;
+declare type AsProps<C extends ElementType> = PolyPropRef<C>;
+declare type AsComponent = WithName<(<C extends ElementType = "span">(props: AsProps<C>) => ReactElement | null)>;
+export declare const As: AsComponent;
+declare type TTextProps<C extends ElementType> = PolyPropRef<C, {
+    lang: string;
+}>;
+declare type TTextComponent = WithName<(<C extends ElementType = "span">(props: TTextProps<C>) => ReactElement | null)>;
+export declare const TText: TTextComponent;
 /**
  * Properties for the `<T>` component.
  */
-export interface TProps {
-    /**
-     * Any children. When `tag` or `text` is also present any children are mapped to the
-     * corresponding placeholder
-     */
-    children?: ReactNode;
+export declare type TProps<C extends ElementType> = PolyPropRef<C, {
     /**
      * A tag to look up in the current dictionary and perform template substitution on.
      */
@@ -110,15 +117,9 @@ export interface TProps {
      * pluralisation rules. Defaults to 1.
      */
     count?: number;
-    /**
-     * The element to render as. May be a string (e.g. `"div", "section"`) or a React component.
-     */
-    as?: AsType;
-    /**
-     * The remaining properties are passed to the rendered element.
-     */
-    [key: string]: any;
-}
+    children?: ReactNode;
+}> & TPrefix<ComponentPropsWithoutRef<C>>;
+declare type TComponent = WithName<(<C extends ElementType = "span">(props: TProps<C>) => ReactElement | null)>;
 /**
  * A wrapper for content that should be translated. It attempts to translate
  * the content you give it according to the active [[`LangContext`]]. It can
@@ -182,7 +183,7 @@ export interface TProps {
  *
  * @category Components
  */
-export declare const T: ComponentType<TProps>;
+export declare const T: TComponent;
 /**
  * Create a new component that behaves like `<T>` but with a different default
  * `as` element.
@@ -206,14 +207,5 @@ export declare const T: ComponentType<TProps>;
  *
  * @category Utilities
  */
-export declare const tBind: (as: AsType) => ComponentType<TProps>;
-/**
- * Make multiple bound versions of `<T>` at once.
- *
- * ```typescript
- * const [Tli, Tdiv, Th2, Tp] = tBindMulti(["li", "div", "h2", "p"]);
- * ```
- *
- * @category Utilities
- */
-export declare const tBindMulti: (as: AsType[]) => React.ComponentType<TProps>[];
+export declare const tBind: <C extends React.ElementType<any>>(as: C) => React.ComponentType<TProps<C>>;
+export {};

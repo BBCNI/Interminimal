@@ -1,4 +1,4 @@
-import type { GetServerSideProps, GetStaticProps, NextPage } from "next";
+import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,7 +17,6 @@ import {
 import {
   T,
   tBind,
-  tBindMulti,
   TextPropType,
   Translate,
   useTranslation,
@@ -239,7 +238,7 @@ const LanguagePicker: ComponentType<{
   state: LanguageState;
 }> = ({ label, state }) => {
   // Bake an alternative to <T as="li" ...>
-  const [Toption] = tBindMulti(["option"]);
+  const Toption = tBind("option");
 
   const onChange = (e: ChangeEvent<HTMLSelectElement>) => {
     e.preventDefault();
@@ -281,12 +280,13 @@ const Block: ComponentType<
   const counts = [0, 1, 1.5, 2, 3, 6, 42];
 
   // Bake an alternative to <T as="li" ...>
-  const [Tli, Tdiv, Th2, Tp] = tBindMulti(["li", "div", "h2", "p"]);
+  const Tli = tBind("li");
+  const Tdiv = tBind("div");
+  const Th2 = tBind("h2");
+  const Tp = tBind("p");
 
-  // Unfortunately we have to cast next/Image as a FunctionComponent.
-  // Not sure what a better fix for this might be.
-  const TImage = tBind(Image as FunctionComponent);
-  const TBox = tBind(Box as FunctionComponent);
+  const TImage = tBind(Image);
+  const TBox = tBind(Box);
 
   return (
     <div>

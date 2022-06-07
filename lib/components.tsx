@@ -1,7 +1,6 @@
 import React, {
   ComponentType,
   createContext,
-  createElement,
   ReactNode,
   Children,
   useContext,
@@ -11,14 +10,38 @@ import React, {
   forwardRef,
   ReactElement,
   Ref,
-  ComponentClass,
-  FunctionComponent
+  ComponentPropsWithoutRef,
+  ComponentPropsWithRef,
+  ElementType,
+  PropsWithChildren
 } from "react";
 
 import { parseTemplate } from "./template";
 import { LangContext, LangContextProps, TextPropType } from "./context";
 import { TString } from "./string";
 import { TDictionaryRoot } from "./dictionary";
+
+type Scalar = string | number | boolean;
+
+type TPrefix<T> = {
+  [P in keyof T as T[P] extends Scalar ? `t-${string & P}` : never]?:
+    | T[P]
+    | [string];
+};
+
+type PolyRef<C extends ElementType> = ComponentPropsWithRef<C>["ref"];
+type AsProperty<C extends ElementType> = { as?: C };
+type PropsToOmit<C extends ElementType, P> = keyof (AsProperty<C> & P);
+type WithName<T> = T & { displayName?: string | undefined };
+
+type PolyProp<C extends ElementType, Props = {}> = PropsWithChildren<
+  Props & AsProperty<C>
+> &
+  Omit<ComponentPropsWithoutRef<C>, PropsToOmit<C, Props>>;
+
+type PolyPropRef<C extends ElementType, Props = {}> = PolyProp<C, Props> & {
+  ref?: PolyRef<C>;
+};
 
 const TContext = createContext(new LangContext());
 
@@ -68,10 +91,13 @@ export const TranslateLocal: ComponentType<TranslateLocalProps> = ({
   return <TContext.Provider value={ctx}>{children}</TContext.Provider>;
 };
 
-export type TranslateProps = LangContextProps & {
-  children: ReactNode;
-  as?: AsType;
-};
+type TranslateProps<C extends ElementType> = PolyProp<C, LangContextProps>;
+
+type TranslateComponent = WithName<
+  <C extends ElementType = "div">(
+    props: TranslateProps<C>
+  ) => ReactElement | null
+>;
 
 /**
  * Wrap components in a nested [[`LangContext`]] that establishes a new
@@ -101,56 +127,64 @@ export type TranslateProps = LangContextProps & {
  *
  * @category Components
  */
-export const Translate: ComponentType<TranslateProps> = ({
+export const Translate: TranslateComponent = <C extends ElementType = "div">({
+  as,
   children,
-  as = "div",
   ...props
-}): ReactElement => {
+}: TranslateProps<C>) => {
   const ctx = useTranslation().derive(props);
   return (
-    <TText as={as} lang={ctx.language}>
+    <TText as={as || ("div" as ElementType)} lang={ctx.language}>
       <TContext.Provider value={ctx}>{children}</TContext.Provider>
     </TText>
   );
 };
 
-/**
- * The type of a component - either a string like `"div"` or `"span"` or a React component.
- */
-export type AsType =
-  | string
-  | FunctionComponent<{ lang?: string; ref?: Ref<ReactElement> }>
-  | ComponentClass<{ lang?: string; ref?: Ref<ReactElement> }, any>;
+type AsProps<C extends ElementType> = PolyPropRef<C>;
 
-interface AsProps {
-  as: AsType;
-  children?: ReactNode;
-  [key: string]: any;
-}
+type AsComponent = WithName<
+  <C extends ElementType = "span">(props: AsProps<C>) => ReactElement | null
+>;
 
-const As: ComponentType<AsProps> = forwardRef<ReactElement, AsProps>(
-  ({ as, children, ...props }, ref) =>
-    createElement(as, { ref, ...props }, children)
+export const As: AsComponent = forwardRef(
+  <C extends ElementType = "span">(
+    { as, children, ...rest }: AsProps<C>,
+    ref?: PolyRef<C>
+  ) => {
+    const Component = as || "span";
+    return (
+      <Component {...rest} ref={ref}>
+        {children}
+      </Component>
+    );
+  }
 );
 
 As.displayName = "As";
 
-interface TTextProps {
-  children: ReactNode;
-  lang: string;
-  as: AsType;
-  [key: string]: any;
-}
+type TTextProps<C extends ElementType> = PolyPropRef<C, { lang: string }>;
 
-const TText: ComponentType<TTextProps> = forwardRef<ReactElement, TTextProps>(
-  ({ children, lang, as, ...props }, ref): ReactElement => {
+type TTextComponent = WithName<
+  <C extends ElementType = "span">(props: TTextProps<C>) => ReactElement | null
+>;
+
+export const TText: TTextComponent = forwardRef(
+  <C extends ElementType = "span">(
+    { as, lang, children, ...props }: TTextProps<C>,
+    ref?: PolyRef<C>
+  ) => {
     const ctx = useTranslation();
 
     if (lang !== ctx.ambience) {
       const ctxProps = ctx.retainAmbience ? { lang: lang } : { ambient: lang };
       return (
         <TranslateLocal {...ctxProps}>
-          <As as={as} ref={ref} {...props} lang={lang}>
+          <As
+            as={as || ("span" as ElementType)}
+            ref={ref}
+            {...props}
+            lang={lang}
+          >
             {children}
           </As>
         </TranslateLocal>
@@ -158,7 +192,7 @@ const TText: ComponentType<TTextProps> = forwardRef<ReactElement, TTextProps>(
     }
 
     return (
-      <As as={as} ref={ref} {...props}>
+      <As as={as || ("span" as ElementType)} ref={ref} {...props}>
         {children}
       </As>
     );
@@ -174,75 +208,70 @@ interface TFormatProps {
   ref?: Ref<ReactElement>;
 }
 
-const TFormat: ComponentType<TFormatProps> = forwardRef<
-  ReactElement,
-  TFormatProps
->(({ format, lang, children }, ref): ReactElement => {
-  const clone = (elt: ReactNode, props?: any): ReactNode => {
-    if (isValidElement(elt)) return cloneElement(elt, props);
+const TFormat: ComponentType<TFormatProps> = forwardRef(
+  ({ format, lang, children }: TFormatProps, ref): ReactElement => {
+    const clone = (elt: ReactNode, props?: any): ReactNode => {
+      if (isValidElement(elt)) return cloneElement(elt, props);
+      if (process.env.NODE_ENV !== "production")
+        throw new Error(`Can't add props to a non-element`);
+    };
+
+    const parts = parseTemplate(format);
+
+    // Bail out quickly in the simple case
+    if (parts.length === 1 && typeof parts[0] === "string")
+      return <Fragment>{parts[0]}</Fragment>;
+
+    // Make children into a regular array of nodes
+    const params = Children.toArray(children);
+
     if (process.env.NODE_ENV !== "production")
-      throw new Error(`Can't add props to a non-element`);
-  };
+      if (ref && params.length !== 1)
+        // Passing a ref is a special case which only allows
+        // a single child
+        throw new Error(`Can only forward refs to single children`);
 
-  const parts = parseTemplate(format);
+    // Set of available indexes
+    const avail = new Set(params.map((_x: any, i: number) => i + 1));
 
-  // Bail out quickly in the simple case
-  if (parts.length === 1 && typeof parts[0] === "string")
-    return <Fragment>{parts[0]}</Fragment>;
+    const dict: TDictionaryRoot = { $$dict: {} };
 
-  // Make children into a regular array of nodes
-  const params = Children.toArray(children);
+    // Output nodes
+    const out = parts.map(part => {
+      if (typeof part === "string") return part;
+      const { index, name, text } = part;
 
-  if (process.env.NODE_ENV !== "production")
-    if (ref && params.length !== 1)
-      // Passing a ref is a special case which only allows
-      // a single child
-      throw new Error(`Can only forward refs to single children`);
+      if (name && text)
+        dict.$$dict[name] = TString.literal(text, lang).dictionary;
 
-  // Set of available indexes
-  const avail = new Set(params.map((_x: any, i: number) => i + 1));
+      if (index < 1 || index > params.length)
+        throw new Error(
+          `Arg out of range %${index} (1..${params.length} are valid)`
+        );
 
-  const dict: TDictionaryRoot = { $$dict: {} };
+      if (!avail.has(index)) throw new Error(`Already using arg %${index}`);
 
-  // Output nodes
-  const out = parts.map(part => {
-    if (typeof part === "string") return part;
-    const { index, name, text } = part;
+      // Mark it used
+      avail.delete(index);
 
-    if (name && text)
-      dict.$$dict[name] = TString.literal(text, lang).dictionary;
+      // If we're passing a ref clone it in. Only do this to the first
+      // parameter. This check pretty redundant - there's a check above
+      // that enforces singularity in the ref passed case.
+      if (ref && index === 1) return clone(params[index - 1], { ref });
+      return params[index - 1];
+    });
 
-    if (index < 1 || index > params.length)
-      throw new Error(
-        `Arg out of range %${index} (1..${params.length} are valid)`
-      );
+    if (process.env.NODE_ENV !== "production")
+      if (avail.size) throw new Error(`Unused args: ${avail}`);
 
-    if (!avail.has(index)) throw new Error(`Already using arg %${index}`);
+    if (Object.keys(dict.$$dict).length)
+      return <TranslateLocal dictionary={dict}>{out}</TranslateLocal>;
 
-    // Mark it used
-    avail.delete(index);
-
-    // If we're passing a ref clone it in. Only do this to the first
-    // parameter. This check pretty redundant - there's a check above
-    // that enforces singularity in the ref passed case.
-    if (ref && index === 1) return clone(params[index - 1], { ref });
-    return params[index - 1];
-  });
-
-  if (process.env.NODE_ENV !== "production")
-    if (avail.size) throw new Error(`Unused args: ${avail}`);
-
-  if (Object.keys(dict.$$dict).length)
-    return <TranslateLocal dictionary={dict}>{out}</TranslateLocal>;
-
-  return <Fragment>{out}</Fragment>;
-});
+    return <Fragment>{out}</Fragment>;
+  }
+);
 
 TFormat.displayName = "TFormat";
-
-const noRef = (ref: Ref<ReactElement>) => {
-  if (ref) throw new Error(`Can't pass ref`);
-};
 
 function resolveTranslationProps(
   ctx: LangContext,
@@ -263,40 +292,41 @@ function resolveTranslationProps(
 /**
  * Properties for the `<T>` component.
  */
-export interface TProps {
-  /**
-   * Any children. When `tag` or `text` is also present any children are mapped to the
-   * corresponding placeholder
-   */
-  children?: ReactNode;
-  /**
-   * A tag to look up in the current dictionary and perform template substitution on.
-   */
-  tag?: string;
-  /**
-   * Text to translate. Can also refer to a dictionary tag if it's a single element array:
-   * `["tag"]`. The resolved text is processed with template substitution.
-   */
-  text?: TextPropType;
-  /**
-   * Text to translate without any further template substitution. Use for e.g. literal
-   * translated text from an API.
-   */
-  content?: TextPropType;
-  /**
-   * The number of the thing being described for cases where the translation provides
-   * pluralisation rules. Defaults to 1.
-   */
-  count?: number;
-  /**
-   * The element to render as. May be a string (e.g. `"div", "section"`) or a React component.
-   */
-  as?: AsType;
-  /**
-   * The remaining properties are passed to the rendered element.
-   */
-  [key: string]: any;
-}
+export type TProps<C extends ElementType> = PolyPropRef<
+  C,
+  {
+    /**
+     * A tag to look up in the current dictionary and perform template substitution on.
+     */
+    tag?: string;
+    /**
+     * Text to translate. Can also refer to a dictionary tag if it's a single element array:
+     * `["tag"]`. The resolved text is processed with template substitution.
+     */
+    text?: TextPropType;
+    /**
+     * Text to translate without any further template substitution. Use for e.g. literal
+     * translated text from an API.
+     */
+    content?: TextPropType;
+    /**
+     * The number of the thing being described for cases where the translation provides
+     * pluralisation rules. Defaults to 1.
+     */
+    count?: number;
+
+    children?: ReactNode;
+  }
+> &
+  TPrefix<ComponentPropsWithoutRef<C>>;
+
+type TComponent = WithName<
+  <C extends ElementType = "span">(props: TProps<C>) => ReactElement | null
+>;
+
+const noRef = (ref: PolyRef<any>) => {
+  if (ref) throw new Error(`Can't pass ref`);
+};
 
 /**
  * A wrapper for content that should be translated. It attempts to translate
@@ -361,11 +391,11 @@ export interface TProps {
  *
  * @category Components
  */
-export const T: ComponentType<TProps> = forwardRef<ReactElement, TProps>(
-  (
-    { children, tag, text, content, count, as = "span", ...props },
-    ref
-  ): ReactElement => {
+export const T: TComponent = forwardRef(
+  <C extends ElementType = "span">(
+    { as, tag, text, content, count, children, ...props }: TProps<C>,
+    ref?: PolyRef<C>
+  ) => {
     const ctx = useTranslation();
 
     if (content) {
@@ -378,7 +408,7 @@ export const T: ComponentType<TProps> = forwardRef<ReactElement, TProps>(
       const ts = ctx.translate(content);
       return (
         <TText
-          as={as}
+          as={as || ("span" as ElementType)}
           lang={ts.language}
           {...ctx.resolveMagicProps(props, ts.language)}
         >
@@ -392,7 +422,7 @@ export const T: ComponentType<TProps> = forwardRef<ReactElement, TProps>(
 
       return (
         <TText
-          as={as}
+          as={as || ("span" as ElementType)}
           lang={ts.language}
           {...ctx.resolveMagicProps(props, ts.language)}
         >
@@ -406,7 +436,11 @@ export const T: ComponentType<TProps> = forwardRef<ReactElement, TProps>(
     if (process.env.NODE_ENV !== "production") noRef(ref);
 
     return (
-      <TText as={as} lang={ctx.defaultLang} {...ctx.resolveMagicProps(props)}>
+      <TText
+        as={as || ("span" as ElementType)}
+        lang={ctx.defaultLang}
+        {...ctx.resolveMagicProps(props)}
+      >
         {children}
       </TText>
     );
@@ -440,10 +474,22 @@ const boundMap = new Map();
  *
  * @category Utilities
  */
-export const tBind = (as: AsType): ComponentType<TProps> => {
-  const bind = (as: AsType): ComponentType<TProps> => {
-    const bound: ComponentType<TProps> = forwardRef(
-      ({ children, ...props }, ref) => (
+
+//  Type '{ as: C; ref: ForwardedRef<ReactElement<any, string | JSXElementConstructor<any>>>; } & Omit<TProps<C>, "children"> & { ...; }'
+//    is not assignable to type 'IntrinsicAttributes & { tag?: string | undefined; text?: TextPropType | undefined; content?: TextPropType | undefined; count?: number | undefined; } & AsProperty<...> & { ...; } & Omit<...> & { ...; }'.
+//  Type '{ as: C; ref: ForwardedRef<ReactElement<any, string | JSXElementConstructor<any>>>; } & Omit<TProps<C>, "children"> & { ...; }'
+//    is not assignable to type 'Omit<PropsWithoutRef<ComponentProps<C>>, "text" | "as" | "content" | "tag" | "count">'.ts(2322)
+
+export const tBind = <C extends ElementType>(
+  as: C
+): ComponentType<TProps<C>> => {
+  const bind = (as: C) => {
+    const bound = forwardRef(
+      <C extends ElementType>(
+        { children, ...props }: TProps<C>,
+        ref?: PolyRef<C>
+      ) => (
+        // @ts-ignore
         <T as={as} ref={ref} {...props}>
           {children}
         </T>
@@ -461,14 +507,3 @@ export const tBind = (as: AsType): ComponentType<TProps> => {
   if (!bound) boundMap.set(as, (bound = bind(as)));
   return bound;
 };
-
-/**
- * Make multiple bound versions of `<T>` at once.
- *
- * ```typescript
- * const [Tli, Tdiv, Th2, Tp] = tBindMulti(["li", "div", "h2", "p"]);
- * ```
- *
- * @category Utilities
- */
-export const tBindMulti = (as: AsType[]) => as.map(tBind);

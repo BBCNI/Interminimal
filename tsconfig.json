@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "module": "esnext",
-    "lib": ["ESNext"],
+    "lib": ["ESNext", "dom"],
     "declaration": true,
     "outDir": "demo/dist/esm",
     "strict": true,
