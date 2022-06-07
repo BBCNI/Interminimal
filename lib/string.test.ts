@@ -140,16 +140,7 @@ describe("TSString", () => {
   });
 
   it("should find the best language", () => {
-    interface TestCase {
-      dict: TFatString;
-      langs: string[];
-      want: {
-        lang: string;
-        str: string;
-      };
-    }
-
-    const tests: TestCase[] = [
+    const tests = [
       {
         dict: { "en": "Color", "en-GB": "Colour", "fr": "Couleur" },
         langs: ["en-GB", "en"],
@@ -176,6 +167,14 @@ describe("TSString", () => {
       expect(ts.language).toBe(want.lang);
       expect(ts.toString()).toBe(want.str);
     }
+  });
+
+  it("should return self if lang correct", () => {
+    const ts1 = TString.cast({ en: "Hello" }).toLang(["en"]);
+    const ts2 = ts1.toLang(["en"]);
+    const ts3 = ts2.toLang(["fr"]);
+    expect(ts2).toBe(ts1);
+    expect(ts3).toBe(ts1);
   });
 
   it("should fail on unmatched plurals", () => {
