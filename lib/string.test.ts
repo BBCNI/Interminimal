@@ -140,7 +140,16 @@ describe("TSString", () => {
   });
 
   it("should find the best language", () => {
-    const tests = [
+    interface TestCase {
+      dict: TFatString;
+      langs: string[];
+      want: {
+        lang: string;
+        str: string;
+      };
+    }
+
+    const tests: TestCase[] = [
       {
         dict: { "en": "Color", "en-GB": "Colour", "fr": "Couleur" },
         langs: ["en-GB", "en"],
