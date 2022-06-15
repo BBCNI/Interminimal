@@ -1,10 +1,10 @@
-export type NextFactory<T, U> = (current: T, delta: U) => T;
+type NextReducer<T, U> = (current: T, delta: U) => T;
 
-export class NextCache<T extends object, U extends object> {
+export class NextCache<T extends object, U extends object = T> {
   private readonly cache = new WeakMap<T, WeakMap<U, T>>();
-  private factory: NextFactory<T, U>;
+  private factory: NextReducer<T, U>;
 
-  constructor(factory: NextFactory<T, U>) {
+  constructor(factory: NextReducer<T, U>) {
     this.factory = factory;
   }
 

@@ -32,7 +32,9 @@ import { NextCache } from "./nextCache";
  * @param d maybe a dictionary
  * @returns true if `d` looks like a dictionary
  */
-export var isDictionary = function (d) { return "$$dict" in d; };
+export var isDictionary = function (d) {
+    return d && typeof d === "object" && "$$dict" in d;
+};
 /**
  * @category Dictionary
  */
@@ -46,7 +48,6 @@ export var checkDictionary = function (dictionary) {
 var canMerge = function (obj) {
     return obj && typeof obj === "object" && !Array.isArray(obj);
 };
-// Frozen dictionary merge
 var mergeObj = function (a, b) {
     if (canMerge(a) && canMerge(b))
         return Object.fromEntries(__spreadArray([], __read(new Set(__spreadArray(__spreadArray([], __read(Object.keys(a)), false), __read(Object.keys(b)), false))), false).map(function (key) {
@@ -59,7 +60,10 @@ var mergeObj = function (a, b) {
         }));
     return b;
 };
-var merge = function (a, b) { return Object.freeze(mergeObj(a, b)); };
+// Frozen dictionary merge
+var merge = function (a, b) {
+    return Object.freeze(mergeObj(a, b));
+};
 /**
  * @category Dictionary
  */

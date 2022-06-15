@@ -74,6 +74,7 @@ describe("LangContext", () => {
     const ts = ctx.resolve(["site"]).toLang(["cy"]);
     expect(ts.toString()).toBe("Interminimal");
     expect(ts.language).toBe("en");
+    // @ts-ignore
     expect(() => ctx.resolve(["this", "that"])).toThrow(/must be/);
   });
 

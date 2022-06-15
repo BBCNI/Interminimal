@@ -81,7 +81,7 @@ const parse = (format: string) => {
   return parsePart();
 };
 
-const cache: { [key: string]: TemplateToken[] } = {};
+const cache: Record<string, TemplateToken[]> = {};
 
 export const parseTemplate = (format: string): TemplateToken[] =>
   /%/.test(format)

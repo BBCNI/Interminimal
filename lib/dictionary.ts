@@ -1,16 +1,14 @@
 import { TFatString, TString } from "./string";
 import { NextCache } from "./nextCache";
 
-type TDictionaryType = {
-  [key: string]: TFatString | TDictionaryRoot;
-} & { $$dict?: never };
+type TDictionaryType = Record<string, TFatString | TDictionaryRoot> & {
+  $$dict?: never;
+};
 
 /**
  * @category Dictionary
  */
-export type TDictionaryMeta = {
-  [key: string]: string;
-};
+export type TDictionaryMeta = Record<string, any>;
 
 /**
  * The root of a translation dictionary
@@ -31,12 +29,13 @@ export type TDictionaryRoot = {
  * @param d maybe a dictionary
  * @returns true if `d` looks like a dictionary
  */
-export const isDictionary = (d: object): d is TDictionaryRoot => "$$dict" in d;
+export const isDictionary = (d: any): d is TDictionaryRoot =>
+  d && typeof d === "object" && "$$dict" in d;
 
 /**
  * @category Dictionary
  */
-export const checkDictionary = (dictionary: object): void => {
+export const checkDictionary = (dictionary: any): void => {
   if (!isDictionary(dictionary))
     throw new Error(`Invalid dictionary (missing $$dict key)`);
 
@@ -48,7 +47,6 @@ export const checkDictionary = (dictionary: object): void => {
 const canMerge = (obj: any): boolean =>
   obj && typeof obj === "object" && !Array.isArray(obj);
 
-// Frozen dictionary merge
 const mergeObj = (a: any, b: any): any => {
   if (canMerge(a) && canMerge(b))
     return Object.fromEntries(
@@ -63,12 +61,14 @@ const mergeObj = (a: any, b: any): any => {
   return b;
 };
 
-const merge = (a: any, b: any) => Object.freeze(mergeObj(a, b));
+// Frozen dictionary merge
+const merge = (a: TDictionaryRoot, b: TDictionaryRoot) =>
+  Object.freeze(mergeObj(a, b));
 
 /**
  * @category Dictionary
  */
-export const nextDict = new NextCache<TDictionaryRoot, TDictionaryRoot>(merge);
+export const nextDict = new NextCache<TDictionaryRoot>(merge);
 
 /**
  * @category Dictionary

@@ -1,16 +1,12 @@
 import { TFatString } from "./string";
 import { NextCache } from "./nextCache";
-declare type TDictionaryType = {
-    [key: string]: TFatString | TDictionaryRoot;
-} & {
+declare type TDictionaryType = Record<string, TFatString | TDictionaryRoot> & {
     $$dict?: never;
 };
 /**
  * @category Dictionary
  */
-export declare type TDictionaryMeta = {
-    [key: string]: string;
-};
+export declare type TDictionaryMeta = Record<string, any>;
 /**
  * The root of a translation dictionary
  *
@@ -29,11 +25,11 @@ export declare type TDictionaryRoot = {
  * @param d maybe a dictionary
  * @returns true if `d` looks like a dictionary
  */
-export declare const isDictionary: (d: object) => d is TDictionaryRoot;
+export declare const isDictionary: (d: any) => d is TDictionaryRoot;
 /**
  * @category Dictionary
  */
-export declare const checkDictionary: (dictionary: object) => void;
+export declare const checkDictionary: (dictionary: any) => void;
 /**
  * @category Dictionary
  */

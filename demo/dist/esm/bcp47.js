@@ -34,7 +34,7 @@ var canonCache = new Map();
  */
 export var safeCanonicaliseLanguage = function (tag) {
     try {
-        // Or use Intl.getCanonicalLocales()? Doesn't make much different - the
+        // Or use Intl.getCanonicalLocales()? Doesn't make much difference - the
         // same error can be thrown.
         return new Intl.Locale(tag).toString();
     }

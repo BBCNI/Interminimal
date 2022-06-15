@@ -1,7 +1,8 @@
-export declare type NextFactory<T, U> = (current: T, delta: U) => T;
-export declare class NextCache<T extends object, U extends object> {
+declare type NextReducer<T, U> = (current: T, delta: U) => T;
+export declare class NextCache<T extends object, U extends object = T> {
     private readonly cache;
     private factory;
-    constructor(factory: NextFactory<T, U>);
+    constructor(factory: NextReducer<T, U>);
     next(current: T, delta: U): T;
 }
+export {};

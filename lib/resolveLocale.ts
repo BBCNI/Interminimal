@@ -2,7 +2,7 @@ import "./weakRef"; // Polyfill WeakRef for Opera
 
 export type LocaleStack = readonly string[];
 
-type NextCache = { [key: string]: WeakRef<LocaleStack> };
+type NextCache = Record<string, WeakRef<LocaleStack>>;
 
 const parentCache = new WeakMap<LocaleStack, LocaleStack | undefined>();
 const nextCache = new WeakMap<LocaleStack, NextCache>();

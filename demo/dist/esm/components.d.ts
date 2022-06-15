@@ -196,10 +196,8 @@ export declare const T: TComponent;
  * It's also possible to wrap React components.
  *
  * ```typescript
- * const TImage = tBind(Image as FunctionComponent);
+ * const TImage = tBind(Image);
  * ```
- *
- * The need for the cast is ugly. Not sure how to fix that. PRs welcome...
  *
  * The generated components are cached - so whenever you call `tBind("p")` you
  * will get the same component.

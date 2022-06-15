@@ -40,7 +40,7 @@ const canonCache = new Map<string, string | undefined>();
  */
 export const safeCanonicaliseLanguage = (tag: string): string | undefined => {
   try {
-    // Or use Intl.getCanonicalLocales()? Doesn't make much different - the
+    // Or use Intl.getCanonicalLocales()? Doesn't make much difference - the
     // same error can be thrown.
     return new Intl.Locale(tag).toString();
   } catch (e) {}

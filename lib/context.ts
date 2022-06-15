@@ -19,7 +19,7 @@ export type StringPropType = TFatString | TString | string;
 /**
  * @category LangContext
  */
-export type TextPropType = TFatString | TString | string | string[];
+export type TextPropType = TFatString | TString | string | [string];
 
 /**
  * Properties that can be passed to [[`LangContext.constructor`]] and [[`LangContext.derive`]]
