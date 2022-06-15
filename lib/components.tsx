@@ -21,12 +21,8 @@ import { LangContext, LangContextProps, TextPropType } from "./context";
 import { TString } from "./string";
 import { TDictionaryRoot } from "./dictionary";
 
-type Scalar = string | number | boolean;
-
 type TPrefix<T> = {
-  [P in keyof T as T[P] extends Scalar ? `t-${string & P}` : never]?:
-    | T[P]
-    | [string];
+  [P in keyof T as `t-${string & P}`]?: T[P] | [string];
 };
 
 type PolyRef<C extends ElementType> = ComponentPropsWithRef<C>["ref"];
@@ -489,7 +485,7 @@ export const tBind = <C extends ElementType>(
         { children, ...props }: TProps<C>,
         ref?: PolyRef<C>
       ) => (
-        // @ts-ignore
+        // @ts-ignore hmm...
         <T as={as} ref={ref} {...props}>
           {children}
         </T>
