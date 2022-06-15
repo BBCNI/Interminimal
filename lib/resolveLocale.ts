@@ -62,7 +62,7 @@ const resolve = (stack: LocaleStack, langs: LocaleStack): LocaleStack => {
  *
  * @param stack
  * @param langs a list of langs to prepend to the stack
- * @returns a stack node with the prepended langs
+ * @returns a stack array with the prepended langs
  * @category Locale
  */
 export const resolveLocales = (

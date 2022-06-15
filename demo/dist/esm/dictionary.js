@@ -42,7 +42,7 @@ export var checkDictionary = function (dictionary) {
     if (!isDictionary(dictionary))
         throw new Error("Invalid dictionary (missing $$dict key)");
     Object.values(dictionary.$$dict).map(function (ts) {
-        return "$$dict" in ts ? checkDictionary(ts) : TString.cast(ts);
+        return isDictionary(ts) ? checkDictionary(ts) : TString.cast(ts);
     });
 };
 var canMerge = function (obj) {

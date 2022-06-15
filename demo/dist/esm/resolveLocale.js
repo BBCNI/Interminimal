@@ -75,7 +75,7 @@ var resolve = function (stack, langs) {
  *
  * @param stack
  * @param langs a list of langs to prepend to the stack
- * @returns a stack node with the prepended langs
+ * @returns a stack array with the prepended langs
  * @category Locale
  */
 export var resolveLocales = function (stack, langs) { return resolve(canonicaliseLocales(stack), langs); };

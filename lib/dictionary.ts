@@ -40,7 +40,7 @@ export const checkDictionary = (dictionary: any): void => {
     throw new Error(`Invalid dictionary (missing $$dict key)`);
 
   Object.values(dictionary.$$dict).map(ts =>
-    "$$dict" in ts ? checkDictionary(ts as TDictionaryRoot) : TString.cast(ts)
+    isDictionary(ts) ? checkDictionary(ts) : TString.cast(ts)
   );
 };
 

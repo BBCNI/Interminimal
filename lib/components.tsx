@@ -101,7 +101,7 @@ type TranslateComponent = WithName<
  * a `lang=` property that indicates the language of the wrapped content.
  *
  * Within this context any content which can't be translated into the requested
- * languages will have it's own `lang=` property to reflect the fact that it
+ * languages will have its own `lang=` property to reflect the fact that it
  * is in a different language than expected.
  *
  * ```typescript
