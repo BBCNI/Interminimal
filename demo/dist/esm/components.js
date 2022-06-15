@@ -293,10 +293,6 @@ var boundMap = new Map();
  *
  * @category Utilities
  */
-//  Type '{ as: C; ref: ForwardedRef<ReactElement<any, string | JSXElementConstructor<any>>>; } & Omit<TProps<C>, "children"> & { ...; }'
-//    is not assignable to type 'IntrinsicAttributes & { tag?: string | undefined; text?: TextPropType | undefined; content?: TextPropType | undefined; count?: number | undefined; } & AsProperty<...> & { ...; } & Omit<...> & { ...; }'.
-//  Type '{ as: C; ref: ForwardedRef<ReactElement<any, string | JSXElementConstructor<any>>>; } & Omit<TProps<C>, "children"> & { ...; }'
-//    is not assignable to type 'Omit<PropsWithoutRef<ComponentProps<C>>, "text" | "as" | "content" | "tag" | "count">'.ts(2322)
 export var tBind = function (as) {
     var bind = function (as) {
         var bound = forwardRef(function (_a, ref) {

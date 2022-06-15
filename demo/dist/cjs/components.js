@@ -331,7 +331,7 @@ var tBind = function (as) {
         var bound = (0, react_1.forwardRef)(function (_a, ref) {
             var children = _a.children, props = __rest(_a, ["children"]);
             return (
-            // @ts-ignore
+            // @ts-ignore hmm...
             react_1.default.createElement(exports.T, __assign({ as: as, ref: ref }, props), children));
         });
         var asName = typeof as === "string" ? as : as.displayName;

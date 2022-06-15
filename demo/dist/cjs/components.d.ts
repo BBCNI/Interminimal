@@ -1,8 +1,7 @@
 import React, { ComponentType, ReactNode, ReactElement, ComponentPropsWithoutRef, ComponentPropsWithRef, ElementType, PropsWithChildren } from "react";
 import { LangContext, LangContextProps, TextPropType } from "./context";
-declare type Scalar = string | number | boolean;
 declare type TPrefix<T> = {
-    [P in keyof T as T[P] extends Scalar ? `t-${string & P}` : never]?: T[P] | [string];
+    [P in keyof T as `t-${string & P}`]?: T[P] | [string];
 };
 declare type PolyRef<C extends ElementType> = ComponentPropsWithRef<C>["ref"];
 declare type AsProperty<C extends ElementType> = {
