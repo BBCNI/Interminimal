@@ -62,4 +62,10 @@ describe("searchOrder", () => {
       searchOrder(["this-is-a-really-long-language-name-which-should-not-work"])
     ).toThrow(/too long/);
   });
+
+  it("should cache", () => {
+    const so1 = searchOrder(["en", "fr"]);
+    const so2 = searchOrder(["en", "en", "fr"]);
+    expect(so1).toBe(so2);
+  });
 });

@@ -6,13 +6,7 @@ import { Fragment } from "react";
 import { useEffect } from "react";
 import { Children } from "react";
 
-import {
-  ChangeEvent,
-  ComponentType,
-  FunctionComponent,
-  ReactNode,
-  useState
-} from "react";
+import { ChangeEvent, ComponentType, ReactNode, useState } from "react";
 
 import {
   T,
@@ -157,8 +151,8 @@ const TList: ComponentType<{
   style?: "long" | "short" | "narrow";
 }> = ({ children, ...opt }) => {
   const ctx = useTranslation();
-  // @ts-ignore - no type mapping available
   const lf = new Intl.ListFormat(ctx.languages, opt);
+  // @ts-ignore - no type mapping available
   const { locale } = lf.resolvedOptions();
   // Make the children into a list of args, %1, %2 etc
   const list = Array.from(

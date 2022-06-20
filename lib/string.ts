@@ -211,6 +211,7 @@ export class TString {
     if (first === lang) return this;
     if (first in dict) return new TString(dict, first);
 
+    // TODO we could safely cache this as a set.
     const tags = Object.keys(dict);
     if (tags.length > 1) {
       const best = bestLocale(tags, langs);

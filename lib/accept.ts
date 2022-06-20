@@ -15,7 +15,7 @@ const parsePriority = (term: string): [number, string] => {
   return [1, term];
 };
 
-const cmp = (a: string | number, b: string | number) =>
+const cmp = <T extends string | number>(a: T, b: T): number =>
   a < b ? -1 : a > b ? 1 : 0;
 
 const canonTag = (tag: string): string[] => {

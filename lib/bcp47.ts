@@ -1,5 +1,5 @@
 import { searchOrder } from "./searchOrder";
-import { canonicaliseLocales, LocaleStack } from "./resolveLocale";
+import { LocaleStack } from "./resolveLocale";
 
 /**
  * Given a set of BCP 47 language tags and a list of locales in
@@ -26,7 +26,7 @@ export const bestLocale = (
   langs: LocaleStack
 ): string | undefined => {
   const ts = new Set(tags);
-  return searchOrder(canonicaliseLocales(langs)).find(ln => ts.has(ln));
+  return searchOrder(langs).find(ln => ts.has(ln));
 };
 
 const canonCache = new Map<string, string | undefined>();
