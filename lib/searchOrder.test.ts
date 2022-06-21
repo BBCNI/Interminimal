@@ -64,8 +64,8 @@ describe("searchOrder", () => {
   });
 
   it("should cache", () => {
-    const so1 = searchOrder(["en", "fr"]);
-    const so2 = searchOrder(["en", "en", "fr"]);
+    const so1 = searchOrder(["en-GB", "fr"]);
+    const so2 = searchOrder(["en-GB", "en", "en", "fr"]);
     expect(so1).toBe(so2);
   });
 });
